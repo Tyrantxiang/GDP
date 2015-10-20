@@ -19,7 +19,9 @@ function authenticate(req, res){
     (function(userId){
         // Generate web token
         var token = jwt.sign({ userId : userId }, secret, { expiresIn : 60 * 60 });
-        res.send(token);
+        res.json({
+            token : token
+        });
     })(1);
 
 }
@@ -27,7 +29,7 @@ function authenticate(req, res){
 function express_middleware(req, res, next){
     // Try and get the token from the query string first
     var token = req.query.token || req.query.t;
-    console.log("HERE");
+    
     // See if that worked
     if(!token){
         // Try and get it from the body

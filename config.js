@@ -124,7 +124,7 @@ module.exports.games = (function(){
                     data = JSON.parse(data);
 
                     // Check required elements are present
-                    if(data.name || data.id || data.entryObject){
+                    if(data.name && data.id && data.entryObject){
                         data.directory = dir;
                         gameConfigs[data.id] = data;
 
@@ -257,20 +257,25 @@ module.exports.games = (function(){
 
         /* A express route function, that will serve a game's file */
         serveFile : function(req, res){
-            var gameId = req.params.game,
-                fileType = req.params.fileType,
-                filename = req.params.filename,
-                dir = gameConfigs[gameId].directory,
-                path;
+            var gameId = req.params.game;
 
-            if(fileType === "scripts"){
-                path = path.join(gamesDir, dir, "scripts", filename);
-            }
-            if(fileType === "assets"){
-                path = path.join(gamesDir, dir, "assets", filename);
-            }
+            if(gameConfigs[gameId]){
+                var fileType = req.params.fileType,
+                    filename = req.params.filename,
+                    dir = gameConfigs[gameId].directory,
+                    path;
 
-            res.sendFile(path);
+                if(fileType === "scripts"){
+                    path = path.join(gamesDir, dir, "scripts", filename);
+                }
+                if(fileType === "assets"){
+                    path = path.join(gamesDir, dir, "assets", filename);
+                }
+
+                res.sendFile(path);
+            }else{
+                res.status(404).send("error, no game with that ID");
+            }
 
         }
     };

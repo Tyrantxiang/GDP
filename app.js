@@ -25,7 +25,7 @@ app.use(parser.json());
 app.use(parser.urlencoded({ extended : true }));
 
 // Set up the authentication middleware
-app.use(auth.express_middleware);
+app.use(["/games", "/common/p"], auth.express_middleware);
 
 
 // Set the static files to be served
