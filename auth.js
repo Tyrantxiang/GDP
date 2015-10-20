@@ -37,7 +37,7 @@ function express_middleware(req, res, next){
 
         if(!token){
             // Fail here
-            next();
+            res.status(403).json({ error : true, message : "unauthorised" });
             return;
         }
     }
@@ -46,7 +46,8 @@ function express_middleware(req, res, next){
     // Attempt to verify token
     jwt.verify(token, secret, function(err, decoded){
         if(err){
-            // Fail here
+            res.status(403).json({ error : true, message : "unauthorised" });
+            return;
         }
         req.userId = decoded.userId;
         next();
