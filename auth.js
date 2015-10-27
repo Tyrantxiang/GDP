@@ -15,10 +15,14 @@ function authenticate(req, res){
         // Fail here
     }
 
+    /* To make sure we don't send the userId (for db reasons) maybe we should encrypt the 
+     * user ID here (with AES?)
+     */
+
     // Verify and get userId here
     (function(userId){
         // Generate web token
-        var token = jwt.sign({ userId : userId }, secret, { expiresIn : 60 * 60 });
+        var token = jwt.sign({ userId : userId }, secret, { expiresIn : 60 * 60 * 24 });
         res.json({
             token : token
         });

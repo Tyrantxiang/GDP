@@ -51,6 +51,11 @@ function Hub(userId, comms){
 // Set the locations as "class constants"
 Hub.locations = locations;
 
+
+Hub.prototype.exit = function(){
+    // Cleanup code when I client disconnects
+};
+
 // Define functions here
 Hub.prototype.eventListeners = {
     getGamesList : function(data, fn){

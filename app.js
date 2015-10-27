@@ -41,7 +41,7 @@ app.post("/authenticate", auth.authenticate);
 
 // Routes to serve semi static files
 app.get("/games/:game/:fileType/:filename", config.games.serveFile);
-app.get("/items/sprites/:filename", config.items.serveFile);
+app.get("/items/sprites/:item/:filename", config.items.serveFile);
 
 
 // Set up Socket.io connection
