@@ -171,12 +171,12 @@ function configReaderFactory(directory){
     /* Sets up all the watchers to check if the config files change */
     function updateWatchers(){
         // Close all open watchers
-        if(configWatchers[dir]){
-            configWatchers[dir].close();
-            delete configWatchers[dir];
+        for(w in configWatchers){
+            configWatchers[w].close();
+            delete configWatchers[w];
         }
 
-        getGameDirs(function(dirs){
+        getSubDirs(function(dirs){
             dirs.forEach(updateWatcher);
         });
     }
@@ -195,8 +195,8 @@ function configReaderFactory(directory){
         }
     });
 
-    // Inital game config update
-    updateGameConfigs();
+    // Inital config update
+    updateConfigs();
     // Set up inital watchers
     updateWatchers();
 
@@ -328,7 +328,7 @@ module.exports.items = (function(){
 
 
         // Generate the config readers and extract generated functions
-        configReader = configReaderFactory(itemsConfigDir),
+        configReader = configReaderFactory(itemsDir),
         itemConfigs = configReader.configs,
         functions = configReader.functions;
 
@@ -367,10 +367,10 @@ module.exports.items = (function(){
  */
 module.exports.conditions = (function(){
 
-    var conditionsConfigDir = config.app.conditionsConfigDir || "conditions",
+    var conditionsDir = config.app.conditionsDir || "conditions",
 
         // Generate the config readers and extract generated functions
-        configReader = configReaderFactory(conditionsConfigDir),
+        configReader = configReaderFactory(conditionsDir),
 
         functions = configReader.functions;
 
