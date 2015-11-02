@@ -1,0 +1,277 @@
+NEEDED QUERIES
+==============
+
+User
+----
+~~~~~~~~~~~#
+insertUser (username, password, dob)
+updateUser (user_id, [params_to_change])
+	?? Needs validation (in database module or before?)
+	-- Need to salt the password!
+		~~ password -> (SALT PASSWORD) -> saltedpw
+
+INSERT INTO users 
+	(username, saltedpw, dob) 
+VALUES 
+	($username, $saltedpw, $dob)
+;
+
+UPDATE users 
+SET [params_to_change]
+WHERE id = $user_id
+;
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+getUserById (user_id)
+	-- RETURNS: {user_id, username, dob, currency, created, modified}
+
+SELECT id AS user_id, username, dob, currency, created, modified
+FROM users
+WHERE id = $user_id
+;
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+getUserByName (username)
+	-- RETURNS: {user_id, username, dob, currency, created, modified}
+
+SELECT id AS user_id, username, dob, currency, created, modified
+FROM users
+WHERE username = $username
+;
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+validateLogin (username, password)
+	-- Use salting library to validate password
+	-- RETURNS: {user_id, username, dob, currency, created, modified}
+
+SELECT id AS user_id, username, saltedpw, dob, currency, created, modified
+FROM users
+WHERE username = $username
+;
+~ validate password, then return user object WITH PASSWORD DROPPED
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+#deleteUser (user_id)
+
+DELETE FROM users
+WHERE id = $user_id
+;
+~~~~~~~~~~~#
+
+?????????
+Sessions
+--------
+~~~~~~~~~~~#
+insertSession (user_id, start_timestamp)
+	-- Called as soon as session is created
+	-- RETURNS: {session_id}
+
+INSERT INTO sessions 
+	(user_id, start_time) 
+VALUES 
+	($user_id, $start_timestamp)
+;
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+endSession (session_id, end_timestamp)
+	-- Called when session ends
+
+UPDATE sessions
+SET end_time = $end_timestamp
+WHERE id = $session_id
+;
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+getSession (session_id)
+	-- RETURNS: {id, user_id, start_time, end_time}
+
+SELECT id AS session_id, user_id, start_time, end_time, logged
+FROM sessions
+WHERE id = $session_id
+;
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+#deleteSession (session_id)
+
+DELETE FROM sessions
+WHERE id = $session_id
+;
+~~~~~~~~~~~#
+
+
+Plays
+-----
+~~~~~~~~~~~#
+insertPlay (user_id, game_id, start_timestamp, end_timestamp, score)
+	-- game_id = id in the game config file
+		?? needs validation: where?
+	-- RETURNS: {play_id}
+
+INSERT INTO plays 
+	(user_id, game_id, start_time, end_time, score) 
+VALUES 
+	($user_id, $game_id, $start_timestamp, $end_timestamp, $score)
+;
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+getPlay (play_id)
+	-- RETURNS: {user_id, game_id, start_time, end_time, score, created}
+
+SELECT user_id, game_id, start_timestamp, end_timestamp, score, created
+FROM plays
+WHERE id = $play_id
+;
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+getHighScores ({~params_to_search~ user_id, game_id, times]})
+	-- search obj includes which columns to filter on
+	-- RETURNS: [ {play obj as above}, ... ]
+
+SELECT user_id, game_id, start_timestamp, end_timestamp, score, created
+FROM plays
+WHERE [params_to_search]
+;
+
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+#deletePlay(play_id)
+
+DELETE FROM sessions
+WHERE id = $session_id
+;
+~~~~~~~~~~~#
+
+Conditions
+----------
+~~~~~~~~~~~#
+insertCondition(user_id, condition_id, active)
+	-- condition_id = id in the condition config file
+		!! needs validation server side
+	-- active = whether condition is active for user (used when turning conditions on and off)
+	-- RETURNS: {user_cond_id}
+
+INSERT INTO conditions
+	(user_id, condition_id, active)
+VALUES
+	($user_id, $condition_id, $active)
+;
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+getConditionsForUser(user_id)
+	-- will need to with timestamp ordering; then where active is true
+	-- RETURNS: [ {condition_id}, ... ]
+
+??
+SELECT condition_id
+FROM (
+	SELECT condition_id, active
+	FROM user_conditions
+	WHERE user_id = $user_id
+	GROUP BY condition_id	
+)
+WHERE active = true
+;
+??
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+#deleteCondition(user_cond_id)
+
+DELETE FROM user_conditions
+WHERE id = $user_cond_id
+;
+~~~~~~~~~~~#
+
+
+Inventory
+---------
+~~~~~~~~~~~#
+insertInventory(user_id, item_id, active)
+	-- item_id = id in the item config file
+		!! needs validation server side
+	-- active = whether item is active for user (used when adding and removing items from inventory)
+	-- RETURNS: {user_item_id}
+
+INSERT INTO user_inventory
+	(user_id, item_id, active)
+VALUES
+	($user_id, $item_id, $active)
+;
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+getInventoryForUser(user_id)
+	-- will need to group by active with timestamp ordering; then where active is true
+	-- RETURNS: [ {item_id}, ... ]
+
+??
+SELECT item_id
+FROM (
+	SELECT item_id, active
+	FROM user_inventory
+	WHERE user_id = $user_id
+	GROUP BY item_id	
+)
+WHERE active = true
+;
+??
+
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+#deleteInventory(user_id, item_id)
+
+DELETE FROM user_inventory
+WHERE id = $user_item_id
+;
+~~~~~~~~~~~#
+
+
+Equipped
+--------
+
+~~~~~~~~~~~#
+insertEquipped(user_id, equipped_obj)
+	-- equipped_obj is an object which maps the item slots to item_id
+		!! needs validation server side
+		!! this needs to somehow make sure that only tries to insert into columns that do exist
+	-- RETURNS: {equipped_id}
+
+INSERT INTO equipped
+	(user_id, ~equipped_obj properties~)
+VALUES
+	($user_id, ~equipped_obj values~)
+;
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+getEquippedForUser(user_id)
+	-- gets latest equipped row for that user
+
+SELECT *
+FROM equipped
+WHERE user_id = $user_id
+ORDER BY created
+LIMIT 1
+;
+
+~~~~~~~~~~~#
+
+~~~~~~~~~~~#
+#deleteEquipped(equipped_id)
+
+DELETE FROM equipped
+WHERE id = $equipped_id
+;
+~~~~~~~~~~~#

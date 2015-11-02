@@ -1,0 +1,87 @@
+DROP SCHEMA IF EXISTS "{schema}" CASCADE;
+
+CREATE OR REPLACE FUNCTION update_modified_column()	
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.modified = now();
+    RETURN NEW;	
+END;
+$$ language 'plpgsql';
+
+CREATE SCHEMA "{schema}";
+
+-- users
+CREATE TABLE "{schema}".users
+( id 				serial		NOT NULL
+, username		  	text    	NOT NULL UNIQUE
+, saltedpw		 	text    	NOT NULL
+, dob			  	date    	NOT NULL
+, currency			bigint		NOT NULL DEFAULT 0
+, created 			timestamp   NOT NULL DEFAULT current_timestamp
+, modified			timestamp 	NOT NULL
+, PRIMARY KEY(id)
+);
+
+CREATE TRIGGER update_user_modified_ts 
+	BEFORE UPDATE ON users
+	FOR EACH ROW 
+EXECUTE PROCEDURE update_modified_column();
+
+-- sessions
+CREATE TABLE "{schema}".sessions
+( id				serial		NOT NULL
+, user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
+, start_time		timestamp	NOT NULL
+, end_time			timestamp	NULL
+, modified 			timestamp 	NOT NULL
+, PRIMARY KEY(id)
+);
+
+CREATE TRIGGER update_session_modified_ts 
+	BEFORE UPDATE ON sessions
+	FOR EACH ROW 
+EXECUTE PROCEDURE update_modified_column();
+
+-- plays
+CREATE TABLE "{schema}".plays
+( id 				serial		NOT NULL
+, user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
+, game_id		  	text    	NOT NULL
+, start_time		timestamp	NOT NULL
+, end_time			timestamp	NOT NULL
+, score				bigint		NOT NULL
+, created			timestamp 	NOT NULL DEFAULT current_timestamp
+, PRIMARY KEY(run_id)
+);
+
+-- conditions
+CREATE TABLE "{schema}".user_conditions
+( id				serial		NOT NULL
+, user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
+, condition_id 		text 		NOT NULL
+, active			boolean		NOT NULL
+, created			timestamp   NOT NULL DEFAULT current_timestamp
+, PRIMARY KEY(user_id, condition_id)
+);
+
+-- inventory
+CREATE TABLE "{schema}".user_inventory
+( id				serial		NOT NULL
+, user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
+, item_id	 		text 		NOT NULL
+, active			boolean		NOT NULL
+, created			timestamp   NOT NULL DEFAULT current_timestamp
+, PRIMARY KEY(user_id, item_id)
+);
+
+-- equipped
+CREATE TABLE "{schema}".equipped
+( id 		serial 		NOT NULL
+, user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
+, head 				text		NULL
+, eyes				text		NULL
+, skin				text		NULL
+, top				text		NULL
+, created			timestamp   NOT NULL DEFAULT current_timestamp
+, PRIMARY KEY(equipped_id)
+);
