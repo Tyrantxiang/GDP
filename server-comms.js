@@ -53,6 +53,8 @@ module.exports = function (server, auth, config, hub){
         socket.on("disconnect", function (){
             h.exit();
         });
+		
+		socket.emit('message', {message: "hi"});
     });
 
 

@@ -59,7 +59,8 @@ function express_middleware(req, res, next){
 }
 
 function socket_middleware(socket, next){
-    var token = socket.request.token;
+	//console.log(socket.request);
+    var token = socket.request._query.token;
     if(!token){
         // Fail here
         next(new Error('not authorized'));
@@ -69,7 +70,9 @@ function socket_middleware(socket, next){
     jwt.verify(token, secret, function(err, decoded){
         if(err){
             next(new Error('not authorized'));
+			return;
         }
+		
         socket.userId = decoded.userId;
         next();
     });
