@@ -74,14 +74,16 @@ Hub.prototype.eventListeners = {
             var name = config.games.getName(id),
                 assetBaseURL = config.games.getAssetsBaseURL(id),
                 scriptURLs = config.games.getScripts(id),
-                entryObject = config.games.getEntryObject(id);
+                entryObject = config.games.getEntryObject(id),
+                version = config.games.getConfig(id, "version");
 
             fn({
                 gameId : id,
                 name : name,
                 assetBaseURL : assetBaseURL,
                 scriptURLs : scriptURLs,
-                entryObject : entryObject
+                entryObject : entryObject,
+                version : version
             });
         }else{
             fn({

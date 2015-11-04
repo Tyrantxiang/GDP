@@ -25,16 +25,16 @@ app.use(parser.json());
 app.use(parser.urlencoded({ extended : true }));
 
 // Set up the authentication middleware
-app.use(["/games", "/common/p"], auth.express_middleware);
+app.use(["/games", "/static/p"], auth.express_middleware);
 
 
 // Set the static files to be served
-app.use("/common", express.static("static"));
+app.use("/static", express.static("static"));
 
 
 // Routes
 app.get("/", function (req, res){
-    res.sendFile(__dirname + "/index.html");
+    res.sendFile(__dirname + "/static/index.html");
 });
 
 app.post("/authenticate", auth.authenticate);
