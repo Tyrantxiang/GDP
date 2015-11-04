@@ -43,6 +43,12 @@ function Hub(userId, comms){
     // The minigame ID that the player is currently in
     this.gameId = null;
 
+    // The time the player started the current game
+    this.gameStartTime = null;
+
+    // Time they logged on (this object was created)
+    this.connectedTime = new Date();
+
     // Get the user data from the db
 
 
@@ -53,7 +59,10 @@ Hub.locations = locations;
 
 
 Hub.prototype.exit = function(){
-    // Cleanup code when I client disconnects
+    // Cleanup code when a client disconnects
+
+    // Save session data in db
+    var disconnectTime = new Date();
 };
 
 // Define functions here
@@ -77,6 +86,12 @@ Hub.prototype.eventListeners = {
                 entryObject = config.games.getEntryObject(id),
                 version = config.games.getConfig(id, "version");
 
+
+            // Set the game we are in
+            this.location = Hub.locations.IN_MINIGAME;
+            this.gameId = id;
+            this.gameStartTime = new Date();
+
             fn({
                 gameId : id,
                 name : name,
@@ -88,7 +103,29 @@ Hub.prototype.eventListeners = {
         }else{
             fn({
                 err : "No game with that ID"
-            })
+            });
+        }
+    },
+
+    finishGame : function(data, fn){
+        var id = data.gameId,
+            score = data.score,
+            timeInGame = (new Date() - this gameStartTime)/1000; // Divide by 1000 to get seconds, not millis
+
+        if(id = this.gameId){
+            this.location = Hub.locations.IN_HUB;
+            this.gameId = null;
+            this.gameStartTime = null;
+
+
+            // Save score in database
+
+
+            fn();
+        }else{
+            fn({
+                err : "Game ID supplied does not match the server's"
+            });
         }
     }
 
