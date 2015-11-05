@@ -54,7 +54,6 @@ module.exports = function (server, auth, config, hub){
             h.exit();
         });
 		
-		socket.emit('message', {message: "hi"});
     });
 
 
