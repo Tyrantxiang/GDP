@@ -18,7 +18,7 @@ CREATE TABLE "{schema}".users
 , dob			  	date    	NOT NULL
 , currency			bigint		NOT NULL DEFAULT 0
 , created 			timestamp   NOT NULL DEFAULT current_timestamp
-, modified			timestamp 	NOT NULL
+, modified			timestamp 	NOT NULL DEFAULT current_timestamp
 , PRIMARY KEY(id)
 );
 
@@ -33,7 +33,7 @@ CREATE TABLE "{schema}".sessions
 , user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
 , start_time		timestamp	NOT NULL
 , end_time			timestamp	NULL
-, modified 			timestamp 	NOT NULL
+, modified 			timestamp 	NOT NULL DEFAULT current_timestamp
 , PRIMARY KEY(id)
 );
 
@@ -51,7 +51,7 @@ CREATE TABLE "{schema}".plays
 , end_time			timestamp	NOT NULL
 , score				bigint		NOT NULL
 , created			timestamp 	NOT NULL DEFAULT current_timestamp
-, PRIMARY KEY(run_id)
+, PRIMARY KEY(id)
 );
 
 -- conditions
@@ -61,7 +61,7 @@ CREATE TABLE "{schema}".user_conditions
 , condition_id 		text 		NOT NULL
 , active			boolean		NOT NULL
 , created			timestamp   NOT NULL DEFAULT current_timestamp
-, PRIMARY KEY(user_id, condition_id)
+, PRIMARY KEY(id)
 );
 
 -- inventory
@@ -71,17 +71,17 @@ CREATE TABLE "{schema}".user_inventory
 , item_id	 		text 		NOT NULL
 , active			boolean		NOT NULL
 , created			timestamp   NOT NULL DEFAULT current_timestamp
-, PRIMARY KEY(user_id, item_id)
+, PRIMARY KEY(id)
 );
 
 -- equipped
 CREATE TABLE "{schema}".equipped
-( id 		serial 		NOT NULL
+( id 				serial 		NOT NULL
 , user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
 , head 				text		NULL
 , eyes				text		NULL
 , skin				text		NULL
 , top				text		NULL
 , created			timestamp   NOT NULL DEFAULT current_timestamp
-, PRIMARY KEY(equipped_id)
+, PRIMARY KEY(id)
 );

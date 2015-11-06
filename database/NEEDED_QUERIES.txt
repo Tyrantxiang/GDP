@@ -6,7 +6,7 @@ User
 ~~~~~~~~~~~#
 insertUser (username, password, dob)
 updateUser (user_id, [params_to_change])
-	?? Needs validation (in database module or before?)
+	-- do validation here!
 	-- Need to salt the password!
 		~~ password -> (SALT PASSWORD) -> saltedpw
 
@@ -62,7 +62,6 @@ WHERE id = $user_id
 ;
 ~~~~~~~~~~~#
 
-?????????
 Sessions
 --------
 ~~~~~~~~~~~#
@@ -111,7 +110,7 @@ Plays
 ~~~~~~~~~~~#
 insertPlay (user_id, game_id, start_timestamp, end_timestamp, score)
 	-- game_id = id in the game config file
-		?? needs validation: where?
+		-- validation does exist
 	-- RETURNS: {play_id}
 
 INSERT INTO plays 
