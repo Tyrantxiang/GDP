@@ -13,6 +13,7 @@ var user_equipped = {}
 	, dbutils = require('./dbutils.js')
 	;
 
+//Creates a user_equipped entry
 user_equipped.createUserEquipped = function(pass, fail, equippedObj) {
 	//Validates the details given
 	validateEquippedDetails(validationPass, fail, equippedObj);
@@ -23,6 +24,7 @@ user_equipped.createUserEquipped = function(pass, fail, equippedObj) {
 	}
 }
 
+//Gets the user_equipped entry that matches the given id
 user_equipped.readUserEquippedById = function(pass, fail, id){
 	dbutils.readById(pass, fail, TABLE_NAME, ["id", "user_id", "item_id", "active", "created"], id);
 }
@@ -31,6 +33,7 @@ user_equipped.getEquippedForUser = function(pass, fail, user_id){
 	dbutils.readSingle(pass, fail, TABLE_NAME, ["item_id"], {"user_id": user_id}, "ORDER BY id DESC");
 }
 
+//Deletes the entry that matches the id
 user_equipped.deleteUserEquipped = function(pass, fail, id){
 	dbutils.deleteById(pass, fail, TABLE_NAME, id);
 }
