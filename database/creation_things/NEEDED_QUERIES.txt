@@ -261,7 +261,7 @@ getEquippedForUser(user_id)
 SELECT *
 FROM equipped
 WHERE user_id = $user_id
-ORDER BY created
+ORDER BY created DESC
 LIMIT 1
 ;
 
