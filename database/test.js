@@ -42,4 +42,4 @@ db.init(function(){
 			console.log(db.connection_string)
 		}, testFail, dummyServerSettings);
 
-db.getScores(testPass, testFail, filters, 10);
+db.getScores(testPass, testFail, filters, {column: "score", direction: "DESC"}, 10);

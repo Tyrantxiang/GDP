@@ -11,9 +11,12 @@
 //dbutils =  require('./dbutils') 
 var db = {}
 	, databaseReq = [
-		require('./usersData.js')
-		, require('./sessionsData.js')
-		, require('./playsData.js')
+		require('./users_db.js')
+		, require('./sessions_db.js')
+		, require('./plays_db.js')
+		, require('./userConditions_db.js')
+		, require('./userInventory_db.js')
+		, require('./userEquipped_db.js')
 	]
 ;
 

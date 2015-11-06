@@ -37,12 +37,12 @@ usersData.readUserById = function(pass, fail, id){
 }
 
 usersData.readUserByName = function(pass, fail, username){
-	dbutils.readUnique(pass, fail, TABLE_NAME, ["id", "username", "dob", "currency", "created", "modified"],
+	dbutils.readSingle(pass, fail, TABLE_NAME, ["id", "username", "dob", "currency", "created", "modified"],
 		{"username": username});
 }
 
 usersData.authenticateUser = function(pass, fail, username, givenpw){
-	dbutils.readUnique(readUserPass, fail, TABLE_NAME, ["id", "username", "saltedpw", "dob", "currency", "created", "modified"],
+	dbutils.readSingle(readUserPass, fail, TABLE_NAME, ["id", "username", "saltedpw", "dob", "currency", "created", "modified"],
 		{"username": username});
 
 	function readUserPass(userObj){

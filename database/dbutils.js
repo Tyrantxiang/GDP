@@ -58,7 +58,7 @@ dbutils.create = function(pass, fail, tableName, valuesObj){
 	}
 };
 
-dbutils.read = function(pass, fail, tableName, columnsArr, filterConds, limit){
+dbutils.read = function(pass, fail, tableName, columnsArr, filterConds, byString, limit){
 	dbutils.createFilterString(filterCreationPass, fail, filterConds);
 
 	function filterCreationPass(filterString, filterVals){
@@ -68,19 +68,22 @@ dbutils.read = function(pass, fail, tableName, columnsArr, filterConds, limit){
 			values: filterVals
 		}
 
+		if(byString)
+			preparedStatement.text += " "+byString;
+
 		if(limit)
-			preparedStatement.text += " LIMIT "+limit
+			preparedStatement.text += " LIMIT "+limit;
 
 		dbutils.query(pass, fail, preparedStatement);
 	}
 }
 
-dbutils.readUnique = function(pass, fail, tableName, columnsArr, filterConds){
-	dbutils.read(pass, fail, tableName, columnsArr, filterConds, null);
+dbutils.readSingle = function(pass, fail, tableName, columnsArr, filterConds, byString){
+	dbutils.read(pass, fail, tableName, columnsArr, filterConds, byString, null);
 }
 
 dbutils.readById = function(pass, fail, tableName, columnsArr, idVal){
-	dbutils.read(pass, fail, tableName, columnsArr, {"id": idVal}, null);
+	dbutils.read(pass, fail, tableName, columnsArr, {"id": idVal}, null, null);
 }
 
 dbutils.update = function(pass, fail, tableName, valuesObj, filterConds){
@@ -179,7 +182,6 @@ dbutils.createFilterString = function(pass, fail, filterConds, placeIndex){
 	}
 
 	for(var cond in filterConds){
-		console.log(cond);
 		if(cond == "time_range"){
 
 			if(filterConds[cond].start)

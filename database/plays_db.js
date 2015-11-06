@@ -3,7 +3,7 @@
 /*
  * playsData.js
  * 
- * Queries for the Sessions database table
+ * Queries for the Plays database table
  *
  * @authors Joe Ringham
 */
@@ -27,9 +27,15 @@ playsData.readPlayById = function(pass, fail, id){
 	dbutils.readById(pass, fail, TABLE_NAME, ["id", "user_id", "game_id", "start_time", "end_time", "score", "created"], id);
 }
 
-playsData.getScores = function(pass, fail, filterConds, limit){
+playsData.getScores = function(pass, fail, filterConds, orderBy, limit){
+	var orderByString = ""
+		;
+
+	if(orderBy && orderBy.column && orderBy.direction)
+		orderByString = "ORDER BY "+orderBy.column+" "+orderBy.direction;
+
 	dbutils.read(pass, fail, TABLE_NAME, ["id", "user_id", "game_id", "start_time", "end_time", "score", "created"],
-		filterConds, limit);
+		filterConds, orderByString, limit);
 }
 
 playsData.deletePlay = function(pass, fail, id){
@@ -40,7 +46,7 @@ playsData.deletePlay = function(pass, fail, id){
  * HELPER FUNCTIONS
 */
 
-function validatePlayDetails(pass, fail, start_ts, end_ts, score){
+function validatePlayDetails(pass, fail, playObj){
 	pass();
 }
 
