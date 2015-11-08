@@ -52,7 +52,7 @@ echo -e "Creating Build Script\n"
 #Forces the overwrite when the file already exists
 cp -f ./schema.sql ./build.sql
 
-#Replaces all {schema} to be wanted schema
+#Replaces all {schema} placeholderto be wanted schema string
 sed -i -e "s/{schema}/${schema}/g" ./build.sql
 
 echo $?

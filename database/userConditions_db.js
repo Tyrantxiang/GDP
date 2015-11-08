@@ -16,10 +16,10 @@ var user_conditions = {}
 //Creates a user_condition entry
 user_conditions.createUserCondition = function(pass, fail, condObj) {
 	//Validates the details given
-	validateConditionDetails(validationPass, fail, condObj);
+	validateConditionDetails(queryExecution, fail, condObj);
 	
 	//After validation, persists the play obj
-	function validationPass(){
+	function queryExecution(){
 		dbutils.create(pass, fail, TABLE_NAME, condObj);
 	}
 }

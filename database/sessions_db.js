@@ -16,10 +16,10 @@ var sessionsData = {}
 //Creates a new entry on the Sessions table
 sessionsData.createSession = function(pass, fail, sessionObj) {
 	//Validates the sessionObj given
-	validateSession(validationPass, fail, sessionObj);
+	validateSession(queryExecution, fail, sessionObj);
 	
 	//After validation, persists the session obj
-	function validationPass(){
+	function queryExecution(){
 		dbutils.create(pass, fail, TABLE_NAME, sessionObj);
 	}
 }
@@ -32,13 +32,13 @@ sessionsData.readSessionById = function(pass, fail, id){
 //This updates a session entry to have the end_time of said session
 //When the session ends, this should be called
 sessionsData.endSession = function(pass, fail, end_ts, id){
-	sessionsData.readSessionById(readPass, fail, id);
+	sessionsData.readSessionById(validateTimes, fail, id);
 
-	function readPass(sessionObj){
-		validateEndTime(validationPass, fail, end_ts, sessionObj.start_time);	
+	function validateTimes(sessionObj){
+		validateEndTime(queryExecution, fail, end_ts, sessionObj.start_time);	
 	}
 
-	function validationPass(){
+	function queryExecution(){
 		dbutils.updateById(pass, fail, TABLE_NAME, {"end_time": end_ts}, id);
 	}
 }

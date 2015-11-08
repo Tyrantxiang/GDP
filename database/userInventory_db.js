@@ -16,10 +16,10 @@ var user_inventory = {}
 //Creates a user_inventory entry
 user_inventory.createUserInventory = function(pass, fail, inventoryObj) {
 	//Validates the details given
-	validateInventoryDetails(validationPass, fail, inventoryObj);
+	validateInventoryDetails(queryExecution, fail, inventoryObj);
 	
 	//After validation, persists the play obj
-	function validationPass(){
+	function queryExecution(){
 		dbutils.create(pass, fail, TABLE_NAME, inventoryObj);
 	}
 }

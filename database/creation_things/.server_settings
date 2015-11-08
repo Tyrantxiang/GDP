@@ -1,0 +1,15 @@
+[dev]
+hostname 	= host
+username 	= user
+password 	= pass
+database 	= dbdb
+schema 		= sche
+api_port 	= apip
+
+[test]
+hostname 	= localhost
+username 	= testuser
+password 	= testpass
+database 	= testdb
+schema 		= test
+api_port 	= 0
