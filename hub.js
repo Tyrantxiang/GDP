@@ -110,7 +110,7 @@ Hub.prototype.eventListeners = {
     finishGame : function(data, fn){
         var id = data.gameId,
             score = data.score,
-            timeInGame = (new Date() - this gameStartTime)/1000; // Divide by 1000 to get seconds, not millis
+            timeInGame = (new Date() - this.gameStartTime)/1000; // Divide by 1000 to get seconds, not millis
 
         if(id = this.gameId){
             this.location = Hub.locations.IN_HUB;
