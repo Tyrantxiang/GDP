@@ -1,14 +1,14 @@
 DROP SCHEMA IF EXISTS "{schema}" CASCADE;
 
-CREATE OR REPLACE FUNCTION update_modified_column()	
+CREATE SCHEMA "{schema}";
+
+CREATE OR REPLACE FUNCTION "{schema}".update_modified_column()	
 RETURNS TRIGGER AS $$
 BEGIN
     NEW.modified = now();
     RETURN NEW;	
 END;
 $$ language 'plpgsql';
-
-CREATE SCHEMA "{schema}";
 
 -- users
 CREATE TABLE "{schema}".users
@@ -23,7 +23,7 @@ CREATE TABLE "{schema}".users
 );
 
 CREATE TRIGGER update_user_modified_ts 
-	BEFORE UPDATE ON users
+	BEFORE UPDATE ON "{schema}".users
 	FOR EACH ROW 
 EXECUTE PROCEDURE update_modified_column();
 
@@ -33,12 +33,13 @@ CREATE TABLE "{schema}".sessions
 , user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
 , start_time		timestamp	NOT NULL
 , end_time			timestamp	NULL
+, created 			timestamp   NOT NULL DEFAULT current_timestamp
 , modified 			timestamp 	NOT NULL DEFAULT current_timestamp
 , PRIMARY KEY(id)
 );
 
 CREATE TRIGGER update_session_modified_ts 
-	BEFORE UPDATE ON sessions
+	BEFORE UPDATE ON "{schema}".sessions
 	FOR EACH ROW 
 EXECUTE PROCEDURE update_modified_column();
 
@@ -75,7 +76,7 @@ CREATE TABLE "{schema}".user_inventory
 );
 
 -- equipped
-CREATE TABLE "{schema}".equipped
+CREATE TABLE "{schema}".user_equipped
 ( id 				serial 		NOT NULL
 , user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
 , head 				text		NULL

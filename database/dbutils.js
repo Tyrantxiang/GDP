@@ -10,20 +10,19 @@
 
 var pg = require('pg')
 	, dbutils = { connection_string : null }
+	, getErrorNameFromCode = require('./errorCodes.js')
 	;
 
 /*
  * Connect to the db and run a query
  */
 dbutils.query = function(pass, fail, q) {
-	console.log(q.text);
-	console.log(q.values.join(", "));
-	pass();		
-/*
 	if(!dbutils.connection_string)
 		return fail("Database not initialised yet");
 	
 	pg.connect( dbutils.connection_string, runQuery );
+
+	q.name = createPreparedStatementName(q.text);
 
 	function runQuery(err, client, queryDone) {
 		if(err) 
@@ -33,91 +32,146 @@ dbutils.query = function(pass, fail, q) {
 			queryDone();
 			if(err) {
 				err.sql = q;
-				return fail(err);
+				return dbutils.sanitiseError(err, fail);
+			} else {
+				//console.log(q);
+				pass(results);
 			}
-		
-			pass(results);
 		});
 	}
-*/
 };
 
 dbutils.create = function(pass, fail, tableName, valuesObj){
 	delete valuesObj.id;
 
-	dbutils.prepareCreateStrings(preparationPass, fail, valuesObj);
+	dbutils.prepareCreateStrings(queryExecution, fail, valuesObj);
 
-	function preparationPass(colNames, valNums, colVals){
+	function queryExecution(colNames, valNums, colVals){
 		var preparedStatement = {
-			name: 'insert_'+tableName,
-			text: 'INSERT INTO '+tableName+colNames+" VALUES"+valNums+" RETURNING id",
-			values: colVals
+			text: 'INSERT INTO '+tableName+colNames+" VALUES"+valNums+" RETURNING id"
+			, values: colVals
 		}
 
-		dbutils.query(pass, fail, preparedStatement);
+		dbutils.query(resultsHandling, fail, preparedStatement);
+	}
+
+	function resultsHandling(results){
+		pass({ id: results.rows[0].id });
 	}
 };
 
 dbutils.read = function(pass, fail, tableName, columnsArr, filterConds, byString, limit){
-	dbutils.createFilterString(filterCreationPass, fail, filterConds);
+	dbutils.prepareFilterString(queryExecution, fail, filterConds);
 
-	function filterCreationPass(filterString, filterVals){
+	function queryExecution(filterString, filterVals){
 		var preparedStatement = {
-			name: 'read_'+tableName+"FILTER"+filterString+"LIMIT"+limit,
-			text: "SELECT "+(columnsArr.join(", "))+" FROM "+tableName+" "+filterString,
-			values: filterVals
+			text: "SELECT "+(columnsArr.join(", "))+" FROM "+tableName+" "+filterString
+			, values: filterVals
 		}
 
 		if(byString)
 			preparedStatement.text += " "+byString;
 
-		if(limit)
-			preparedStatement.text += " LIMIT "+limit;
+		if(limit) {
+			preparedStatement.values.push(limit);
+			preparedStatement.text += " LIMIT $"+preparedStatement.values.length;
+		}
 
-		dbutils.query(pass, fail, preparedStatement);
+		dbutils.query(resultsHandling, fail, preparedStatement);
+	}
+
+	function resultsHandling(results){
+		pass(results.rows);
 	}
 }
 
 dbutils.readSingle = function(pass, fail, tableName, columnsArr, filterConds, byString){
-	dbutils.read(pass, fail, tableName, columnsArr, filterConds, byString, null);
+	dbutils.read(resultsHandling, fail, tableName, columnsArr, filterConds, byString, null);
+
+	function resultsHandling(results){
+		var row = results[0];
+
+		if(!row)
+			return fail({
+				name: "ERR_NO_MATCHING_ENTRY"
+				, message: "No entry in relation \""+tableName+"\" matching the given filters"
+			});
+
+		pass(row);
+	}
 }
 
 dbutils.readById = function(pass, fail, tableName, columnsArr, idVal){
-	dbutils.read(pass, fail, tableName, columnsArr, {"id": idVal}, null, null);
+	dbutils.read(resultsHandling, fail, tableName, columnsArr, {"id": idVal}, null, null);
+
+	function resultsHandling(results){
+		var row = results[0];
+
+		if(!row)
+			return fail({
+				name: "ERR_NO_MATCHING_ENTRY"
+				, message: "No entry in relation \""+tableName+"\" with id ("+idVal+")."
+			});
+
+		pass(row);
+	}
 }
 
 dbutils.update = function(pass, fail, tableName, valuesObj, filterConds){
-	dbutils.prepareUpdateStrings(setValsCreationPass, fail, valuesObj);
+	var setString = ""
+		, setVals = []
+		;
 
-	function setValsCreationPass(setString, setVals, currentPlaceIndex){
-		dbutils.createFilterString(filterCreationPass, fail, filterConds, currentPlaceIndex);
+	dbutils.prepareUpdateString(filterStringCreation, fail, valuesObj);
+
+	function filterStringCreation(str, vals, currentPlaceIndex){
+		setString = str;
+		setVals = vals;
+		dbutils.prepareFilterString(queryExecution, fail, filterConds, currentPlaceIndex);
 	}
 
-	function filterCreationPass(filterString, filterVals){
+	function queryExecution(filterString, filterVals){
 		var preparedStatement = {
-			name: 'updateById_'+tableName+setString,
-			text: "UPDATE "+tableName+" SET "+setString+filterString,
-			values: setVals.concat(filterVals)
+			text: "UPDATE "+tableName+" SET "+setString+" "+filterString
+			, values: setVals.concat(filterVals)
 		}
 
-		dbutils.query(pass, fail, preparedStatement);
+		dbutils.query(resultsHandling, fail, preparedStatement);
+	}
+
+	function resultsHandling(results){
+		pass( {rowsUpdated: results.rowCount} );
 	}
 }
 
 dbutils.updateById = function(pass, fail, tableName, valuesObj, idVal){
-	dbutils.update(pass, fail, tableName, valuesObj, {"id": id});
+	dbutils.update(resultsHandling, fail, tableName, valuesObj, {"id": idVal});
+
+	function resultsHandling(results){
+		var row = results[0];
+
+		if(results.rowsUpdated < 1)
+			return fail({
+				name: "ERR_NO_MATCHING_ENTRY"
+				, message: "No entry in relation \""+tableName+"\" with id ("+idVal+")."
+			});
+
+		pass(results);
+	}
 }
 
 dbutils.deleteById = function(pass, fail, tableName, idVal){
 	var preparedStatement = {
-		name: 'deleteById_'+tableName,
-		text: "DELETE FROM "+tableName+" WHERE id=$1",
-		values: [idVal]
+		text: "DELETE FROM "+tableName+" WHERE id=$1"
+		, values: [idVal]
 	}
 
-	dbutils.query(pass, fail, preparedStatement);
-}
+	dbutils.query(resultsHandling, fail, preparedStatement);
 
+	function resultsHandling(results){
+		pass( {rowsDeleted: results.rowCount} );
+	}
+}
 
 //Function used for creating column name and value list strings from objects
 //i.e. {"a": 10, "b": 20} --> will return a function with these args --> "(a, b)", "($1, $2)", [10, 20]
@@ -166,7 +220,7 @@ dbutils.prepareUpdateString = function(pass, fail, obj){
 	pass(setString, setVals, loopIndex);
 }
 
-dbutils.createFilterString = function(pass, fail, filterConds, placeIndex){
+dbutils.prepareFilterString = function(pass, fail, filterConds, placeIndex){
 	var filterString = ""
 		, filterArr = []
 		, filterVals = []
@@ -199,6 +253,35 @@ dbutils.createFilterString = function(pass, fail, filterConds, placeIndex){
 		filterString = "WHERE "+filterArr.join(" AND ");
 
 	pass(filterString, filterVals);
+}
+
+dbutils.sanitiseError = function(err, cb){
+	var cleanErr = {}
+		;		
+
+	cleanErr.name = getErrorNameFromCode(err.code);
+	cleanErr.code = err.code;
+	cleanErr.message = err.message;
+	cleanErr.detail = err.detail;
+	cleanErr.sql = err.sql;
+
+	cb(cleanErr);
+}
+
+
+/*
+*	Prepared statement names have to be unique
+*	This is my quick method of creating unique names for now
+*/
+function createPreparedStatementName(queryStr){
+	var hash = 0;
+    if (queryStr.length == 0) return hash;
+    for (var i = 0; i < queryStr.length; i++) {
+        var char = queryStr.charCodeAt(i);
+        hash = ((hash<<5)-hash)+char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash.toString();
 }
 
 

@@ -16,10 +16,10 @@ var user_equipped = {}
 //Creates a user_equipped entry
 user_equipped.createUserEquipped = function(pass, fail, equippedObj) {
 	//Validates the details given
-	validateEquippedDetails(validationPass, fail, equippedObj);
+	validateEquippedDetails(queryExecution, fail, equippedObj);
 	
 	//After validation, persists the play obj
-	function validationPass(){
+	function queryExecution(){
 		dbutils.create(pass, fail, TABLE_NAME, equippedObj);
 	}
 }

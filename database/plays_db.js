@@ -15,10 +15,10 @@ var playsData = {}
 
 playsData.createPlay = function(pass, fail, playObj) {
 	//Validates the details given
-	validatePlayDetails(validationPass, fail, playObj);
+	validatePlayDetails(queryExecution, fail, playObj);
 	
 	//After validation, persists the play obj
-	function validationPass(){
+	function queryExecution(){
 		dbutils.create(pass, fail, TABLE_NAME, playObj);
 	}
 }
@@ -52,8 +52,10 @@ playsData.getScores = function(pass, fail, filterConds, orderBy, limit){
 	var orderByString = ""
 		;
 
-	if(orderBy && orderBy.column && orderBy.direction)
-		orderByString = "ORDER BY "+orderBy.column+" "+orderBy.direction;
+	if(orderBy && orderBy.column){
+		orderByString = "ORDER BY "+orderBy.column+" "
+		orderByString += orderBy.direction || "DESC"
+	}
 
 	dbutils.read(pass, fail, TABLE_NAME, ["id", "user_id", "game_id", "start_time", "end_time", "score", "created"],
 		filterConds, orderByString, limit);

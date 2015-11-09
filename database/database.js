@@ -8,8 +8,9 @@
  *
  * @authors Joe Ringham
 */
-//dbutils =  require('./dbutils') 
+
 var db = {}
+	, dbutils = require('./dbutils.js')
 	, databaseReq = [
 		require('./users_db.js')
 		, require('./sessions_db.js')
@@ -46,7 +47,7 @@ function validateSettings(pass, fail, settings){
 	if( !credentials.every(isTrue) )
 		return fail("Missing Parameters");
 	
-	setConnectionString(pass, fail, settings);
+	pass();
 }
 
 function isTrue(c){
@@ -57,7 +58,7 @@ function isTrue(c){
  * Creates the connection string
  */
 function setConnectionString(pass, fail, creds) {
- 	db.connection_string = 
+ 	dbutils.connection_string = 
  		[ 
  			"postgres://"
 			, creds['username']
@@ -74,7 +75,16 @@ function setConnectionString(pass, fail, creds) {
 
 
 db.init = function(pass, fail, settings) {
-	validateSettings(pass, fail, settings);
+	validateSettings(validationPass, fail, settings);
+
+	function validationPass(){
+		setConnectionString(connStringPass, fail, settings);
+	}
+
+	function connStringPass(){
+		//dbutils.query(pass, fail, "SET search_path TO "+settings.schema+";");
+		pass(dbutils.connection_string);
+	}
 }
 
 module.exports = db;
