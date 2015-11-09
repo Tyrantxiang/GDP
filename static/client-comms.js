@@ -51,7 +51,7 @@ var add_condition = function(name, statuses, cb){
 var remove_condition = function(id, cb){
 	socket.emit(	'remove_condition',
 					{id: id},
-					function(data){ cb(data);
+					function(data){ cb(data)};
 				);
 };
 
@@ -134,15 +134,9 @@ var change_user_details = function(username, password, dob, illnesses, cb){
 			);
 };
 
-//TODO: Come back to this
 var logout = function(cb){
-	socket.emit(	'logout',
-					{},
-					function(data){
-						
-						
-					}
-				);
+	socket.disconnect();
+	cb();
 }
 
 var get_options = function(cb){
@@ -253,3 +247,52 @@ var set_status = function(status, value, cb){
 var client_socket_call = function(name, data, cb){
 	socket.emit(name, data, function(data){ cb(data); });	
 }
+
+module.exports = function(){
+	create_socket();
+	
+	var comms = {};
+	
+	comms.superuser = {};
+	comms.superuser.add_bag_item = add_bag_item;
+	comms.superuser.remove_bag_item = remove_bag_item;
+	comms.superuser.add_status = add_status;
+	comms.superuser.remove_status = remove_status;
+	comms.superuser.add_condition = remove_condition;
+	comms.superuser.remove_condition = remove_condition;
+	comms.superuser.add_store_item = add_store_item;
+	comms.superuser.remove_store_item = remove_store_item;
+	comms.superuser.add_minigame = add_minigame;
+	comms.superuser.remove_minigame = remove_minigame;
+	comms.superuser.add_inventory = add_inventory;
+	comms.superuser.remove_inventory = remove_inventory;
+	
+	comms.usermanagement = {};
+	comms.usermanagement.login = login;
+	comms.usermanagement.validate_username = validate_username;
+	comms.usermanagement.validate_details = validate_details;
+	comms.usermanagement.sign_up = sign_up;
+	comms.usermanagement.change_user_details = change_user_details;
+	comms.usermanagement.logout = logout;
+	comms.usermanagement.get_options = get_options;
+	comms.usermanagement.set_options = set_options;
+	
+	comms.customise = {};
+	comms.customise.get_item_info = get_item_info;
+	comms.customise.update_equipped_items = update_equipped_items;
+	
+	comms.bag = {};
+	comms.bag.get_bag = get_bag;
+	comms.bag.set_bag = set_bag;
+	
+	comms.minigame = {};
+	comms.minigame.list_minigames = list_minigames;
+	comms.minigame.launch_minigame = launch_minigame;
+	comms.minigame.get_scores = get_scores;
+	comms.minigame.set_score = set_score;
+	comms.minigame.set_currency = set_currency;
+	comms.minigame.set_hp = set_hp;
+	comms.minigame.set_status = set_status;
+	
+	return comms;
+};
