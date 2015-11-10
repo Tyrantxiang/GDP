@@ -30,3 +30,6 @@ node_modules
 # Temporary database folder ignores
 database/build.sql
 database/.server_settings
+
+## MAC SHIT
+.DS_Store
