@@ -12,7 +12,7 @@
 		}		
 		, "test" : {
 			"hostname" : "localhost"
-			, "username" : "testuserfail"
+			, "username" : "testuser"
 			, "password" : "testpass"
 			, "database" : "testdb"
 			, "schema" : "test"

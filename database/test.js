@@ -29,18 +29,22 @@ function tfail(err){
 var ts = new Date().toISOString();
 
 var dummyUser = {
-	username : 'user'
-	, password : 'password'
+	username : 'user1'
+	, password : 'pass1'
 	, dob : ts
 }
 
 var dummyUser2 = {
 	username : 'user2'
-	, password : 'password2'
+	, password : 'pass2'
 	, dob : ts
 }
 
+//db.createUser(tpass, tfail, dummyUser);
+
 //db.createUser(tpass, tfail, dummyUser2);
+
+db.getInventoryForUser(tpass, tfail, 2);
 
 //db.readUserById(tpass, tfail, 1);
 
@@ -99,4 +103,4 @@ var filters = {
 
 //db.getScores(tpass, tfail, filters, {column: 'score', direction: 'DESC'}, null);
 
-require('./creation_things/buildDB.js')(tpass, tfail, 'test');
+//require('./creation_things/buildDB.js')(tpass, tfail, 'test');
