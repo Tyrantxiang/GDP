@@ -12,37 +12,50 @@ var config = require("./config.js"),
     parser = require("body-parser"),
     morgan = require("morgan");
 
-
-// App requires
-var auth = require("./auth.js"),
-    hub = require("./hub.js")(config);
+// Set up the database
+require("./database/database.js").init(startApp, dbFailure, config.database.getSettings(config.database.getDefaultSchema()));
 
 
-app.use(morgan("dev"));
-
-// Body parser middleware
-app.use(parser.json());
-app.use(parser.urlencoded({ extended : true }));
-
-// Set up the authentication middleware
-app.use(["/games", "/static/p"], auth.express_middleware);
 
 
-// Set the static files to be served
-app.use("/", express.static("static"));
+function startApp(db){
+	// App requires
+	var auth = require("./auth.js")(db),
+	    hub = require("./hub.js")(config, db);
 
 
-// Routes
-app.get("/", function (req, res){
-    res.sendFile(__dirname + "/static/index.html");
-});
+	app.use(morgan("dev"));
 
-app.post("/authenticate", auth.authenticate);
+	// Body parser middleware
+	app.use(parser.json());
+	app.use(parser.urlencoded({ extended : true }));
 
-// Routes to serve semi static files
-app.get("/games/:game/:fileType/:filename", config.games.serveFile);
-app.get("/items/sprites/:item/:filename", config.items.serveFile);
+	// Set up the authentication middleware
+	app.use(["/games", "/static/p"], auth.express_middleware);
 
 
-// Set up Socket.io connection
-var comms = require("./server-comms.js")(server, auth, config, hub);
+	// Set the static files to be served
+	app.use("/", express.static("static"));
+
+
+	// Routes
+	app.get("/", function (req, res){
+	    res.sendFile(__dirname + "/static/index.html");
+	});
+
+	app.post("/authenticate", auth.authenticate);
+
+	// Routes to serve semi static files
+	app.get("/games/:game/:fileType/:filename", config.games.serveFile);
+	app.get("/items/sprites/:item/:filename", config.items.serveFile);
+
+
+	// Set up Socket.io connection
+	var comms = require("./server-comms.js")(server, auth, config, hub);
+}
+
+
+function dbFailure(){
+	console.error("DB could not be inited");
+}
+

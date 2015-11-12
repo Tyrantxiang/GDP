@@ -2,32 +2,52 @@
 
 /* Authentication module contains the methods to handle login, auth and user handling */
 
+var db;
+function setDatabase(database){
+    if(!database){
+        throw new Error("Database object not defined");
+    }
+    db = database;
+}
+function getDatabase(){
+    return db;
+}
+
+
+
 var jwt = require('jsonwebtoken'),
     secret = "trisha is bob";
 
 
+
 function authenticate(req, res){
-    var username, password;
+    var username, password,
+
+    authenticated = function authenticated(user){
+        // Generate web token
+        var token = jwt.sign({ userId : user.userId }, secret, { expiresIn : 60 * 60 * 24 });
+        res.json({
+            token : token
+        });
+    }
+
+    function failed(error){
+        res.json(error);
+    }
     if(req.body.username && req.body.password){
         username = req.body.username;
         password = req.body.password;
     }else{
-        // Fail here
+        failed
     }
 
     /* To make sure we don't send the userId (for db reasons) maybe we should encrypt the 
      * user ID here (with AES?)
      */
 
-    // Verify and get userId here
-    (function(userId){
-        // Generate web token
-        var token = jwt.sign({ userId : userId }, secret, { expiresIn : 60 * 60 * 24 });
-        res.json({
-            token : token
-        });
-    })(1);
 
+    // Verify and get userId
+    db.authenticateUser(authenticated, failed, username, password);
 }
 
 function express_middleware(req, res, next){
@@ -78,9 +98,15 @@ function socket_middleware(socket, next){
     });
 }
 
-module.exports = {
-    authenticate : authenticate,
-    express_middleware : express_middleware,
-    socket_middleware : socket_middleware
+module.exports = function(db){
+    setDatabase(db);
+
+    return {
+        authenticate : authenticate,
+        express_middleware : express_middleware,
+        socket_middleware : socket_middleware,
+        setDatabase : setDatabase,
+        getDatabase : getDatabase
+    };
 };
 

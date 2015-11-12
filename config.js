@@ -43,6 +43,10 @@ module.exports.app = {
 
 //Database settings config
 module.exports.database = {
+    getDefaultSchema : function(){
+        return config.defaultDatabase || "main";
+    },
+
     getSettings : function(databaseName){
         return config.databases[databaseName];
     }

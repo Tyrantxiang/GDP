@@ -2,6 +2,8 @@
 
 	"app" : {}
 	
+	, "defaultSchema" : "main"
+
 	, "databases" : {
 		"main" : {
 			"hostname" : "localhost"
