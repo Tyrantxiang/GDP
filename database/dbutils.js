@@ -202,6 +202,8 @@ dbutils.update = function(pass, fail, tableName, valuesObj, filterConds){
 		, setVals = []
 		;
 
+	delete valuesObj.id; //Don't want to update id values!
+
 	dbutils.prepareUpdateString(filterStringCreation, fail, valuesObj);
 
 	function filterStringCreation(str, vals, currentPlaceIndex){

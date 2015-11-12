@@ -61,6 +61,7 @@ authenticateUser(pass, fail, username, givenpw);
 
 
 updateUserDetails(pass, fail, updatedUserObj, id);
+!!!! Does not do any checks that user is ok, just updates everything you have given in that object, so be careful !!
 * Updates the entry matching the id with the values found in the updatedUserObj
 * updatedUserObj = {
 	username : "newusername",
@@ -170,8 +171,7 @@ readUserConditionById(pass, fail, id);
 * RETURNS: id<int>, user_id<int>, condition_id<text??>, active<boolean>, created<timestamp>
 
 
-!! getConditionsForUser(pass, fail, user_id);
-* !! NOT IMPLEMENTED YET !!
+getConditionsForUser(pass, fail, user_id);
 * Will return a list of conditions that are currently active on the user matching the id given
 * RETURNS: [ condition_id, condition_id, ... ]
 
@@ -197,8 +197,7 @@ readUserInventoryById(pass, fail, id);
 * RETURNS: id<int>, user_id<int>, item_id<text??>, active<boolean>, created<timestamp>
 
 
-!! getInventoryForUser(pass, fail, user_id);
-* !! NOT IMPLEMENTED YET !!
+getInventoryForUser(pass, fail, user_id);
 * Will return a list of items that make up the inventory of the user matching the id given
 * RETURNS: [ item_id, item_id, ... ]
 
