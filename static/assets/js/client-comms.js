@@ -8,7 +8,7 @@ var token = null,
 	// The event listeners for the comms
 	eventListeners = {};
 
-function ajaz(url, verb, data, success, error, responseType){
+function ajaz(url, verb, data, success, error, responseType, contentType){
 	var xhr = new XMLHttpRequest();
 	verb = very.toUpperCase();
 	
@@ -37,6 +37,7 @@ function ajaz(url, verb, data, success, error, responseType){
 	}
 
 	xhr.responseType = responseType || "json";
+	xhr.setRequestHeader("Content-Type", contentType || "application/json")
 
 	xhr.send(data);
 
