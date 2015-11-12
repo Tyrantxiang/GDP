@@ -71,6 +71,18 @@ usersData.authenticateUser = function(pass, fail, username, givenpw){
 	}
 }
 
+// This will always succed, as a "fail" is it not existing, which actually means it doesn't exist
+usersData.checkUsernameExists = function(cb, username){
+	dbutils.readSingle(exists, notExists, TABLE_NAME, [ "id" ], { username : username });
+
+	function exists(){
+		cb(true);
+	}
+	function notExists(err){
+		cb(false);
+	}
+}
+
 //Updates all user details provided in the updatedUserObj
 usersData.updateUserDetails = function(pass, fail, updatedUserObj, id){
 	//Validates the details given
