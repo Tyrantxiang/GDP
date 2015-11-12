@@ -32,9 +32,9 @@ function loadXMLDoc(page) {
   }
 
   if (page === "signup") {
-    xmlHttp.open("GET", "signup.html", true);
+    xmlHttp.open("GET", "/views/signup.html", true);
   } else if (page === "login") {
-    xmlHttp.open("GET", "login.html", true);
+    xmlHttp.open("GET", "/views/login.html", true);
   }
 
   xmlHttp.send();

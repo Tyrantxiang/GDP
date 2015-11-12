@@ -1,298 +1,441 @@
+(function(){
 "use strict";
 
-var create_socket = function(){
+
+// The token used after auth
+var token = null,
+	socket = null,
+	// The event listeners for the comms
+	eventListeners = {};
+
+function ajaz(url, verb, data, success, error, responseType){
+	var xhr = new XMLHttpRequest();
+	verb = very.toUpperCase();
 	
-	//POST to /authenticate to get the token, then use that to open the websocket
-	$.post("/authenticate").done(function(data){
-		socket = io.connect('http://localhost:3000', {
-			query: "token=" + data.token
-		});
-		
+	// Attach data to the get request
+	if(verb === "GET"){
+		dataStrings = [];
+		for(d in data){
+			if(data.hasOwnProperty(d)){
+				dataStrings.push(d + "=" + encodeURIComponent(data[d]));
+			}
+		}
+
+		url += "?" + dataStrings.join("&");
+		data = null;
+	}else{
+		data = JSON.stringify(data);
+	}
+
+	xhr.open(verb, url, true);
+
+	xhr.addEventListener("load", success);
+	if(error){
+		xhr.addEventListener("error", error);
+	}else{
+		xhr.addEventListener("error", success);
+	}
+
+	xhr.responseType = responseType || "json";
+
+	xhr.send(data);
+
+	return xhr;
+}
+
+function postRequest(url, data, cb){
+	ajaz(url, "POST", data, cb);
+}
+
+
+
+// NOT EXPOSED
+function setToken(t){
+	token = t;
+}
+
+function getToken(){
+	return token;
+}
+
+
+
+function setEventListener(name, func){
+	if(!eventListeners[name]){
+		eventListeners[name] = [];
+	}
+
+	eventListeners[name].push(func);
+}
+
+function clearEventListeners(name){
+	if(name){
+		delete eventListeners[name];
+	}else{
+		eventListeners = {};
+	}
+}
+
+function authenticate(username, password, cb){
+	ajaz("/authenticate", POST,
+		{ username : username, password : password },
+		function(){
+			setToken(this.response.token);
+			cb();
+		},
+		function(){
+			console.log("error");
+			cb(true);
+		}
+	);
+}
+
+function createSocket(){
+	var t = getToken();
+	if(!t){
+		throw new Error("Authentication required first");
+	}
+
+	socket = io.connect('/', {
+		query: "token=" + t
 	});
-};
 
-//SUPER USER
-var add_bag_item = function(id, name, sprite, effects, cb){
-	socket.emit(	'add_bag_item', 
-					{id: id, 'name': name, 'sprite': sprite, 'effects': effects}, 
-					function(data){ cb(data); }
-				);
-};
+	// Bind the event listeners
+	for(name in eventListeners){
+		eventListeners[name].forEach(function(l){
+			socket.on(name, l);
+		});
+	}
+}
 
-var remove_bag_item = function(id, cb){
-	socket.emit(	'remove_bag_item', 
-					{'id': id},
-					function(data){ cb(data); }
-				);
-};
 
-var add_status = function(id, name, min_val, max_val, healthy_min, healthy_max, isNumber, words, cb){
-	socket.emit(	'add_status',
-					{'id': id, 'name': name, 'min': min_val, 'max': max_val, 'healthy_min': healthy_min,
-						'healthy_max': healthy_max, 'isNumber': isNumber, 'words': words},
-					function(data){ cb(data); }
-	);
-};
-
-var remove_status = function(id, cb){
-	socket.emit(	'remove_status',
-					{'id': id},
-					function(data){ cb(data); }
-	);
-};
-
-var add_condition = function(name, statuses, cb){
-	socket.emit(	'add_condition',
-					{name: name, statuses: statuses},
-					function(data){ cb(data); }
-	);
-};
-
-var remove_condition = function(id, cb){
-	socket.emit(	'remove_condition',
-					{id: id},
-					function(data){ cb(data)};
-				);
-};
-
-var add_store_item = function(id, name, description, slot, price, sprite, cb){
-	socket.emit(	'add_store_item',
-					{id: id, name: name, description: description, slot: slot, price: price, sprite: sprite},
-					function(data){ cb(data); };
-	);
-};
-
-var remove_store_item = function(id, cb){
-	socket.emit(	'remove_store_item',
-					{id: id},
-					function(data){ cb(data); }
-	);
-};
-
-var add_minigame = function(id, name, description, image, scripts, entry_point, cb){
-	socket.emit(	'add_minigame',
-					{id: id, name: name, description: description, image: image, scripts: scripts, entry_point: entry_point},
-					function(data){ cb(data); }
-				);
-};
-
-var remove_minigame = function(id, cb){
-	socket.emit(	'remove_minigame',
-					{id: id},
-					function(data){ cb(data); }
-				);
-};
-
-var add_inventory = function(id, cb){
-	socket.emit(	'add_inventory',
-					{id: id},
-					function(data){ cb(data); }
-				);
-};
-
-var remove_inventory = function(id, cb){
-	socket.emit(	'remove_inventory',
-					{id:id},
-					function(data){ cb(data); }
-				);
-	
-};
-
-//USER MANAGEMENT
-var login = function(username, password, cb){
-	socket.emit(	'login',
-					{username: username, password: password},
-					function(data){ cb(data); }
-				);
-};
-
-var validate_username = function(username, cb){
-	socket.emit(	'validate_username',
-					{username: username},
-					function(data){ cb(data); }	
-				);
-};
-
-var validate_details = function(dob, illnesses, cb){
-	socket.emit(	'validate_details',
-					{dob: dob, illnesses: illnesses},
-					function(data){ cb(data); }
-				);
-};
-
-var sign_up = function(username, password, dob, illnesses, cb){
-	socket.emit(	'sign_up',
-					{username: username, password: password, dob: dob, illnesses: illnesses},
-					function(data){ cb(data); }
-				);
-};
-
-var change_user_details = function(username, password, dob, illnesses, cb){
-	socket.emit(	'change_user_details',
-					{username: username, password: password, dob: dob, illnesses: illnesses},
-					function(data){ cb(data); }
-			);
-};
-
-var logout = function(cb){
+function logout(cb){
 	socket.disconnect();
+	token = null;
+	socket = null;
 	cb();
 }
 
-var get_options = function(cb){
-	socket.emit(	'get_options',
-					{},
-					function(data){ cb(data); }
-				);
-};
+function authenticated(){
+	return !!token;
+}
+
+function socketOpen(){
+	return !!socket;
+}
+
+function client_socket_call(name, data, cb){
+	socket.emit(name, data, cb);	
+}
 
 
-var set_options = function(cb){
-	socket.emit(	'set_options',
-					{},
-					function(data){ cb(data); }
+/**** I am removing superuser commands for now, these are likely to be done via a web interface and so will use ajax
+//SUPER USER
+function add_bag_item(id, name, sprite, effects, cb){
+	client_socket_call(	'add_bag_item', 
+						{id: id, 'name': name, 'sprite': sprite, 'effects': effects}, 
+						cb
+					);
+}
+
+function remove_bag_item(id, cb){
+	client_socket_call(	'remove_bag_item', 
+						{'id': id},
+						cb
+					);
+}
+
+function add_status(id, name, min_val, max_val, healthy_min, healthy_max, isNumber, words, cb){
+	client_socket_call(	'add_status',
+						{'id': id, 'name': name, 'min': min_val, 'max': max_val, 'healthy_min': healthy_min,
+							'healthy_max': healthy_max, 'isNumber': isNumber, 'words': words},
+						cb
+	);
+}
+
+function remove_status(id, cb){
+	client_socket_call(	'remove_status',
+						{'id': id},
+						cb
+		);
+}
+
+function add_condition(name, statuses, cb){
+	client_socket_call(	'add_condition',
+						{name: name, statuses: statuses},
+						cb
+		);
+}
+
+function remove_condition(id, cb){
+	client_socket_call(	'remove_condition',
+						{id: id},
+						function(data){ cb(data)}
+					);
+}
+
+function add_store_item(id, name, description, slot, price, sprite, cb){
+	client_socket_call(	'add_store_item',
+						{id: id, name: name, description: description, slot: slot, price: price, sprite: sprite},
+						cb;
+		);
+}
+
+function remove_store_item(id, cb){
+	client_socket_call(	'remove_store_item',
+						{id: id},
+						cb
+		);
+}
+
+function add_minigame(id, name, description, image, scripts, entry_point, cb){
+	client_socket_call(	'add_minigame',
+						{id: id, name: name, description: description, image: image, scripts: scripts, entry_point: entry_point},
+						cb
+					);
+}
+
+function remove_minigame(id, cb){
+	client_socket_call(	'remove_minigame',
+						{id: id},
+						cb
+					);
+}
+
+function add_inventory(id, cb){
+	client_socket_call(	'add_inventory',
+						{id: id},
+						cb
+					);
+}
+
+function remove_inventory(id, cb){
+	client_socket_call(	'remove_inventory',
+						{id:id},
+						cb
+					);
+	
+}
+******/
+
+
+
+
+
+//USER MANAGEMENT - Ajax request
+function validate_username(username, cb){
+	postRequest(	'/user/validate_username',
+					{username: username},
+					cb	
 				);
-};
+}
+
+function validate_details(dob, illnesses, cb){
+	postRequest(	'/user/validate_details',
+					{dob: dob, illnesses: illnesses},
+					cb
+				);
+}
+
+function sign_up(username, password, dob, illnesses, cb){
+	postRequest(	'/user/sign_up',
+					{username: username, password: password, dob: dob, illnesses: illnesses},
+					cb
+				);
+}
+
+function change_user_details(username, password, dob, illnesses, cb){
+	postRequest(	'/user/change_details',
+					{username: username, password: password, dob: dob, illnesses: illnesses},
+					cb
+			);
+}
+
+// USER MANAGEMENT - Socket requests
+function get_options(cb){
+	client_socket_call(	'get_options',
+						{},
+						cb
+					);
+}
+
+
+function set_options(cb){
+	client_socket_call(	'set_options',
+						{},
+						cb
+					);
+}
+
+
+
+
+
 
 //AVATAR AND HOUSE CUSTOMIZATION
 
-var get_item_info = function(option, cb){
+function get_item_info(option, cb){
 	var valid_options = ['get_full_configs', 'get_text_first', 'inventory_first'];
 	
-	socket.emit(	'get_item_info',
-					{option_num: option, option_text: valid_options[option] || valid_options[0]},
-					function(data){ cb(data); }
-				);
+	client_socket_call(	'get_item_info',
+						{option_num: option, option_text: valid_options[option] || valid_options[0]},
+						cb
+					);
 	
-};
-
-var update_equipped_items = function(items, cb){
-	socket.emit(	'update_eqipped_items',
-					{items: items},
-					function(data){ cb(data); }
-				);
-};
-
-//BAG
-var get_bag = function(cb){
-	socket.emit(	'get_bag',
-					{},
-					function(data){ cb(data); }
-				);
-};
-
-var set_bag = function(items, cb){
-	socket.emit(	'set_bag',
-					{items: items},
-					function(data){ cb(data); }
-				);
-};
-
-//MINIGAME SELECTION
-var list_minigames = function(cb){
-	socket.emit(	'list_minigames',
-					{},
-					function(data){ cb(data); }
-				);
-	
-};
-
-var launch_minigame = function(id, cb){
-	socket.emit(	'launch_minigame',
-					{id: id},
-					function(data){ cb(data); }
-					function(data){ cb(data); }
-				);
-};
-
-var get_scores = function(option, id, cb){
-	var valid_options = ['all_scores', 'scores_for_game', 'scores_for_user'];
-	
-	socket.emit(	'get_scores',
-					{option_num: option, option_text: valid_options[option] || valid_options[0], id: id},
-					function(data){ cb(data); }
-				);
-};
-
-//MINIGAME
-var set_score = function(cb){
-	socket.emit(	'set_score',
-					{},
-					function(data){ cb(data); }
-				);
-};
-
-var set_currency = function(value, cb){
-	socket.emit(	'set_currency',
-					{value: value},
-					function(data){ cb(data); }
-				);
-};
-
-var set_hp = function(value, cb){
-	socket.emit(	'set_hp',
-					{value: value},
-					function(data){ cb(data); }
-				);
-};
-
-var set_status = function(status, value, cb){
-	socket.emit(	'set_status',
-					{status: status, value: value},
-					function(data){ cb(data); }
-				);
-};
-
-///////////////////////////////////////////
-var client_socket_call = function(name, data, cb){
-	socket.emit(name, data, function(data){ cb(data); });	
 }
 
-module.exports = function(){
-	create_socket();
+function update_equipped_items(items, cb){
+	client_socket_call(	'update_eqipped_items',
+						{items: items},
+						cb
+					);
+}
+
+//BAG
+function get_bag(cb){
+	client_socket_call(	'get_bag',
+						{},
+						cb
+					);
+}
+
+function set_bag(items, cb){
+	client_socket_call(	'set_bag',
+						{items: items},
+						cb
+					);
+}
+
+
+
+
+
+//MINIGAME SELECTION
+function list_minigames(cb){
+	client_socket_call(	'list_minigames',
+						{},
+						cb
+					);
 	
-	var comms = {};
+}
+
+function launch_minigame(id, cb){
+	client_socket_call(	'launch_minigame',
+						{id: id},
+						cb
+				);
+}
+
+function get_scores(option, id, cb){
+	var valid_options = ['all_scores', 'scores_for_game', 'scores_for_user'];
 	
-	comms.superuser = {};
-	comms.superuser.add_bag_item = add_bag_item;
-	comms.superuser.remove_bag_item = remove_bag_item;
-	comms.superuser.add_status = add_status;
-	comms.superuser.remove_status = remove_status;
-	comms.superuser.add_condition = remove_condition;
-	comms.superuser.remove_condition = remove_condition;
-	comms.superuser.add_store_item = add_store_item;
-	comms.superuser.remove_store_item = remove_store_item;
-	comms.superuser.add_minigame = add_minigame;
-	comms.superuser.remove_minigame = remove_minigame;
-	comms.superuser.add_inventory = add_inventory;
-	comms.superuser.remove_inventory = remove_inventory;
+	client_socket_call(	'get_scores',
+						{option_num: option, option_text: valid_options[option] || valid_options[0], id: id},
+						cb
+					);
+}
+
+
+
+
+
+//MINIGAME
+function set_score(cb){
+	client_socket_call(	'set_score',
+						{},
+						cb
+					);
+}
+
+function set_currency(value, cb){
+	client_socket_call(	'set_currency',
+						{value: value},
+						cb
+					);
+}
+
+function set_hp(value, cb){
+	client_socket_call(	'set_hp',
+						{value: value},
+						cb
+					);
+}
+
+function set_status(status, value, cb){
+	client_socket_call(	'set_status',
+						{status: status, value: value},
+						cb
+					);
+}
+
+
+
+
+///////////////////////////////////////////
+
+
+/*comms.superuser = {}
+comms.superuser.add_bag_item = add_bag_item;
+comms.superuser.remove_bag_item = remove_bag_item;
+comms.superuser.add_status = add_status;
+comms.superuser.remove_status = remove_status;
+comms.superuser.add_condition = remove_condition;
+comms.superuser.remove_condition = remove_condition;
+comms.superuser.add_store_item = add_store_item;
+comms.superuser.remove_store_item = remove_store_item;
+comms.superuser.add_minigame = add_minigame;
+comms.superuser.remove_minigame = remove_minigame;
+comms.superuser.add_inventory = add_inventory;
+comms.superuser.remove_inventory = remove_inventory;*/
+
+window.comms = {
+
+	authenticate : authenticate,
+	authenticated : authenticated,
+	createSocket : createSocket,
+	socketOpen : socketOpen,
+
+	logout : logout,
+
+	getToken : getToken,
+	ajaz : ajaz,
+
+	setEventListener : setEventListener,
+	clearEventListeners : clearEventListeners,
+
+
+	user_management : {
+		validate_username : validate_username,
+		validate_details : validate_details,
+		sign_up : sign_up,
+		change_user_details : change_user_details,
+		get_options : get_options,
+		set_options : set_options
+	},
 	
-	comms.usermanagement = {};
-	comms.usermanagement.login = login;
-	comms.usermanagement.validate_username = validate_username;
-	comms.usermanagement.validate_details = validate_details;
-	comms.usermanagement.sign_up = sign_up;
-	comms.usermanagement.change_user_details = change_user_details;
-	comms.usermanagement.logout = logout;
-	comms.usermanagement.get_options = get_options;
-	comms.usermanagement.set_options = set_options;
+	customise : {
+		get_item_info : get_item_info,
+		update_equipped_items : update_equipped_items
+	},
 	
-	comms.customise = {};
-	comms.customise.get_item_info = get_item_info;
-	comms.customise.update_equipped_items = update_equipped_items;
 	
-	comms.bag = {};
-	comms.bag.get_bag = get_bag;
-	comms.bag.set_bag = set_bag;
+	bag : {
+		get_bag : get_bag,
+		set_bag : set_bag
+	},
+
+
 	
-	comms.minigame = {};
-	comms.minigame.list_minigames = list_minigames;
-	comms.minigame.launch_minigame = launch_minigame;
-	comms.minigame.get_scores = get_scores;
-	comms.minigame.set_score = set_score;
-	comms.minigame.set_currency = set_currency;
-	comms.minigame.set_hp = set_hp;
-	comms.minigame.set_status = set_status;
+	minigame : {
+		list_minigames : list_minigames,
+		launch_minigame : launch_minigame,
+		get_scores : get_scores,
+		set_score : set_score,
+		set_currency : set_currency,
+		set_hp : set_hp,
+		set_status : set_status
+	}
 	
-	return comms;
-};
+}
+
+})();

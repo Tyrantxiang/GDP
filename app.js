@@ -29,7 +29,7 @@ app.use(["/games", "/static/p"], auth.express_middleware);
 
 
 // Set the static files to be served
-app.use("/static", express.static("static"));
+app.use("/", express.static("static"));
 
 
 // Routes
