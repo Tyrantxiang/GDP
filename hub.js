@@ -6,19 +6,26 @@
  */
 
 var config;
-
 function setConfig(cfg){
     if(!cfg && typeof cfg !== Object){
         throw new Error("Config object not defined");
     }
     config = cfg;
 }
-
 function getConfig(){
     return config;
 }
 
-
+var db;
+function setDatabase(database){
+	if(!database){
+		throw new Error("Database object not defined");
+	}
+	db = database;
+}
+function getDatabase(){
+	return db;
+}
 
 var locations = {
     IN_HUB : 0,
@@ -50,7 +57,10 @@ function Hub(userId, comms){
     this.connectedTime = new Date();
 
     // Get the user data from the db
-
+	db.createSession(function(){},
+						function(){},
+							{userId: userId, start_time: this.connectedTime.toISOString()}
+					);
 
 
 };
@@ -176,13 +186,16 @@ var getItem = (function(){
 
 
 
-module.exports = function (cfg){
+module.exports = function (cfg, db){
     setConfig(cfg);
-
+	setDatabase(db);
+	
     return {
         setConfig : setConfig,
         getConfig : getConfig,
-
+		setDatabase : setDatabase,
+		getDatabase : getDatabase,
+		
         // Creates a new hub object and assigns the event listeners to the given comms object
         create : function (userId, comms){
             var h = new Hub(userId, comms);
