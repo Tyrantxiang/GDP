@@ -2,6 +2,11 @@
 
 /* Authentication module contains the methods to handle login, auth and user handling */
 
+var jwt = require('jsonwebtoken'),
+    secret = "trisha is bob";
+
+
+
 var db;
 function setDatabase(database){
     if(!database){
@@ -13,17 +18,14 @@ function getDatabase(){
     return db;
 }
 
-
-
-var jwt = require('jsonwebtoken'),
-    secret = "trisha is bob";
-
-
-
 function authenticate(req, res){
     var username, password,
 
         authenticated = function(user){
+            /* To make sure we don't send the userId (for db reasons) maybe we should encrypt the
+             * user ID here (with AES?)
+             */
+
             // Generate web token
             var token = jwt.sign({ userId : user.userId }, secret, { expiresIn : 60 * 60 * 24 });
             res.json({
@@ -37,17 +39,13 @@ function authenticate(req, res){
     if(req.body.username && req.body.password){
         username = req.body.username.trim();
         password = req.body.password.trim();
+
+        // Authenticate and get userId
+        db.authenticateUser(authenticated, failed, username, password);
+
     }else{
         failed("Username or password not supplied");
     }
-
-    /* To make sure we don't send the userId (for db reasons) maybe we should encrypt the 
-     * user ID here (with AES?)
-     */
-
-
-    // Verify and get userId
-    db.authenticateUser(authenticated, failed, username, password);
 }
 
 function express_middleware(req, res, next){
