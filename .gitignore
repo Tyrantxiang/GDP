@@ -28,8 +28,8 @@ build/Release
 node_modules
 
 # Temporary database folder ignores
-database/build.sql
-database/.server_settings
+database/buildFiles/build.sql
+database/old/.server_settings
 
 ## MAC SHIT
 .DS_Store

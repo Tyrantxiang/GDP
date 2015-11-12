@@ -9,7 +9,8 @@
  * @authors Joe Ringham
 */
 
-var db = require('./database.js')
+var config = require('../config.js')
+	, db = require('./database.js').init(tpass, tfail, config.database.getSettings("test"));
 	;
 
 function tpass(results){
@@ -23,16 +24,6 @@ function tfail(err){
 	console.log(err);
 	console.log("*************************");
 }
-
-var dummyServerSettings = {
-	username: 'testuser',
-	password: 'testpass',
-	hostname: 'localhost',
-	database: 'testdb',
-	schema: 'test'
-}
-
-db.init(tpass, tfail, dummyServerSettings);
 
 
 var ts = new Date().toISOString();
@@ -106,4 +97,6 @@ var filters = {
 	}
 }
 
-db.getScores(tpass, tfail, filters, {column: 'score', direction: 'DESC'}, null);
+//db.getScores(tpass, tfail, filters, {column: 'score', direction: 'DESC'}, null);
+
+require('./creation_things/buildDB.js')(tpass, tfail, 'test');

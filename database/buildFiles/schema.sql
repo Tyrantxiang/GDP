@@ -25,7 +25,7 @@ CREATE TABLE "{schema}".users
 CREATE TRIGGER update_user_modified_ts 
 	BEFORE UPDATE ON "{schema}".users
 	FOR EACH ROW 
-EXECUTE PROCEDURE update_modified_column();
+EXECUTE PROCEDURE "{schema}".update_modified_column();
 
 -- sessions
 CREATE TABLE "{schema}".sessions
@@ -41,7 +41,7 @@ CREATE TABLE "{schema}".sessions
 CREATE TRIGGER update_session_modified_ts 
 	BEFORE UPDATE ON "{schema}".sessions
 	FOR EACH ROW 
-EXECUTE PROCEDURE update_modified_column();
+EXECUTE PROCEDURE "{schema}".update_modified_column();
 
 -- plays
 CREATE TABLE "{schema}".plays

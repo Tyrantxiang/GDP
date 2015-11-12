@@ -14,6 +14,51 @@ var pg = require('pg')
 	;
 
 /*
+ * Creates the connection string
+ */
+dbutils.validateServerSettings = function(pass, fail, settings){
+	var credentials = 
+		[ 
+			settings.username
+			, settings.password
+			, settings.hostname
+			, settings.database
+			, settings.schema
+		];
+
+	//Checks all credentials are not undefined
+	if( !credentials.every(isTrue) )
+		return fail("Missing Parameters");
+	
+
+	function isTrue(c){
+		return !!c;
+	}
+
+	pass();
+}
+
+/*
+ * Creates the connection string
+ */
+dbutils.setConnectionString = function(pass, fail, creds) {
+ 	dbutils.connection_string = 
+ 		[ 
+ 			"postgres://"
+			, creds['username']
+			, ":"
+			, creds['password']
+			, "@"
+			, creds['hostname']
+			, "/"
+			, creds['database']
+		
+		].join('');
+	pass();
+}
+
+
+/*
  * Connect to the db and run a query
  */
 dbutils.query = function(pass, fail, q) {

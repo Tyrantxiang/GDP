@@ -1,5 +1,22 @@
 {
 
 	"app" : {}
+	
+	, "databases" : {
+		"main" : {
+			"hostname" : "localhost"
+			, "username" : "suser"
+			, "password" : "UUmtEAstuwsy4Bhs"
+			, "database" : "sgames"
+			, "schema" : "sschema"
+		}		
+		, "test" : {
+			"hostname" : "localhost"
+			, "username" : "testuserfail"
+			, "password" : "testpass"
+			, "database" : "testdb"
+			, "schema" : "test"
+		}
+	}
 
 }

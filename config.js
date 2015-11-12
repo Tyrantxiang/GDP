@@ -39,8 +39,13 @@ module.exports.app = {
     getServerVersion : function(){
         return config.app.serverVersion;
     }
+};
 
-
+//Database settings config
+module.exports.database = {
+    getSettings : function(databaseName){
+        return config.databases[databaseName];
+    }
 };
 
 
