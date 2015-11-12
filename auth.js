@@ -23,22 +23,22 @@ var jwt = require('jsonwebtoken'),
 function authenticate(req, res){
     var username, password,
 
-    authenticated = function authenticated(user){
-        // Generate web token
-        var token = jwt.sign({ userId : user.userId }, secret, { expiresIn : 60 * 60 * 24 });
-        res.json({
-            token : token
-        });
-    }
+        authenticated = function(user){
+            // Generate web token
+            var token = jwt.sign({ userId : user.userId }, secret, { expiresIn : 60 * 60 * 24 });
+            res.json({
+                token : token
+            });
+        },
+        failed = function(error){
+            res.json(error);
+        };
 
-    function failed(error){
-        res.json(error);
-    }
     if(req.body.username && req.body.password){
-        username = req.body.username;
-        password = req.body.password;
+        username = req.body.username.trim();
+        password = req.body.password.trim();
     }else{
-        failed
+        failed("Username or password not supplied");
     }
 
     /* To make sure we don't send the userId (for db reasons) maybe we should encrypt the 
