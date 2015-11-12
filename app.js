@@ -1,24 +1,25 @@
 "use strict";
 
 
-var config = require("./config.js"),
-    express = require("express"),
-    app = express(),
-    port = process.env.PORT || config.app.getPort() || 3000,
-    server = app.listen(port),
-
-
-// Other libary requires
-    parser = require("body-parser"),
-    morgan = require("morgan");
+var config = require("./config.js");
 
 // Set up the database
 require("./database/database.js").init(startApp, dbFailure, config.database.getSettings(config.database.getDefaultSchema()));
 
 
-
-
 function startApp(db){
+    var express = require("express"),
+	    app = express(),
+	    port = process.env.PORT || config.app.getPort() || 3000,
+	    server = app.listen(port),
+
+
+	// Other libary requires
+	    parser = require("body-parser"),
+	    morgan = require("morgan");
+
+
+
 	// App requires
 	var auth = require("./auth.js")(db),
 	    hub = require("./hub.js")(config, db);
