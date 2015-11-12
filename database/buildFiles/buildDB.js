@@ -12,7 +12,7 @@ var fs = require("fs")
 	, config = require('../../config.js')
 	, db = require('../database.js');
 
-module.exports = function(pass, fail, databaseName){
+module.exports = function build(pass, fail, databaseName){
 	var settings = config.database.getSettings(databaseName);
 
 	db.init(createBuildScript, fail, settings);
@@ -54,3 +54,5 @@ module.exports = function(pass, fail, databaseName){
 		});
 	}
 };
+
+module.exports(console.log, console.error, process.argv[2]);
