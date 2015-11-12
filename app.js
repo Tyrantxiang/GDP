@@ -67,7 +67,7 @@ function startApp(db){
 					o.message = "Username already exists";
 				}
 				res.json(o);
-			}, username);
+			}, null, username);
 		}else{
 			res.json({
 				valid : false,

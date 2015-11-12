@@ -72,14 +72,18 @@ usersData.authenticateUser = function(pass, fail, username, givenpw){
 }
 
 // This will always succed, as a "fail" is it not existing, which actually means it doesn't exist
-usersData.checkUsernameExists = function(cb, username){
+usersData.checkUsernameExists = function(pass, fail, username){
 	dbutils.readSingle(exists, notExists, TABLE_NAME, [ "id" ], { username : username });
 
 	function exists(){
-		cb(true);
+		pass(true);
 	}
 	function notExists(err){
-		cb(false);
+		if(err.name === "ERR_NO_MATCHING_ENTRY"){
+			pass(false);
+		}else{
+			fail(err);
+		}
 	}
 }
 
