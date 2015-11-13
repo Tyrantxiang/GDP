@@ -69,6 +69,8 @@ dbutils.query = function(pass, fail, q) {
 
 	q.name = createPreparedStatementName(q.text);
 
+	//console.log(q);
+
 	function runQuery(err, client, queryDone) {
 		if(err) 
 			return fail(err);
@@ -340,7 +342,7 @@ dbutils.prepareFilterString = function(pass, fail, filterConds, placeIndex, prep
 	if(filterArr.length > 0)
 		filterString = "WHERE "+filterArr.join(" AND ");
 
-	pass(filterString, filterVals);
+	pass(filterString, filterVals, placeIndex);
 }
 
 dbutils.sanitiseError = function(err, cb){

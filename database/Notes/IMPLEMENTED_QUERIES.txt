@@ -147,8 +147,8 @@ getScores(pass, fail, filterConds, orderBy, limit)
 	direction : <DESC or ASC>
 }
 * limit ==> how many rows you want to retrieve
-* RETURNS: [ <PLAY_ENTRY>, <PLAY_ENTRY>, ... ]
-
+* RETURNS: [ <SCORE_ENTRY>, <SCORE_ENTRY>, ... ]
+** <SCORE_ENTRY> = <PLAY_ENTRY>+username
 
 deletePlay(pass, fail, id);
 * Deletes the entry matching the id provided

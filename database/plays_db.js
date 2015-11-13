@@ -49,16 +49,41 @@ limit = 10
 ======> LIMIT 10
 */
 playsData.getScores = function(pass, fail, filterConds, orderBy, limit){
-	var orderByString = ""
-		;
 
-	if(orderBy && orderBy.column){
-		orderByString = "ORDER BY "+orderBy.column+" "
-		orderByString += orderBy.direction || "DESC"
+	dbutils.prepareFilterString(queryCreation, fail, filterConds);
+
+	function queryCreation(filterString, filterVals, placeIndex){
+		var orderByString = ""
+			, limitString = ""
+			;
+
+		if(orderBy && orderBy.column){
+			orderByString = "ORDER BY "+orderBy.column+" "
+			orderByString += orderBy.direction || "DESC"
+		}
+
+		if(limit){
+			limitString = "LIMIT $"+placeIndex
+			filterVals.push(limit);
+		}
+
+		var preparedStatement= {
+			text : [
+				"SELECT p.id, p.user_id, u.username, p.game_id, p.start_time, p.end_time, p.score, p.created"
+				, "FROM plays p JOIN users u ON p.user_id = u.id"
+				, filterString
+				, orderByString
+				, limitString
+				].join(" ")
+			, values: filterVals
+		};
+
+		dbutils.query(resultsHandling, fail, preparedStatement);
 	}
 
-	dbutils.read(pass, fail, TABLE_NAME, ["id", "user_id", "game_id", "start_time", "end_time", "score", "created"],
-		filterConds, orderByString, limit);
+	function resultsHandling(results){
+		pass(results.rows);
+	}
 }
 
 //Deletes the entry that matches the id
