@@ -10,7 +10,7 @@ var token = null,
 
 function ajaz(url, verb, data, success, error, responseType, contentType){
 	var xhr = new XMLHttpRequest();
-	verb = very.toUpperCase();
+	verb = verb.toUpperCase();
 	
 	// Attach data to the get request
 	if(verb === "GET"){
@@ -29,7 +29,17 @@ function ajaz(url, verb, data, success, error, responseType, contentType){
 
 	xhr.open(verb, url, true);
 
-	xhr.addEventListener("load", success);
+	xhr.addEventListener("load", function(){
+		if(this.status === 200){
+			success.call(this, this.response);
+		}else{
+			if(error){
+				error.call(this);
+			}else{
+				success.call(this);
+			}
+		}
+	});
 	if(error){
 		xhr.addEventListener("error", error);
 	}else{
@@ -78,7 +88,7 @@ function clearEventListeners(name){
 }
 
 function authenticate(username, password, cb){
-	ajaz("/authenticate", POST,
+	ajaz("/authenticate", "POST",
 		{ username : username, password : password },
 		function(){
 			setToken(this.response.token);
@@ -224,6 +234,13 @@ function remove_inventory(id, cb){
 
 
 //USER MANAGEMENT - Ajax request
+function get_conditions_list(cd){
+	postRequest(	'/user/get_conditions_list',
+					null,
+					cb	
+				);
+}
+
 function validate_username(username, cb){
 	postRequest(	'/user/validate_username',
 					{username: username},
@@ -406,6 +423,7 @@ window.comms = {
 
 
 	user_management : {
+		get_conditions_list : get_conditions_list,
 		validate_username : validate_username,
 		validate_details : validate_details,
 		sign_up : sign_up,
