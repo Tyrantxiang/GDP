@@ -265,23 +265,37 @@ function validate_username(username, cb){
 				);
 }
 
-function validate_details(dob, illnesses, cb){
-	postRequest(	'/user/validate_details',
-					{dob: dob, illnesses: illnesses},
+function validate_dob(dob, cb){
+	postRequest(	'/user/validate_dob',
+					{dob: dob},
 					cb
 				);
 }
 
-function sign_up(username, password, dob, illnesses, cb){
+function validate_conditions(dob, cb){
+	postRequest(	'/user/validate_conditions',
+					{conditions: conditions},
+					cb
+				);
+}
+
+function sign_up(username, password, dob, cb){
 	postRequest(	'/user/sign_up',
-					{username: username, password: password, dob: dob, illnesses: illnesses},
+					{username: username, password: password, dob: dob},
 					cb
 				);
 }
 
-function change_user_details(username, password, dob, illnesses, cb){
+function add_conditions(conditions, cb){
+	postRequest(	'/user/validate_conditions',
+					{conditions: conditions},
+					cb
+				);
+}
+
+function change_user_details(username, password, dob, conditions, cb){
 	postRequest(	'/user/change_details',
-					{username: username, password: password, dob: dob, illnesses: illnesses},
+					{username: username, password: password, dob: dob, conditions: conditions},
 					cb
 			);
 }
@@ -426,7 +440,8 @@ window.comms = {
 	user_management : {
 		get_conditions_list : get_conditions_list,
 		validate_username : validate_username,
-		validate_details : validate_details,
+		validate_dob : validate_dob,
+		validate_conditions : validate_conditions,
 		sign_up : sign_up,
 		change_user_details : change_user_details,
 		get_options : get_options,

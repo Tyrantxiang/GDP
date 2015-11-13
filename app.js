@@ -56,7 +56,8 @@ function startApp(db){
 	// User http RESTful API routes
 	app.get("/user/get_conditions_list", userapi.get_conditions_list);
 	app.post("/user/validate_username", userapi.validate_username);
-	app.post("/user/validate_details", userapi.validate_details);
+	app.post("/user/validate_dob", userapi.validate_dob);
+	app.post("/user/sign_up", userapi.sign_up);
 
 
 	// Set up Socket.io connection
