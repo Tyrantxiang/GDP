@@ -18,17 +18,26 @@
           <hr class="hr-grey">
           <div class="form-large">
             <label for="signup_password"><span class="required">*</span>password: </label>
-            <input type="password" class="form-control pull-right cleafix" id="signup_password" placeholder="password" required="required">
+            <div class="pull-right cleafix">
+              <span class="hidden signup_password-ok glyphicon glyphicon-ok-sign"></span><span class="hidden signup_password-error glyphicon glyphicon-remove-sign"></span>
+              <input type="password" class="form-control" id="signup_password" placeholder="password" required="required">
+            </div>
           </div>
           <hr class="hr-grey">
           <div class="form-large">
             <label for="signup_repeatPassword"><span class="required">*</span>re-enter password: </label>
-            <input type="password" class="form-control pull-right cleafix" id="signup_repeatPassword" placeholder="password" required="required">
+            <div class="pull-right cleafix">
+              <span class="hidden signup_repeatPassword-ok glyphicon glyphicon-ok-sign"></span><span class="hidden signup_repeatPassword-error glyphicon glyphicon-remove-sign"></span>
+              <input type="password" class="form-control" id="signup_repeatPassword" placeholder="password" required="required">
+            </div>
           </div>
           <hr class="hr-grey">
           <div class="form-large">
             <label for="signup_dob"><span class="required">*</span>date of birth: </label>
-            <input type="date" class="form-control pull-right cleafix" style="width:370px;" id="signup_dob" required="required">
+            <div class="pull-right cleafix">
+              <span class="hidden signup_dob-ok glyphicon glyphicon-ok-sign"></span><span class="hidden signup_dob-error glyphicon glyphicon-remove-sign"></span>
+              <input type="date" class="form-control" style="width:370px;" id="signup_dob" required="required">
+            </div>
           </div>
           <br>
           <span class="required" style="font-size:30px">*</span> required field
