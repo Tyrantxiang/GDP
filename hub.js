@@ -108,7 +108,7 @@ Hub.prototype.eventListeners = {
 			},
 			this.user_id
 		);
-	}
+	},
 	
 	//TODO
 	update_equipped_items : function(data, fn){
@@ -163,7 +163,7 @@ Hub.prototype.eventListeners = {
 
     finish_minigame : function(data, fn){
         var id = data.gameId,
-            score = data.score,
+            score = data.score;
 
         if(id === this.gameId){
 			var playObj = {	user_id: this.userId,
@@ -179,13 +179,13 @@ Hub.prototype.eventListeners = {
 
 			//update the users currency
 			db.readUserById(function(result){
-								db.updateUserCurrency(function(){},, function(){}, result.currency+data.currency, this.user_id);
+								db.updateUserCurrency(function(){}, function(){}, result.currency+data.currency, this.user_id);
 							},
 							function(err){
 								fn( {err: "Error reading user ID or "} );
 							},
 							this.user_id
-			};
+			);
 							
             // Save score in database
 			db.createPlay(	function(){ fn(); },
@@ -221,7 +221,7 @@ Hub.prototype.eventListeners = {
 		db.getScores(	function(results){
 							fn({data: results});
 						},
-						function(err){ fn(err: "Error accessing database entries"); },
+						function(err){ fn({err: "Error accessing database entries"}); },
 						filterConds,
 						{column: "score", direction: "DESC"}, 
 						numOfScores
