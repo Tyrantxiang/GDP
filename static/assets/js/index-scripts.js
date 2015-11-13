@@ -1,46 +1,50 @@
 $(function() {
+
+
+  // Functions for changing the view
   $(document).on('click', '.signup-btn', function () {
-    loadXMLDoc("signup");
+    $.get("/views/signup.html", function(data){
+      $("#main-content-area").html(data);
+    });
   });
 
   $(document).on('click', '.login-btn', function () {
-    loadXMLDoc("login");
+    $.get("/views/login.html", function(data){
+      $("#main-content-area").html(data);
+    });
   });
 
 
+  // Login submission button
+  $(document).on('click', '.login-submit', function () {
+    // Get the values
+    var username = $("#login_username").val(),
+      password = $("#login_password").val();
 
-  
-  function loadXMLDoc(page) {
-    var xmlHttp;
-
-    if (window.XMLHttpRequest) {
-      xmlHttp = new XMLHttpRequest();
-    } else {
-      xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-
-    xmlHttp.onreadystatechange = function() {
-      if (xmlHttp.readyState == XMLHttpRequest.DONE ) {
-        if(xmlHttp.status == 200){
-          document.getElementById("main-content-area").innerHTML = xmlHttp.responseText;
-        }
-        else if(xmlHttp.status == 400) {
-          alert('There was an error 400')
-        }
-        else {
-          alert('something else other than 200 was returned')
-        }
+    comms.authenticate(username, password, function(data){
+      if(data){
+        alert("an error");
+      }else{
+        alert("no error");
       }
-    }
+    });
+  });
 
-    if (page === "signup") {
-      xmlHttp.open("GET", "/views/signup.html", true);
-    } else if (page === "login") {
-      xmlHttp.open("GET", "/views/login.html", true);
-    }
 
-    xmlHttp.send();
-  }
+  // Signup scripts!
+  $(document).on('keyup', '#signup_username', function (event) {
+    // Send data to the server to check if it is valid
+    var v = $(event.currentTarget).val();
+    comms.user_management.validate_username(v, function(data){
+      if(data.valid){
+        $(".signup_username-error").addClass("hidden");
+        $(".signup_username-ok").removeClass("hidden");
+      }else{
+        $(".signup_username-ok").addClass("hidden");
+        $(".signup_username-error").removeClass("hidden");
+      }
+    });
+  });
 
 
 });

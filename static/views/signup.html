@@ -9,31 +9,38 @@
       <div class="white-box top-buffer">
         <form class="form-inline top-buffer">
           <div class="form-large">
-            <label for="inputUsername"><span class="required">*</span>username: </label>
-            <input class="form-control" style="float:right; clear:both;" id="inputUsername" placeholder="username" required="required">
+            <label for="signup_username"><span class="required">*</span>username: </label>
+            <div class="pull-right cleafix">
+              <span class="hidden signup_username-ok glyphicon glyphicon-ok-sign"></span><span class="hidden signup_username-error glyphicon glyphicon-remove-sign"></span>
+              <input type="text" class="form-control" id="signup_username" placeholder="username" required="required">
+            </div>
           </div>
           <hr class="hr-grey">
           <div class="form-large">
-            <label for="inputPw"><span class="required">*</span>password: </label>
-            <input type="password" class="form-control" style="float:right; clear:both;" id="inputPw" placeholder="password" required="required">
+            <label for="signup_password"><span class="required">*</span>password: </label>
+            <input type="password" class="form-control pull-right cleafix" id="signup_password" placeholder="password" required="required">
           </div>
           <hr class="hr-grey">
           <div class="form-large">
-            <label for="inputRePw"><span class="required">*</span>re-enter password: </label>
-            <input type="password" class="form-control" style="float:right; clear:both;" id="inputRePw" placeholder="password">
+            <label for="signup_repeatPassword"><span class="required">*</span>re-enter password: </label>
+            <input type="password" class="form-control pull-right cleafix" id="signup_repeatPassword" placeholder="password" required="required">
           </div>
           <hr class="hr-grey">
           <div class="form-large">
-            <label for="inputDOB">date of birth: </label>
-            <input type="date" class="form-control" style="float:right; clear:both; width:370px;" id="inputDOB">
+            <label for="signup_dob"><span class="required">*</span>date of birth: </label>
+            <input type="date" class="form-control pull-right cleafix" style="width:370px;" id="signup_dob" required="required">
           </div>
           <br>
           <span class="required" style="font-size:30px">*</span> required field
         </form>
       </div>
-      <div class="top-buffer" style="margin-left:10px;">
-        <button class="btn btn-xl btn-secondary" style="float:right; clear:both;">next</button>
+
+      <div class="pull-left">
+        <button class="login-btn btn btn-xl btn-primary top-buffer">log in</button>
       </div>
+      <div class="pull-right">
+        <button class="signup-submit btn btn-xl btn-secondary top-buffer">next</button>
+      </div> 
     </div>
   </div>
 </div>
