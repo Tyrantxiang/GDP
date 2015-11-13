@@ -11,11 +11,12 @@
 var playsData = {}
 	, TABLE_NAME = "plays"
 	, dbutils = require('./dbutils.js')
+	, validateDetails = require("../validateDetails.js")
 	;
 
 playsData.createPlay = function(pass, fail, playObj) {
 	//Validates the details given
-	validatePlayDetails(queryExecution, fail, playObj);
+	validateDetails(queryExecution, fail, playObj);
 	
 	//After validation, persists the play obj
 	function queryExecution(){
@@ -89,14 +90,6 @@ playsData.getScores = function(pass, fail, filterConds, orderBy, limit){
 //Deletes the entry that matches the id
 playsData.deletePlay = function(pass, fail, id){
 	dbutils.deleteById(pass, fail, TABLE_NAME, id);
-}
-
-/*
- * HELPER FUNCTIONS
-*/
-
-function validatePlayDetails(pass, fail, playObj){
-	pass();
 }
 
 module.exports = playsData;

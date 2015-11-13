@@ -16,7 +16,7 @@ var user_inventory = {}
 //Creates a user_inventory entry
 user_inventory.createUserInventory = function(pass, fail, inventoryObj) {
 	//Validates the details given
-	validateInventoryDetails(queryExecution, fail, inventoryObj);
+	validateDetails(queryExecution, fail, inventoryObj);
 	
 	//After validation, persists the play obj
 	function queryExecution(){

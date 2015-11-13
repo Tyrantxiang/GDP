@@ -16,7 +16,7 @@ var user_conditions = {}
 //Creates a user_condition entry
 user_conditions.createUserCondition = function(pass, fail, condObj) {
 	//Validates the details given
-	validateConditionDetails(queryExecution, fail, condObj);
+	validateDetails(queryExecution, fail, condObj);
 	
 	//After validation, persists the play obj
 	function queryExecution(){

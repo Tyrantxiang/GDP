@@ -11,12 +11,13 @@
 var sessionsData = {}
 	, TABLE_NAME = "sessions"
 	, dbutils = require('./dbutils.js')
+	, validateDetails = require("../validateDetails.js")
 	;
 
 //Creates a new entry on the Sessions table
 sessionsData.createSession = function(pass, fail, sessionObj) {
 	//Validates the sessionObj given
-	validateSession(queryExecution, fail, sessionObj);
+	validateDetails(queryExecution, fail, sessionObj);
 	
 	//After validation, persists the session obj
 	function queryExecution(){
@@ -35,7 +36,7 @@ sessionsData.endSession = function(pass, fail, end_ts, id){
 	sessionsData.readSessionById(validateTimes, fail, id);
 
 	function validateTimes(sessionObj){
-		validateEndTime(queryExecution, fail, end_ts, sessionObj.start_time);	
+		validateDetails(queryExecution, fail, {start_time: sessionObj.start_time, end_time: end_ts});	
 	}
 
 	function queryExecution(){
@@ -46,18 +47,6 @@ sessionsData.endSession = function(pass, fail, end_ts, id){
 //Deletes the entry that matches the id
 sessionsData.deleteSession = function(pass, fail, id){
 	dbutils.deleteById(pass, fail, TABLE_NAME, id);
-}
-
-/*
- * HELPER FUNCTIONS
-*/
-
-function validateSession(pass, fail, sessionObj){
-	pass();
-}
-
-function validateEndTime(pass, fail, end_ts, start_ts){
-	pass();
 }
 
 module.exports = sessionsData;

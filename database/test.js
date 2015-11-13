@@ -10,7 +10,9 @@
 */
 
 var config = require('../config.js')
-	, db = require('./database.js').init(tpass, tfail, config.database.getSettings("test"));
+	, validateDetails = require("../validateDetails.js")
+	, db = require('./database.js').init(function(){console.log("PASS\n********************");},
+											tfail, config.database.getSettings("test"));
 	;
 
 function tpass(results){
@@ -82,6 +84,13 @@ var filters = {
 
 var order = {column: 'id', direction: 'DESC'};
 
-db.getScores(tpass, tfail, filters, order, null);
+//db.getScores(tpass, tfail, filters, order, null);
 
 //require('./creation_things/buildDB.js')(tpass, tfail, 'test');
+
+var tsN = new Date()
+	, tsM = new Date(Date.now() - 1000);
+
+//console.log(tsN);
+//console.log(tsM);
+validateDetails(tpass, tfail, {end_time: tsM});
