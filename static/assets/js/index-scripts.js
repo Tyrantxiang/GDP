@@ -22,10 +22,10 @@ $(function() {
       password = $("#login_password").val();
 
     comms.authenticate(username, password, function(data){
-      if(data){
-        alert("an error");
+      if(data.authenticated){
+        console.log("authenticated");
       }else{
-        alert("no error");
+        console.log("not authenticated");
       }
     });
   });

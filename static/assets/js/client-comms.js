@@ -92,11 +92,14 @@ function authenticate(username, password, cb){
 		{ username : username, password : password },
 		function(){
 			setToken(this.response.token);
-			cb();
+			cb({
+				authenticated : true
+			});
 		},
 		function(){
-			console.log("error");
-			cb(true);
+			cb({
+				authenticated : false
+			});
 		}
 	);
 }
@@ -107,16 +110,30 @@ function createSocket(){
 		throw new Error("Authentication required first");
 	}
 
-	socket = io.connect('/', {
+	// Autodetection
+	socket = io.connect({
 		query: "token=" + t
 	});
 
-	// Bind the event listeners
-	for(name in eventListeners){
-		eventListeners[name].forEach(function(l){
-			socket.on(name, l);
-		});
-	}
+	// Error handler - not authententicated
+	socket.on("error", function(data){
+		console.error(data);
+		if(data === "not authorized"){
+			socket.close();
+		}
+	});
+
+	// Connection success!
+	socket.on("connect", function(){
+		console.log("connected");
+
+		// Bind the event listeners
+		for(name in eventListeners){
+			eventListeners[name].forEach(function(l){
+				socket.on(name, l);
+			});
+		}
+	});
 }
 
 
