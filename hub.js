@@ -73,19 +73,54 @@ Hub.prototype.exit = function(){
 
     // Save session data in db
     var disconnectTime = new Date();
+	
+	db.endSession(function(){}, function(){}, disconnectTime.toISOString(), this.userId);
 };
 
 // Define functions here
 Hub.prototype.eventListeners = {
-    getGamesList : function(data, fn){
+	//options are unused, here for completions sake. Can be implemented in future for
+	//options such as colour blindness etc.
+	//UNUSED
+	get_options : function(data, fn){
+		fn({});
+	},
+	//UNUSED
+	set_options : function(data, fn){
+		fn({});
+	},
+	
+	get_all_item_info : function(data, fn){
+        fn(config.items.listAll());
+    },
+	
+	get_single_item_info : function(data, fn){
+		fn(config.items.getConfig(data.id, undefined));
+	},
+	
+	//TODO
+	update_equipped_items : function(data, fn){
+		
+	},
+	
+	get_bag : function(data, fn){
+			db.getUserInventory(
+				function(results){ fn(results); },
+				function(){ fn({err: "An error occured"}); },
+				this.userId
+			);
+	},
+	
+	//TODO
+	set_bag : function(data, fn){
+		
+	},
+	
+    list_minigames : function(data, fn){
         fn(config.games.listAll());
     },
 
-    getItemsList : function(data, fn){
-        fn(config.items.listAll());
-    },
-
-    launchGame : function(data, fn){
+    launch_minigame : function(data, fn){
         // Get all of the items required for the game and send them to the client
         var id = data.gameId;
 
@@ -117,27 +152,62 @@ Hub.prototype.eventListeners = {
         }
     },
 
-    finishGame : function(data, fn){
+    finish_minigame : function(data, fn){
         var id = data.gameId,
             score = data.score,
-            timeInGame = (new Date() - this.gameStartTime)/1000; // Divide by 1000 to get seconds, not millis
 
         if(id = this.gameId){
+			var playObj = {	user_id: this.userId,
+							game_id: id,
+							start_time: this.gameStartTime.toISOString(),
+							end_time: (new Date()).toISOString(), 
+							score: score
+						};
+			
             this.location = Hub.locations.IN_HUB;
-            this.gameId = null;
-            this.gameStartTime = null;
-
+            this.gameId = undefined;
+            this.gameStartTime = undefined;
 
             // Save score in database
-
-
-            fn();
+			db.createPlay(	function(){ fn(); },
+							function(){ fn({err: "An error occured"}); },
+							playObj			
+						);
         }else{
             fn({
                 err : "Game ID supplied does not match the server's"
             });
         }
-    }
+    },
+	
+	get_scores : function(data, fn){
+		var numOfScores = 100;
+		
+		var filterConds = {};
+		
+		if(data.option_num === 0){
+			//get top 100 overall scores
+			filterConds = {};
+		}else if(data.option_num === 1){
+			//filtering on user for all games
+			filterConds = {game_id: data.game_id};
+		}else if(data.option_num === 2){
+			filterConds = {user_id: data.user_id};
+		}else if(data.option_num === 3){
+			filterConds = {user_id: data.user_id, game_id: data.game_id}
+		}else{
+			fn({err: "Invalid score option selected"});
+		}
+		
+		db.getScores(	function(results){
+							fn({data: results});
+						},
+						function(err){ fn(err: "Error accessing database entries"); },
+						filterConds,
+						{column: "score", direction: "DESC"}, 
+						numOfScores
+					);
+	}
 
 };
 

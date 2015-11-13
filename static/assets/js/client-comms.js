@@ -294,7 +294,6 @@ function get_options(cb){
 					);
 }
 
-
 function set_options(cb){
 	client_socket_call(	'set_options',
 						{},
@@ -302,21 +301,21 @@ function set_options(cb){
 					);
 }
 
-
-
-
-
-
 //AVATAR AND HOUSE CUSTOMIZATION
 
-function get_item_info(option, cb){
-	var valid_options = ['get_full_configs', 'get_text_first', 'inventory_first'];
-	
-	client_socket_call(	'get_item_info',
-						{option_num: option, option_text: valid_options[option] || valid_options[0]},
+function get_all_item_info(cb){	
+	client_socket_call(	'get_all_item_info',
+						{},
 						cb
 					);
 	
+}
+
+function get_single_item_info(id, cb){
+		client_socket_call(	'get_single_item_info',
+						{id: id},
+						cb
+					);
 }
 
 function update_equipped_items(items, cb){
@@ -341,10 +340,6 @@ function set_bag(items, cb){
 					);
 }
 
-
-
-
-
 //MINIGAME SELECTION
 function list_minigames(cb){
 	client_socket_call(	'list_minigames',
@@ -361,18 +356,21 @@ function launch_minigame(id, cb){
 				);
 }
 
-function get_scores(option, id, cb){
-	var valid_options = ['all_scores', 'scores_for_game', 'scores_for_user'];
+function finish_minigame(cb){
+	client_socket_call( 'finish_minigame',
+						{},
+						cb	
+				);
+}
+
+function get_scores(optionnum, user_id, game_id, cb){
+	var valid_options = ['all_scores', 'all_scores_for_game', 'all_scores_for_user', 'all_scores_for_user_for_game'];
 	
 	client_socket_call(	'get_scores',
-						{option_num: option, option_text: valid_options[option] || valid_options[0], id: id},
+						{option_num: optionnum, option_text: valid_options[optionnum] || valid_options[0], user_id: user_id, game_id: game_id},
 						cb
 					);
 }
-
-
-
-
 
 //MINIGAME
 function set_score(cb){
@@ -396,9 +394,9 @@ function set_hp(value, cb){
 					);
 }
 
-function set_status(status, value, cb){
+function set_status(statuss, value, cb){
 	client_socket_call(	'set_status',
-						{status: status, value: value},
+						{"status": statuss, value: value},
 						cb
 					);
 }
