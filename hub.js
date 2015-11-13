@@ -98,18 +98,31 @@ Hub.prototype.eventListeners = {
 		fn(config.items.getConfig(data.id, undefined));
 	},
 	
+	get_user_equipped_items : function(data, fn){
+		db.getInventoryForUser( 
+			function(results){
+			
+			},
+			function(){
+				
+			},
+			this.user_id
+		);
+	}
+	
 	//TODO
 	update_equipped_items : function(data, fn){
 		
 	},
 	
 	get_bag : function(data, fn){
-		
+		fn( {items: this.bag.getItems()} );
 	},
 	
-	//TODO
 	set_bag : function(data, fn){
+		this.bag.setItems(data.items);
 		
+		fn();
 	},
 	
     list_minigames : function(data, fn){
@@ -152,7 +165,7 @@ Hub.prototype.eventListeners = {
         var id = data.gameId,
             score = data.score,
 
-        if(id = this.gameId){
+        if(id === this.gameId){
 			var playObj = {	user_id: this.userId,
 							game_id: id,
 							start_time: this.gameStartTime.toISOString(),
@@ -213,8 +226,15 @@ Hub.prototype.eventListeners = {
 						{column: "score", direction: "DESC"}, 
 						numOfScores
 					);
+	},
+	
+	set_hp : function(data, fn){
+		
+	},
+	
+	set_status : function(data, fn){
+		
 	}
-
 	
 };
 
@@ -224,6 +244,14 @@ Hub.prototype.eventListeners = {
 function Bag(){
     // Modelled as an array of items contained in the bag
     var items = [];
+	
+	function getItems(){
+		return this.items;
+	}
+	
+	function setItems(itemArray){
+		if(Array.isArray(itemArray)) this.items = itemArray;
+	}
 }
 
 var getItem = (function(){

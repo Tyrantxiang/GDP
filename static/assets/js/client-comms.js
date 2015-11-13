@@ -325,9 +325,17 @@ function get_all_item_info(cb){
 	
 }
 
+
 function get_single_item_info(id, cb){
 		client_socket_call(	'get_single_item_info',
 						{id: id},
+						cb
+					);
+}
+
+function get_user_equipped_items(cb){
+	client_socket_call( 'get_user_eqipped_items',
+						{},
 						cb
 					);
 }
