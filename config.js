@@ -227,12 +227,14 @@ function configReaderFactory(directory){
 
             /* Return a list of objects representing the avalible games */
             listAll : function(){
-                return configs.map(function(config){
-                    return {
-                        id : config.id,
-                        name : config.name
-                    };
-                });
+                var a = [];
+                for(cfg in configs){
+                    a.push({
+                        id : cfg,
+                        name : config[cfg].name
+                    });
+                }
+                return a;
             },
 
             /* Get the name of a game from a given ID */
