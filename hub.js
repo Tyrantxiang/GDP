@@ -104,11 +104,7 @@ Hub.prototype.eventListeners = {
 	},
 	
 	get_bag : function(data, fn){
-			db.getUserInventory(
-				function(results){ fn(results); },
-				function(){ fn({err: "An error occured"}); },
-				this.userId
-			);
+		
 	},
 	
 	//TODO
@@ -168,6 +164,16 @@ Hub.prototype.eventListeners = {
             this.gameId = undefined;
             this.gameStartTime = undefined;
 
+			//update the users currency
+			db.readUserById(function(result){
+								db.updateUserCurrency(function(){},, function(){}, result.currency+data.currency, this.user_id);
+							},
+							function(err){
+								fn( {err: "Error reading user ID or "} );
+							},
+							this.user_id
+			};
+							
             // Save score in database
 			db.createPlay(	function(){ fn(); },
 							function(){ fn({err: "An error occured"}); },
@@ -209,6 +215,7 @@ Hub.prototype.eventListeners = {
 					);
 	}
 
+	
 };
 
 

@@ -356,9 +356,9 @@ function launch_minigame(id, cb){
 				);
 }
 
-function finish_minigame(cb){
+function finish_minigame(score, currency, cb){
 	client_socket_call( 'finish_minigame',
-						{},
+						{score: score, currency: currency},
 						cb	
 				);
 }
@@ -373,20 +373,6 @@ function get_scores(optionnum, user_id, game_id, cb){
 }
 
 //MINIGAME
-function set_score(cb){
-	client_socket_call(	'set_score',
-						{},
-						cb
-					);
-}
-
-function set_currency(value, cb){
-	client_socket_call(	'set_currency',
-						{value: value},
-						cb
-					);
-}
-
 function set_hp(value, cb){
 	client_socket_call(	'set_hp',
 						{value: value},
