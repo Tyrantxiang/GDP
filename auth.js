@@ -2,7 +2,7 @@
 
 /* Authentication module contains the methods to handle login, auth and user handling */
 
-var jwt = require('jsonwebtoken'),
+var jwt = require("jsonwebtoken"),
     secret = "trisha is bob";
 
 
@@ -18,16 +18,21 @@ function getDatabase(){
     return db;
 }
 
+
+
+function generateToken(userId){
+    /* To make sure we don't send the userId (for db reasons) maybe we should encrypt the
+     * user ID here (with AES?)
+     */
+    return jwt.sign({ userId : userId }, secret, { expiresIn : 60 * 60 * 24 });
+}
+
 function authenticate(req, res){
     var username, password,
 
         authenticated = function(user){
-            /* To make sure we don't send the userId (for db reasons) maybe we should encrypt the
-             * user ID here (with AES?)
-             */
-
             // Generate web token
-            var token = jwt.sign({ userId : user.userId }, secret, { expiresIn : 60 * 60 * 24 });
+            var token = generateToken(user.userId);
             res.json({
                 token : token
             });
