@@ -27,6 +27,69 @@ function getDatabase(){
 
 
 
+// Is this call to a validation function successful?
+function resultIsValid(o){
+    return o.valid;
+}
+
+
+function isUsernameValid(username, cb){
+    if(username && username !== ""){
+        // More validation here
+        if(!(/^[a-z0-9]+$/i.test(username))){
+            cb({
+                valid : false,
+                message : "alphanumeric characters only"
+            });
+            return;
+        }
+
+        // Already in use
+        db.checkUsernameExists(function(exists){
+            var o = {
+                valid : !exists
+            };
+            if(exists){
+                o.message = "Username already exists";
+            }
+            cb(o);
+        }, null, username);
+    }else{
+        cb({
+            valid : false,
+            message : "Username was not sent or is empty"
+        });
+    }
+}
+
+function isDobValid(dob, cb){
+    // Must be at least x years old?
+    if(!dob || isNaN(dob.getTime())){
+        cb({
+            valid : false,
+            message : "invalid date"
+        });
+        return;
+    }
+    if(dob >= new Date(Date.now() - (1000 * 60 * 60 * 24 * 365 * 10))){
+        cb({
+            valid : false,
+            message : "You must be at least 10 years old"
+        });
+        return;
+    }
+
+    cb({
+        valid : true
+    });
+}
+
+function isPasswordValid(pw, cb){
+    cb({
+        valid : (pw && pw.length > 6)
+    });
+}
+
 
 
 /****** Route functions ******/
@@ -38,71 +101,71 @@ var routes = {
 
     validate_username : function(req, res){
         var username = req.body.username && req.body.username.trim();
-        if(username && username !== ""){
-            // More validation here
-            if(!(/^[a-z0-9]+$/i.test(username))){
-                res.json({
-                    valid : false,
-                    message : "alphanumeric characters only"
-                });
-                return;
-            }
-
-            // Already in use
-            db.checkUsernameExists(function(exists){
-                var o = {
-                    valid : !exists
-                };
-                if(exists){
-                    o.message = "Username already exists";
-                }
-                res.json(o);
-            }, null, username);
-        }else{
-            res.json({
-                valid : false,
-                message : "Username was not sent or is empty"
-            });
-        }
+        isUsernameValid(username, function(o){
+            res.json(o);
+        });
     },
 
 
 
-    validate_details : function(req, res){
-        var dob = req.body.dob && new Date(req.body.dob),
-            condition = req.body.illnesses;
-
-        // Validate
-        if(!config.conditions.exists(condition)){
-            res.json({
-                valid : false,
-                message : "Condition does not exist"
-            });
-            return;
-        }
-
-        // Validate the DOB
-        // Must be at least x years old?
-        if(isNaN(dob.getTime())){
-            res.json({
-                valid : false,
-                message : "invalid date"
-            });
-            return;
-        }
-        if(dob < new Date(Date.now() - (100 * 60 * 60 * 24 * 365 * 10))){
-            res.json({
-                valid : false,
-                message : "You must be at least 10 years old"
-            });
-            return;
-        }
-
-        res.json({
-            valid : true
+    validate_dob : function(req, res){
+        var dob = req.body.dob && new Date(req.body.dob);
+        isDobValid(dob, function(o){
+            res.json(o);
         });
-    }
+    },
 
+
+
+
+
+
+    sign_up : function(req, res){
+        var b = req.body,
+            username = b.username && b.username.trim(),
+            password = b.password,
+            dob = b.dob && new Date(b.dob);
+
+
+        var validations = [];
+
+        isUsernameValid(username, function(o){
+            validations.push(o);
+            isPasswordValid(password, function(o){
+                validations.push(o);
+                isDobValid(dob, function(o){
+                    validations.push(o);
+
+                    var valid = validations.every(resultIsValid);
+                    if(valid){
+                        db.createUser(
+                            // Pass
+                            function(id){
+                                res.json({
+                                    error : false    
+                                })
+                            },
+                            // Fail
+                            function(error){
+                                res.status(400).json({
+                                    error : error
+                                });
+                            },
+                            { username : username, password : password, dob : dob }
+                        );
+                    }else{
+                        res.status(400).json({
+                            error : "some stuff not valid",
+                            validations : validations
+                        });
+                    }
+
+
+                });
+            });
+        });
+
+    }
 
 };
 
