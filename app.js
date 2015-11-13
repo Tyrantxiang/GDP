@@ -53,10 +53,22 @@ function startApp(db){
 
 
 	// Some user stuff, could probably be moved to a different file
+	app.get("/user/get_conditions_list", function(req, res){
+		res.json(config.conditions.listAll());
+	});
+
+
 	app.post("/user/validate_username", function(req, res){
 		var username = req.body.username && req.body.username.trim();
 		if(username && username !== ""){
 			// More validation here
+			if(!(/^[a-z0-9]+$/i.test(username))){
+				res.json({
+					valid : false,
+					message : "alphanumeric characters only"
+				});
+				return;
+			}
 
 			// Already in use
 			db.checkUsernameExists(function(exists){
@@ -77,7 +89,7 @@ function startApp(db){
 	});
 
 	app.post("/user/validate_details", function(req, res){
-		var dob = req.body.dob && Date.parse(req.body.dob),
+		var dob = req.body.dob && new Date(req.body.dob),
 			condition = req.body.illnesses;
 
 		// Validate
@@ -91,6 +103,13 @@ function startApp(db){
 
 		// Validate the DOB
 		// Must be at least x years old?
+		if(isNaN(dob.getTime())){
+			res.json({
+				valid : false,
+				message : "invalid date"
+			});
+			return;
+		}
 		if(dob < new Date(Date.now() - (100 * 60 * 60 * 24 * 365 * 10))){
 			res.json({
 				valid : false,

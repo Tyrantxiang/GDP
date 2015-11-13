@@ -33,7 +33,10 @@ function authenticate(req, res){
             });
         },
         failed = function(error){
-            res.json(error);
+            res.status(401).json({
+                error : true,
+                message : "invalid username or password"
+            });
         };
 
     if(req.body.username && req.body.password){
@@ -44,7 +47,7 @@ function authenticate(req, res){
         db.authenticateUser(authenticated, failed, username, password);
 
     }else{
-        failed("Username or password not supplied");
+        failed();
     }
 }
 
