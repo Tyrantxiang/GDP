@@ -22,7 +22,8 @@ function startApp(db){
 
 	// App requires
 	var auth = require("./auth.js")(db),
-	    hub = require("./hub.js")(config, db);
+	    hub = require("./hub.js")(config, db),
+	    userapi = require("./user-api.js")(config, db);
 
 
 	app.use(morgan("dev"));
@@ -52,76 +53,10 @@ function startApp(db){
 
 
 
-	// Some user stuff, could probably be moved to a different file
-	app.get("/user/get_conditions_list", function(req, res){
-		res.json(config.conditions.listAll());
-	});
-
-
-	app.post("/user/validate_username", function(req, res){
-		var username = req.body.username && req.body.username.trim();
-		if(username && username !== ""){
-			// More validation here
-			if(!(/^[a-z0-9]+$/i.test(username))){
-				res.json({
-					valid : false,
-					message : "alphanumeric characters only"
-				});
-				return;
-			}
-
-			// Already in use
-			db.checkUsernameExists(function(exists){
-				var o = {
-					valid : !exists
-				};
-				if(exists){
-					o.message = "Username already exists";
-				}
-				res.json(o);
-			}, null, username);
-		}else{
-			res.json({
-				valid : false,
-				message : "Username was not sent or is empty"
-			});
-		}
-	});
-
-	app.post("/user/validate_details", function(req, res){
-		var dob = req.body.dob && new Date(req.body.dob),
-			condition = req.body.illnesses;
-
-		// Validate
-		if(!config.conditions.exists(condition)){
-			res.json({
-				valid : false,
-				message : "Condition does not exist"
-			});
-			return;
-		}
-
-		// Validate the DOB
-		// Must be at least x years old?
-		if(isNaN(dob.getTime())){
-			res.json({
-				valid : false,
-				message : "invalid date"
-			});
-			return;
-		}
-		if(dob < new Date(Date.now() - (100 * 60 * 60 * 24 * 365 * 10))){
-			res.json({
-				valid : false,
-				message : "You must be at least 10 years old"
-			});
-			return;
-		}
-
-		res.json({
-			valid : true
-		});
-	});
+	// User http RESTful API routes
+	app.get("/user/get_conditions_list", userapi.get_conditions_list);
+	app.post("/user/validate_username", userapi.validate_username);
+	app.post("/user/validate_details", userapi.validate_details);
 
 
 	// Set up Socket.io connection
