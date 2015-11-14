@@ -18,13 +18,13 @@ function getConfig(){
 
 var db;
 function setDatabase(database){
-	if(!database){
-		throw new Error("Database object not defined");
-	}
-	db = database;
+    if(!database){
+        throw new Error("Database object not defined");
+    }
+    db = database;
 }
 function getDatabase(){
-	return db;
+    return db;
 }
 
 var locations = {
@@ -57,10 +57,10 @@ function Hub(userId, comms){
     this.connectedTime = new Date();
 
     // Get the user data from the db
-	db.createSession(function(){},
-						function(){},
-							{userId: userId, start_time: this.connectedTime.toISOString()}
-					);
+    db.createSession(function(){},
+                        function(){},
+                            {userId: userId, start_time: this.connectedTime.toISOString()}
+                    );
 
 
 };
@@ -73,84 +73,58 @@ Hub.prototype.exit = function(){
 
     // Save session data in db
     var disconnectTime = new Date();
-	
-	db.endSession(function(){}, function(){}, disconnectTime.toISOString(), this.userId);
+
+    db.endSession(function(){}, function(){}, disconnectTime.toISOString(), this.userId);
 };
 
 // Define functions here
 Hub.prototype.eventListeners = {
-	//options are unused, here for completions sake. Can be implemented in future for
-	//options such as colour blindness etc.
-	//UNUSED
-	get_options : function(data, fn){
-		fn({});
-	},
-	//UNUSED
-	set_options : function(data, fn){
-		fn({});
-	},
-	
-	get_all_item_info : function(data, fn){
+    //options are unused, here for completions sake. Can be implemented in future for
+    //options such as colour blindness etc.
+    //UNUSED
+    get_options : function(data, fn){
+        fn({});
+    },
+    //UNUSED
+    set_options : function(data, fn){
+        fn({});
+    },
+
+    get_all_item_info : function(data, fn){
         fn(config.items.listAll());
     },
-	
-	get_single_item_info : function(data, fn){
-		fn(config.items.getConfig(data.id, undefined));
-	},
-	
-	get_user_unlocked_items : function(data, fn){
-		db.getInventoryForUser(
-			function(results){
-				fn(results);
-			}, function(err){
-				fn({err: err});
-			},
-			this.userId
-		);
-	},
-	
-	get_user_equipped_items : function(data, fn){
-		db.getEquippedForUser( 
-			function(results){
-				var sendBack = {head: results.head, eyes: results.eyes, skin: results.skin, "top":results."top"};
-				fn(sendBack);
-			},
-			function(){
-				fn({err: "Error in db"});
-			},
-			this.user_id
-		);
-	},
-	
-	update_equipped_items : function(data, fn){
-		var invObj = {
-			user_id: this.userId,
-			head: data.head,
-			eyes: data.eyes,
-			skin: data.skin,
-			"top": data."top"
-		};
-		
-		db.createUserEquippedItems(
-			function(results){
-				fn({success: "success"});
-			}, function(){
-				fn({err: "Error in db"});
-			},
-			invObj
-		);
-	},
-	
-	get_bag : function(data, fn){
-		fn( {items: this.bag.getItems()} );
-	},
-	
-	set_bag : function(data, fn){
-		this.bag.setItems(data.items);
-		
-		fn();
-	},
-	
+
+    get_single_item_info : function(data, fn){
+        fn(config.items.getConfig(data.id, undefined));
+    },
+
+    get_user_equipped_items : function(data, fn){
+        db.getInventoryForUser(
+            function(results){
+
+            },
+            function(){
+
+            },
+            this.user_id
+        );
+    },
+
+    //TODO
+    update_equipped_items : function(data, fn){
+
+    },
+
+    get_bag : function(data, fn){
+        fn( {items: this.bag.getItems()} );
+    },
+
+    set_bag : function(data, fn){
+        this.bag.setItems(data.items);
+
+        fn();
+    },
+
     list_minigames : function(data, fn){
         fn(config.games.listAll());
     },
@@ -192,75 +166,76 @@ Hub.prototype.eventListeners = {
             score = data.score;
 
         if(id === this.gameId){
-			var playObj = {	user_id: this.userId,
-							game_id: id,
-							start_time: this.gameStartTime.toISOString(),
-							end_time: (new Date()).toISOString(), 
-							score: score
-						};
-			
+            var playObj = { user_id: this.userId,
+                            game_id: id,
+                            start_time: this.gameStartTime.toISOString(),
+                            end_time: (new Date()).toISOString(),
+                            score: score
+                        };
+
             this.location = Hub.locations.IN_HUB;
             this.gameId = undefined;
             this.gameStartTime = undefined;
 
-			//update the users currency
-			db.readUserById(function(result){
-								db.updateUserCurrency(function(){}, function(){}, result.currency+data.currency, this.user_id);
-							},
-							function(err){
-								fn( {err: "Error reading user ID or "} );
-							},
-							this.user_id
-			);
-							
+            //update the users currency
+            db.readUserById(function(result){
+                                db.updateUserCurrency(function(){}, function(){}, result.currency+data.currency, this.user_id);
+                            },
+                            function(err){
+                                fn( {err: "Error reading user ID or "} );
+                            },
+                            this.user_id
+            );
+
             // Save score in database
-			db.createPlay(	function(){ fn(); },
-							function(){ fn({err: "An error occured"}); },
-							playObj			
-						);
+            db.createPlay(  function(){ fn(); },
+                            function(){ fn({err: "An error occured"}); },
+                            playObj
+                        );
         }else{
             fn({
                 err : "Game ID supplied does not match the server's"
             });
         }
     },
-	
-	get_scores : function(data, fn){
-		var numOfScores = 100;
-		
-		var filterConds = {};
-		
-		if(data.option_num === 0){
-			//get top 100 overall scores
-			filterConds = {};
-		}else if(data.option_num === 1){
-			//filtering on user for all games
-			filterConds = {game_id: data.game_id};
-		}else if(data.option_num === 2){
-			filterConds = {user_id: data.user_id};
-		}else if(data.option_num === 3){
-			filterConds = {user_id: data.user_id, game_id: data.game_id}
-		}else{
-			fn({err: "Invalid score option selected"});
-		}
-		
-		db.getScores(	function(results){
-							fn({data: results});
-						},
-						function(err){ fn({err: "Error accessing database entries"}); },
-						filterConds,
-						{column: "score", direction: "DESC"}, 
-						numOfScores
-					);
-	},
-	
-	set_hp : function(data, fn){
-		
-	},
-	
-	set_status : function(data, fn){
-		
-	}
+
+    get_scores : function(data, fn){
+        var numOfScores = 100;
+
+        var filterConds = {};
+
+        if(data.option_num === 0){
+            //get top 100 overall scores
+            filterConds = {};
+        }else if(data.option_num === 1){
+            //filtering on user for all games
+            filterConds = {game_id: data.game_id};
+        }else if(data.option_num === 2){
+            filterConds = {user_id: data.user_id};
+        }else if(data.option_num === 3){
+            filterConds = {user_id: data.user_id, game_id: data.game_id}
+        }else{
+            fn({err: "Invalid score option selected"});
+        }
+
+        db.getScores(   function(results){
+                            fn({data: results});
+                        },
+                        function(err){ fn({err: "Error accessing database entries" }); },
+                        filterConds,
+                        {column: "score", direction: "DESC"},
+                        numOfScores
+                    );
+    },
+
+    set_hp : function(data, fn){
+
+    },
+
+    set_status : function(data, fn){
+
+    }
+
 };
 
 
@@ -269,63 +244,28 @@ Hub.prototype.eventListeners = {
 function Bag(){
     // Modelled as an array of items contained in the bag
     var items = [];
-	
-	function getItems(){
-		return this.items;
-	}
-	
-	function setItems(itemArray){
-		if(Array.isArray(itemArray)) this.items = itemArray;
-	}
-}
 
-var getItem = (function(){
-    var requirements = ["id", "name", "effect", "sprite"];
-
-    /* Class representing an Item in the bag */
-    function Item(definition){
-        // Check for required items in the definition
-        requirements.forEach(function(i){
-            if(!definition[i]){
-                throw new Error("Item requires " + i + " in config file");
-            }
-        });
-
-        var sprite = config.item.getSpriteURL();
-
-        this.getId = function(){
-            return definition.id;
-        };
-
-        this.getName = function(){
-            return definition.name;
-        };
-
-        this.getSpriteURL = function(){
-            return sprite;
-        };
-
+    function getItems(){
+        return this.items;
     }
 
-    return function getItem(id){
-        return new Item(config.item.getItemConfig(id));
-    };
-
-})();
-
+    function setItems(itemArray){
+        if(Array.isArray(itemArray)) this.items = itemArray;
+    }
+}
 
 
 
 module.exports = function (cfg, db){
     setConfig(cfg);
-	setDatabase(db);
-	
+    setDatabase(db);
+
     return {
         setConfig : setConfig,
         getConfig : getConfig,
-		setDatabase : setDatabase,
-		getDatabase : getDatabase,
-		
+        setDatabase : setDatabase,
+        getDatabase : getDatabase,
+
         // Creates a new hub object and assigns the event listeners to the given comms object
         create : function (userId, comms){
             var h = new Hub(userId, comms);
@@ -335,6 +275,6 @@ module.exports = function (cfg, db){
 
             return h;
         }
-    };    
+    };
 };
 
