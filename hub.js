@@ -98,21 +98,47 @@ Hub.prototype.eventListeners = {
 		fn(config.items.getConfig(data.id, undefined));
 	},
 	
-	get_user_equipped_items : function(data, fn){
-		db.getInventoryForUser( 
+	get_user_unlocked_items : function(data, fn){
+		db.getInventoryForUser(
 			function(results){
-			
+				fn(results);
+			}, function(err){
+				fn({err: err});
+			},
+			this.userId
+		);
+	},
+	
+	get_user_equipped_items : function(data, fn){
+		db.getEquippedForUser( 
+			function(results){
+				var sendBack = {head: results.head, eyes: results.eyes, skin: results.skin, "top":results."top"};
+				fn(sendBack);
 			},
 			function(){
-				
+				fn({err: "Error in db"});
 			},
 			this.user_id
 		);
 	},
 	
-	//TODO
 	update_equipped_items : function(data, fn){
+		var invObj = {
+			user_id: this.userId,
+			head: data.head,
+			eyes: data.eyes,
+			skin: data.skin,
+			"top": data."top"
+		};
 		
+		db.createUserEquippedItems(
+			function(results){
+				fn({success: "success"});
+			}, function(){
+				fn({err: "Error in db"});
+			},
+			invObj
+		);
 	},
 	
 	get_bag : function(data, fn){
@@ -235,7 +261,6 @@ Hub.prototype.eventListeners = {
 	set_status : function(data, fn){
 		
 	}
-	
 };
 
 

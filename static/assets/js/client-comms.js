@@ -316,7 +316,6 @@ function set_options(cb){
 }
 
 //AVATAR AND HOUSE CUSTOMIZATION
-
 function get_all_item_info(cb){	
 	client_socket_call(	'get_all_item_info',
 						{},
@@ -325,9 +324,15 @@ function get_all_item_info(cb){
 	
 }
 
-
 function get_single_item_info(id, cb){
 		client_socket_call(	'get_single_item_info',
+						{id: id},
+						cb
+					);
+}
+
+function get_user_unlocked_items(id, cb){
+	client_socket_call( 'get_user_unlocked_items',
 						{id: id},
 						cb
 					);
@@ -457,24 +462,21 @@ window.comms = {
 	},
 	
 	customise : {
-		get_item_info : get_item_info,
+		get_all_item_info : get_all_item_info,
+		get_single_item_info : get_single_item_info,
+		get_user_equipped_items : get_user_equipped_items,
 		update_equipped_items : update_equipped_items
 	},
-	
-	
+		
 	bag : {
 		get_bag : get_bag,
 		set_bag : set_bag
 	},
-
-
 	
 	minigame : {
 		list_minigames : list_minigames,
 		launch_minigame : launch_minigame,
 		get_scores : get_scores,
-		set_score : set_score,
-		set_currency : set_currency,
 		set_hp : set_hp,
 		set_status : set_status
 	}
