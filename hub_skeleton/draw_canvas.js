@@ -1,20 +1,17 @@
 // This is a temp object to represent pre-loaded images (will deal with where scale etc. is added depending on pre-loader functionality).
-var images	= JSON.parse('{"background": {"name": "background", "id": "background"}, "sprites": [{"name": "mirror", "id": "mirror", "left": "0.74", "top": "0.26", "scale": 0.75, "select_scale": 1}, {"name": "backpack", "id": "backpack", "left": 0.45, "top": 0.5, "scale": 0.75, "select_scale": 1.1}]}')
+var images			= JSON.parse('{"background": {"name": "background", "id": "background"}, "sprites": [{"name": "mirror", "id": "mirror", "left": "0.74", "top": "0.26", "scale": 1, "select_scale": 1.5}, {"name": "backpack", "id": "backpack", "left": 0.45, "top": 0.51, "scale": 1, "select_scale": 1.5}]}')
 
-var canvas					= new fabric.Canvas('canvas');
+var canvas			= new fabric.Canvas('canvas');
 
-var background_img			= document.getElementById(images.background.id);
-var	background_img_width	= background_img.width;
-var	background_img_height	= background_img.height;
-
-var img_w_to_h				= background_img_width / background_img_height;
-var screen_w_to_h			= window.innerWidth / window.innerHeight;
+var background_img	= document.getElementById(images.background.id);
+var img_w_to_h		= background_img.width / background_img.height;
+var screen_w_to_h	= window.innerWidth / window.innerHeight;
 
 // Scales the background image to fit the screen (will always fit within one screen without scrolling).
 if(img_w_to_h >= screen_w_to_h)
 {
 	canvas.setWidth(window.innerWidth);
-	var scaled_height	= (window.innerWidth / background_img_width) * background_img_height;
+	var scaled_height	= (window.innerWidth / background_img.width) * background_img.height;
 	canvas.setHeight(scaled_height);
 
 	var top_offset		= (window.innerHeight - scaled_height) / 2;
@@ -22,15 +19,13 @@ if(img_w_to_h >= screen_w_to_h)
 else
 {
 	canvas.setHeight(window.innerHeight);
-	var scaled_width	= (window.innerHeight / background_img_height) * background_img_width;
+	var scaled_width	= (window.innerHeight / background_img.height) * background_img.width;
 	canvas.setWidth(scaled_width);
 
 	var left_offset		= (window.innerWidth - scaled_width) / 2;
 }
 
-var blah = 'images/' + images.background.name + '.png';
-//canvas.setBackgroundImage('images/background.png', canvas.renderAll.bind(canvas), {
-canvas.setBackgroundImage(blah, canvas.renderAll.bind(canvas), {
+canvas.setBackgroundImage(background_img.src, canvas.renderAll.bind(canvas), {
 	width:		canvas.width,
 	height: 	canvas.height,
 	originX:	'left',
@@ -43,6 +38,10 @@ var mirror_instance	= new fabric.Image(mirror_element, {
 
 	left:			images.sprites[0].left * canvas.width,
 	top:			images.sprites[0].top * canvas.height,
+
+	width:			mirror_element.width * (canvas.width / background_img.width),
+	height:			mirror_element.height * (canvas.height / background_img.height),
+
 	scaleX:			images.sprites[0].scale,
 	scaleY:			images.sprites[0].scale,
 
@@ -58,6 +57,10 @@ var backpack_instance	= new fabric.Image(backpack_element, {
 
 	left:			images.sprites[1].left * canvas.width,
 	top:			images.sprites[1].top * canvas.height,
+
+	width:			backpack_element.width * (canvas.width / background_img.width),
+	height:			backpack_element.height * (canvas.height / background_img.height),
+
 	scaleX:			images.sprites[1].scale,
 	scaleY:			images.sprites[1].scale,
 
@@ -100,16 +103,15 @@ canvas.on('mouse:down', function(i) {
 	// Way to deselect automatically?
 	if(typeof i.target !== 'undefined')
 	{
-		//window.alert(i.target);
 		window.alert('Selected ' + i.target.name + '.');
-			i.target.setLeft(i.target.orig_left);
-	i.target.setTop(i.target.orig_top);
-
-	i.target.scale(i.target.default_scale);
-	canvas.renderAll();
+		i.target.setLeft(i.target.orig_left);
+		i.target.setTop(i.target.orig_top);
+		i.target.scale(i.target.default_scale);
+		canvas.renderAll();
 	};
 })
 
+// Generisise.
 canvas.add(backpack_instance);
 canvas.add(mirror_instance);
 
