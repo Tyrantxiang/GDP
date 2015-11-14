@@ -32,44 +32,6 @@ canvas.setBackgroundImage(background_img.src, canvas.renderAll.bind(canvas), {
 	originY: 	'top'  
 });
 
-var mirror_element	= document.getElementById(images.sprites[0].id);
-var mirror_instance	= new fabric.Image(mirror_element, {
-	name:			images.sprites[0].name,
-
-	left:			images.sprites[0].left * canvas.width,
-	top:			images.sprites[0].top * canvas.height,
-
-	width:			mirror_element.width * (canvas.width / background_img.width),
-	height:			mirror_element.height * (canvas.height / background_img.height),
-
-	scaleX:			images.sprites[0].scale,
-	scaleY:			images.sprites[0].scale,
-
-	default_scale:	images.sprites[0].scale,
-	select_scale:	images.sprites[0].select_scale,
-	orig_left:		images.sprites[0].left * canvas.width,
-	orig_top:		images.sprites[0].top * canvas.height
-});
-
-var backpack_element	= document.getElementById(images.sprites[1].id);
-var backpack_instance	= new fabric.Image(backpack_element, {
-	name:			images.sprites[1].name,
-
-	left:			images.sprites[1].left * canvas.width,
-	top:			images.sprites[1].top * canvas.height,
-
-	width:			backpack_element.width * (canvas.width / background_img.width),
-	height:			backpack_element.height * (canvas.height / background_img.height),
-
-	scaleX:			images.sprites[1].scale,
-	scaleY:			images.sprites[1].scale,
-
-	default_scale:	images.sprites[1].scale,
-	select_scale:	images.sprites[1].select_scale,
-	orig_left:		images.sprites[1].left * canvas.width,
-	orig_top:		images.sprites[1].top * canvas.height
-});
-
 canvas.on('mouse:over', function(i) {
 	var x 			= i.target.getLeft();
 	var y 			= i.target.getTop();
@@ -99,8 +61,8 @@ canvas.on('mouse:out', function(i) {
 });
 
 canvas.on('mouse:down', function(i) {
-	// Non-ideal.
-	// Way to deselect automatically?
+	// TODO: Non-ideal.
+	// Way to deselect automatically/use a different event listener rather than selection.
 	if(typeof i.target !== 'undefined')
 	{
 		window.alert('Selected ' + i.target.name + '.');
@@ -109,13 +71,33 @@ canvas.on('mouse:down', function(i) {
 		i.target.scale(i.target.default_scale);
 		canvas.renderAll();
 	};
-})
+});
 
-// Generisise.
-canvas.add(backpack_instance);
-canvas.add(mirror_instance);
+for(i = 0; i < images.sprites.length; i++)
+{
+	var sprite_element	= document.getElementById(images.sprites[i].id);
+	var sprite_instance	= new fabric.Image(sprite_element, {
+		name:			images.sprites[i].name,
 
-for(i = 0; i < 2; i++)
+		left:			images.sprites[i].left * canvas.width,
+		top:			images.sprites[i].top * canvas.height,
+
+		width:			sprite_element.width * (canvas.width / background_img.width),
+		height:			sprite_element.height * (canvas.height / background_img.height),
+
+		scaleX:			images.sprites[i].scale,
+		scaleY:			images.sprites[i].scale,
+
+		default_scale:	images.sprites[i].scale,
+		select_scale:	images.sprites[i].select_scale,
+		orig_left:		images.sprites[i].left * canvas.width,
+		orig_top:		images.sprites[i].top * canvas.height
+	});
+
+	canvas.add(sprite_instance);
+};
+
+for(i = 0; i < images.sprites.length; i++)
 {
 	canvas.item(i).lockRotation		= true;
 	canvas.item(i).lockScalingX		= canvas.item(i).lockScalingY	= true;
