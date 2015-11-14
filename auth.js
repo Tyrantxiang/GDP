@@ -2,32 +2,58 @@
 
 /* Authentication module contains the methods to handle login, auth and user handling */
 
-var jwt = require('jsonwebtoken'),
+var jwt = require("jsonwebtoken"),
     secret = "trisha is bob";
 
 
-function authenticate(req, res){
-    var username, password;
-    if(req.body.username && req.body.password){
-        username = req.body.username;
-        password = req.body.password;
-    }else{
-        // Fail here
-    }
 
-    /* To make sure we don't send the userId (for db reasons) maybe we should encrypt the 
+var db;
+function setDatabase(database){
+    if(!database){
+        throw new Error("Database object not defined");
+    }
+    db = database;
+}
+function getDatabase(){
+    return db;
+}
+
+
+
+function generateToken(userId){
+    /* To make sure we don't send the userId (for db reasons) maybe we should encrypt the
      * user ID here (with AES?)
      */
+    return jwt.sign({ userId : userId }, secret, { expiresIn : 60 * 60 * 24 });
+}
 
-    // Verify and get userId here
-    (function(userId){
-        // Generate web token
-        var token = jwt.sign({ userId : userId }, secret, { expiresIn : 60 * 60 * 24 });
-        res.json({
-            token : token
-        });
-    })(1);
+function authenticate(req, res){
+    var username, password,
 
+        authenticated = function(user){
+            // Generate web token
+            var token = generateToken(user.userId);
+            res.json({
+                token : token
+            });
+        },
+        failed = function(error){
+            res.status(401).json({
+                error : true,
+                message : "invalid username or password"
+            });
+        };
+
+    if(req.body.username && req.body.password){
+        username = req.body.username.trim();
+        password = req.body.password.trim();
+
+        // Authenticate and get userId
+        db.authenticateUser(authenticated, failed, username, password);
+
+    }else{
+        failed();
+    }
 }
 
 function express_middleware(req, res, next){
@@ -78,9 +104,15 @@ function socket_middleware(socket, next){
     });
 }
 
-module.exports = {
-    authenticate : authenticate,
-    express_middleware : express_middleware,
-    socket_middleware : socket_middleware
+module.exports = function(db){
+    setDatabase(db);
+
+    return {
+        authenticate : authenticate,
+        express_middleware : express_middleware,
+        socket_middleware : socket_middleware,
+        setDatabase : setDatabase,
+        getDatabase : getDatabase
+    };
 };
 

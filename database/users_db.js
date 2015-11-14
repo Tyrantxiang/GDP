@@ -11,14 +11,15 @@
 var usersData = {}
 	, TABLE_NAME = "users"
 	, dbutils = require('./dbutils.js')
-	, bcrypt = require('bcrypt');
+	, bcrypt = require('bcrypt')
+	, validateDetails = require("../validateDetails.js")
 	;
 
 //Creates an entry on the user table
 // Includes validation of details and password salting
 usersData.createUser = function(pass, fail, userObj) {
 	//Validates the details given
-	validateUserDetails(saltPassword, fail, userObj);
+	validateDetails(saltPassword, fail, userObj);
 	
 	//After validation, creates a salted password
 	function saltPassword(){
@@ -71,10 +72,26 @@ usersData.authenticateUser = function(pass, fail, username, givenpw){
 	}
 }
 
+// This will always succed, as a "fail" is it not existing, which actually means it doesn't exist
+usersData.checkUsernameExists = function(pass, fail, username){
+	dbutils.readSingle(exists, notExists, TABLE_NAME, [ "id" ], { username : username });
+
+	function exists(){
+		pass(true);
+	}
+	function notExists(err){
+		if(err.name === "ERR_NO_MATCHING_ENTRY"){
+			pass(false);
+		}else{
+			fail(err);
+		}
+	}
+}
+
 //Updates all user details provided in the updatedUserObj
 usersData.updateUserDetails = function(pass, fail, updatedUserObj, id){
 	//Validates the details given
-	validateUserDetails(saltPasswordIfExists, fail, updatedUserObj);
+	validateDetails(saltPasswordIfExists, fail, updatedUserObj);
 
 	//After validation, creates a salted password if exists
 	function saltPasswordIfExists(){
@@ -96,7 +113,7 @@ usersData.updateUserDetails = function(pass, fail, updatedUserObj, id){
 
 //Updates only currency for a user entry
 usersData.updateUserCurrency = function(pass, fail, newCurrency, id){
-	validateCurrency(queryExecution, fail, newCurrency);
+	validateDetails(queryExecution, fail, {currency: newCurrency});
 
 	function queryExecution(){
 		dbutils.updateById(pass, fail, TABLE_NAME, {"currency": newCurrency}, id);
@@ -111,16 +128,6 @@ usersData.deleteUser = function(pass, fail, id){
 /*
  * HELPER FUNCTIONS
 */
-
-//Will soon validate the username, password and dob to make sure they are correct before persisting
-function validateUserDetails(pass, fail, userObj){
-	pass();
-}
-
-//Will soon validate the currency to make sure it is correct before persisting
-function validateCurrency(pass, fail, currency){
-	pass();
-}
 
 function createSaltedPassword(pass, fail, password){
 	bcrypt.genSalt(10, function(err, salt){

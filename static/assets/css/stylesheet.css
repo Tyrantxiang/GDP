@@ -1,0 +1,198 @@
+/* Global */
+html {
+  position:relative;
+  min-height:100%;
+}
+
+body {
+  background-image: url("../img/bg4.png");
+  margin-bottom: 50px;
+}
+
+* {
+  font-family: "Aileron";
+}
+
+/* Containers */
+.container {
+  padding-bottom: 20px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 155px;
+}
+
+#main-content-area {
+  margin-top: 10px;
+}
+
+.grey-box {
+  background-color: rgba(50, 50, 50, 0.49);
+  color: #ffffff;
+  padding: 10px;
+  padding-bottom: 13px;
+  border-radius: 5px;
+}
+
+.white-box {
+  background-color: rgba(255, 255, 255, 0.49);
+  color: #333333;
+  padding: 8px;
+  padding-bottom: 10px;
+  border-radius: 5px;
+}
+
+.grey-bbox {
+  border-width: 2px;
+  border-style: dotted;
+  border-color: black;
+}
+
+/* Positioning */
+.bottom-align {
+  position: fixed;
+  bottom: 0;
+}
+
+.top-buffer {
+  margin-top: 15px;
+}
+
+.center {
+  text-align: center;
+}
+
+/* Colors/text styles */
+
+.white {
+  color: #ffffff;
+}
+
+.grey {
+  color: #555555;
+}
+
+.hr-grey {
+  border-color: #cccccc;
+}
+
+.required {
+  color: #E74C3C;
+  font-size: 40px;
+}
+
+.titletext {
+  text-align: center;
+  font-size: 100px;
+  font-weight: bold;
+}
+
+.margin-ten {
+  margin: 10px;
+}
+
+/* Forms */
+.form-large {
+    font-size: 35px;
+    padding: 10px;
+}
+
+.form-large .control-label {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    line-height: normal;
+}
+
+.form-large input, .form-large button {
+    font-size: 32px;
+    padding: 10px;
+    height: auto;
+    line-height: normal;
+}
+
+/* Buttons */
+.btn-xl {
+  padding: 18px 28px;
+  font-size: 40px; 
+  line-height: normal;
+  -webkit-border-radius: 8px;
+     -moz-border-radius: 8px;
+          border-radius: 8px;
+}
+
+.btn-primary { 
+  color: #ffffff; 
+  background-color: #9FBB47; 
+  border-color: #9FBB47; 
+  -webkit-box-shadow: 10px 10px 0px 0px rgba(50, 50, 50, 0.49);
+  -moz-box-shadow:    10px 10px 0px 0px rgba(50, 50, 50, 0.49);
+  box-shadow:         10px 10px 0px 0px rgba(50, 50, 50, 0.49);
+} 
+ 
+.btn-primary:hover, 
+.btn-primary:focus, 
+.btn-primary:active, 
+.btn-primary.active, 
+.open .dropdown-toggle.btn-primary { 
+  color: #ffffff; 
+  background-color: #8DA73E; 
+  border-color: #8DA73E; 
+  -webkit-box-shadow: 10px 10px 0px 0px rgba(50, 50, 50, 0.6);
+  -moz-box-shadow:    10px 10px 0px 0px rgba(50, 50, 50, 0.6);
+  box-shadow:         10px 10px 0px 0px rgba(50, 50, 50, 0.6);
+} 
+ 
+.btn-primary .badge { 
+  color: #3A87BA; 
+  background-color: #ffffff; 
+}
+
+.btn-secondary { 
+  color: #ffffff; 
+  background-color: #F7CA18; 
+  border-color: #F7CA18; 
+  -webkit-box-shadow: 10px 10px 0px 0px rgba(50, 50, 50, 0.49);
+  -moz-box-shadow:    10px 10px 0px 0px rgba(50, 50, 50, 0.49);
+  box-shadow:         10px 10px 0px 0px rgba(50, 50, 50, 0.49);
+} 
+ 
+.btn-secondary:hover, 
+.btn-secondary:focus, 
+.btn-secondary:active, 
+.btn-secondary.active, 
+.open .dropdown-toggle.btn-secondary { 
+  color: #ffffff; 
+  background-color: #EBBD08; 
+  border-color: #EBBD08; 
+  -webkit-box-shadow: 10px 10px 0px 0px rgba(50, 50, 50, 0.6);
+  -moz-box-shadow:    10px 10px 0px 0px rgba(50, 50, 50, 0.6);
+  box-shadow:         10px 10px 0px 0px rgba(50, 50, 50, 0.6);
+} 
+
+.btn-secondary .badge { 
+  color: #5EB82B; 
+  background-color: #ffffff; 
+}
+
+/* Fonts */
+@font-face {
+  font-family: "Aileron";
+  src: url("../fonts/Aileron-Regular.otf");
+}
+
+@font-face {
+  font-family: "Aileron";
+  src: url("../fonts/Aileron-Heavy.otf");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "Aileron";
+  src: url("../fonts/Aileron-Italic.otf");
+  font-style: italic;
+}
+

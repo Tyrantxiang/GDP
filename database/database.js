@@ -10,9 +10,10 @@
 */
 
 var db = {}
-	, dbutils = require('./dbutils.js')
+	//, dbutils = 
 	, databaseReq = [
-		require('./users_db.js')
+		require('./dbutils.js')
+		, require('./users_db.js')
 		, require('./sessions_db.js')
 		, require('./plays_db.js')
 		, require('./userConditions_db.js')
@@ -30,61 +31,19 @@ databaseReq.forEach(function(req){
 	}
 });
 
-/*
- * Creates the connection string
- */
-function validateSettings(pass, fail, settings){
-	var credentials = 
-		[ 
-			settings.username
-			, settings.password
-			, settings.hostname
-			, settings.database
-			, settings.schema
-		];
-
-	//Checks all credentials are not undefined
-	if( !credentials.every(isTrue) )
-		return fail("Missing Parameters");
-	
-	pass();
-}
-
-function isTrue(c){
-	return !!c;
-}
-
-/*
- * Creates the connection string
- */
-function setConnectionString(pass, fail, creds) {
- 	dbutils.connection_string = 
- 		[ 
- 			"postgres://"
-			, creds['username']
-			, ":"
-			, creds['password']
-			, "@"
-			, creds['hostname']
-			, "/"
-			, creds['database']
-		
-		].join('');
-	pass();
-}
-
 
 db.init = function(pass, fail, settings) {
-	validateSettings(validationPass, fail, settings);
+	db.validateServerSettings(setConnString, fail, settings);
 
-	function validationPass(){
-		setConnectionString(connStringPass, fail, settings);
+	function setConnString(){
+		db.setConnectionString(returnDB, fail, settings);
 	}
 
-	function connStringPass(){
-		//dbutils.query(pass, fail, "SET search_path TO "+settings.schema+";");
-		pass(dbutils.connection_string);
+	function returnDB(){
+		pass.call(null, db);
 	}
+
+	return db;
 }
 
 module.exports = db;

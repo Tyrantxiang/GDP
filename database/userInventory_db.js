@@ -16,7 +16,7 @@ var user_inventory = {}
 //Creates a user_inventory entry
 user_inventory.createUserInventory = function(pass, fail, inventoryObj) {
 	//Validates the details given
-	validateInventoryDetails(queryExecution, fail, inventoryObj);
+	validateDetails(queryExecution, fail, inventoryObj);
 	
 	//After validation, persists the play obj
 	function queryExecution(){
@@ -30,8 +30,19 @@ user_inventory.readUserInventoryById = function(pass, fail, id){
 }
 
 user_inventory.getInventoryForUser = function(pass, fail, user_id){
-	fail("NEEDS IMPLEMENTING");
-	//dbutils.read(pass, fail, TABLE_NAME, ["item_id"], {"user_id": user_id}, limit);
+	dbutils.readLatestActive(resultsFormatting, fail, TABLE_NAME, 
+		["item_id"], ["user_id, item_id"], {active: true, user_id: user_id});
+
+	function resultsFormatting(results){
+		var idArray = []
+			;
+
+		results.forEach(function(item){
+			idArray.push(item.item_id);
+		});
+
+		pass(idArray);
+	}
 }
 
 //Deletes the entry that matches the id

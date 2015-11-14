@@ -16,7 +16,7 @@ var user_conditions = {}
 //Creates a user_condition entry
 user_conditions.createUserCondition = function(pass, fail, condObj) {
 	//Validates the details given
-	validateConditionDetails(queryExecution, fail, condObj);
+	validateDetails(queryExecution, fail, condObj);
 	
 	//After validation, persists the play obj
 	function queryExecution(){
@@ -30,8 +30,19 @@ user_conditions.readUserConditionById = function(pass, fail, id){
 }
 
 user_conditions.getConditionsForUser = function(pass, fail, user_id){
-	fail("NEEDS IMPLEMENTING");
-	//dbutils.read(pass, fail, TABLE_NAME, ["condition_id"], filterConds, limit);
+	dbutils.readLatestActive(resultsFormatting, fail, TABLE_NAME, 
+		["condition_id"], ["user_id, condition_id"], {active: true, user_id: user_id});
+
+	function resultsFormatting(results){
+		var idArray = []
+			;
+
+		results.forEach(function(cond){
+			idArray.push(cond.condition_id);
+		});
+
+		pass(idArray);
+	}
 }
 
 //Deletes the entry that matches the id

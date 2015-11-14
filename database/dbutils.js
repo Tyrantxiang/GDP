@@ -14,6 +14,51 @@ var pg = require('pg')
 	;
 
 /*
+ * Creates the connection string
+ */
+dbutils.validateServerSettings = function(pass, fail, settings){
+	var credentials = 
+		[ 
+			settings.username
+			, settings.password
+			, settings.hostname
+			, settings.database
+			, settings.schema
+		];
+
+	//Checks all credentials are not undefined
+	if( !credentials.every(isTrue) )
+		return fail("Missing Parameters");
+	
+
+	function isTrue(c){
+		return !!c;
+	}
+
+	pass();
+}
+
+/*
+ * Creates the connection string
+ */
+dbutils.setConnectionString = function(pass, fail, creds) {
+ 	dbutils.connection_string = 
+ 		[ 
+ 			"postgres://"
+			, creds['username']
+			, ":"
+			, creds['password']
+			, "@"
+			, creds['hostname']
+			, "/"
+			, creds['database']
+		
+		].join('');
+	pass();
+}
+
+
+/*
  * Connect to the db and run a query
  */
 dbutils.query = function(pass, fail, q) {
@@ -23,6 +68,8 @@ dbutils.query = function(pass, fail, q) {
 	pg.connect( dbutils.connection_string, runQuery );
 
 	q.name = createPreparedStatementName(q.text);
+
+	//console.log(q);
 
 	function runQuery(err, client, queryDone) {
 		if(err) 
@@ -117,10 +164,47 @@ dbutils.readById = function(pass, fail, tableName, columnsArr, idVal){
 	}
 }
 
+dbutils.readLatestActive = function(pass, fail, tableName, selectColumns, partitionColumns, filterConds){
+	var innerTableName = "ranked"
+		;
+
+	//get the unique concatonation of select columns and the filterconds columns
+	var neededColumns = selectColumns.concat(Object.keys(filterConds).filter(function (item) {
+	    return selectColumns.indexOf(item) < 0;
+	}));
+
+	//Add time_rank to filter conds, and creates the WHERE string
+	filterConds.time_rank = 1;
+	dbutils.prepareFilterString(queryExecution, fail, filterConds, null, innerTableName);
+
+	function queryExecution(filterString, filterVals){
+		var sql = [
+			"SELECT "+selectColumns.join(", ")
+			, "FROM ( SELECT "+neededColumns.join(", ")
+			, ", RANK() OVER (PARTITION BY "+partitionColumns.join(", ")+" ORDER BY created DESC) as time_rank"
+			, "FROM "+tableName+") as "+innerTableName
+			, filterString
+		].join(" ");
+
+		var preparedStatement = {
+			text: sql
+			, values : filterVals
+		};
+
+		dbutils.query(resultsHandling, fail, preparedStatement);
+	}
+
+	function resultsHandling(results){
+		pass(results.rows);
+	}
+}
+
 dbutils.update = function(pass, fail, tableName, valuesObj, filterConds){
 	var setString = ""
 		, setVals = []
 		;
+
+	delete valuesObj.id; //Don't want to update id values!
 
 	dbutils.prepareUpdateString(filterStringCreation, fail, valuesObj);
 
@@ -220,7 +304,7 @@ dbutils.prepareUpdateString = function(pass, fail, obj){
 	pass(setString, setVals, loopIndex);
 }
 
-dbutils.prepareFilterString = function(pass, fail, filterConds, placeIndex){
+dbutils.prepareFilterString = function(pass, fail, filterConds, placeIndex, prepend){
 	var filterString = ""
 		, filterArr = []
 		, filterVals = []
@@ -229,8 +313,14 @@ dbutils.prepareFilterString = function(pass, fail, filterConds, placeIndex){
 	if(!placeIndex)
 		placeIndex = 1;
 
+	if(!prepend) {
+		prepend = "";
+	} else {
+		prepend += ".";
+	}
+
 	function addFilter(statement, val){
-		filterArr.push(statement+placeIndex);
+		filterArr.push(prepend+statement+placeIndex);
 		filterVals.push(val);
 		placeIndex++;
 	}
@@ -252,7 +342,7 @@ dbutils.prepareFilterString = function(pass, fail, filterConds, placeIndex){
 	if(filterArr.length > 0)
 		filterString = "WHERE "+filterArr.join(" AND ");
 
-	pass(filterString, filterVals);
+	pass(filterString, filterVals, placeIndex);
 }
 
 dbutils.sanitiseError = function(err, cb){

@@ -11,7 +11,7 @@
 var fs = require("fs"),
     path = require("path"),
 
-    configFileLocation = "./config.json",
+    configFileLocation = __dirname + "/config.json",
     config = JSON.parse(fs.readFileSync(configFileLocation)); // Sync as it is run only once on startup
 
     // Fill in things for empty config file
@@ -39,8 +39,17 @@ module.exports.app = {
     getServerVersion : function(){
         return config.app.serverVersion;
     }
+};
 
+//Database settings config
+module.exports.database = {
+    getDefaultSchema : function(){
+        return config.defaultDatabase || "main";
+    },
 
+    getSettings : function(databaseName){
+        return config.databases[databaseName];
+    }
 };
 
 
@@ -218,12 +227,14 @@ function configReaderFactory(directory){
 
             /* Return a list of objects representing the avalible games */
             listAll : function(){
-                return configs.map(function(config){
-                    return {
-                        id : config.id,
-                        name : config.name
-                    };
-                });
+                var a = [];
+                for(cfg in configs){
+                    a.push({
+                        id : cfg,
+                        name : config[cfg].name
+                    });
+                }
+                return a;
             },
 
             /* Get the name of a game from a given ID */
@@ -256,7 +267,7 @@ function configReaderFactory(directory){
  */
 module.exports.games = (function(){
     // Variables
-    var gamesDir = config.app.gamesDir || "games",
+    var gamesDir = config.app.gamesDir || __dirname + "/games",
 
         configReader = configReaderFactory(gamesDir),
         gameConfigs = configReader.configs,
@@ -323,7 +334,7 @@ module.exports.games = (function(){
  *
  */
 module.exports.items = (function(){
-    var itemsDir = config.app.itemsDir || "items",
+    var itemsDir = config.app.itemsDir || __dirname + "/items",
         itemsSpritesExt = ".png",
 
 
@@ -367,7 +378,7 @@ module.exports.items = (function(){
  */
 module.exports.conditions = (function(){
 
-    var conditionsDir = config.app.conditionsDir || "conditions",
+    var conditionsDir = config.app.conditionsDir || __dirname + "/conditions",
 
         // Generate the config readers and extract generated functions
         configReader = configReaderFactory(conditionsDir),

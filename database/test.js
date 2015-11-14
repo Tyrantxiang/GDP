@@ -9,7 +9,10 @@
  * @authors Joe Ringham
 */
 
-var db = require('./database.js')
+var config = require('../config.js')
+	, validateDetails = require("../validateDetails.js")
+	, db = require('./database.js').init(function(){console.log("PASS\n********************");},
+											tfail, config.database.getSettings("test"));
 	;
 
 function tpass(results){
@@ -24,66 +27,38 @@ function tfail(err){
 	console.log("*************************");
 }
 
-var dummyServerSettings = {
-	username: 'testuser',
-	password: 'testpass',
-	hostname: 'localhost',
-	database: 'testdb',
-	schema: 'test'
-}
-
-db.init(tpass, tfail, dummyServerSettings);
-
 
 var ts = new Date().toISOString();
 
 var dummyUser = {
-	username : 'user'
-	, password : 'password'
+	username : 'user1'
+	, password : 'pass1'
 	, dob : ts
 }
 
 var dummyUser2 = {
 	username : 'user2'
-	, password : 'password2'
+	, password : 'pass2'
 	, dob : ts
 }
 
+//db.createUser(tpass, tfail, dummyUser);
+
 //db.createUser(tpass, tfail, dummyUser2);
-
-//db.readUserById(tpass, tfail, 1);
-
-//db.readUserByName(tpass, tfail, "usernon");
-
-//db.authenticateUser(tpass, tfail, 'usernon', 'wrong');
-
-//db.updateUserDetails(tpass, tfail, dummyUser2, 1);
-
-//db.updateUserCurrency(tpass, tfail, 10, 1);
-
-//db.deleteUser(tpass, tfail, 1);
-
-//db.createSession(tpass, tfail, {user_id: null, start_time: ts});
-
-//db.readSessionById(tpass, tfail, 0);
-
-//db.endSession(tpass, tfail, ts, 0);
-
-//db.deleteSession(tpass, tfail, 1);
 
 var ts = new Date()
 	, ts1 = new Date()
 	, ts2 = new Date();
 
-ts1.setHours(ts1.getHours() - 2);
+ts1.setHours(ts1.getHours() - 1);
 ts2.setHours(ts2.getHours() - 2);
 
 var dummyPlay = {
-	user_id : 3
+	user_id : 1
 	, game_id : 'game2' 
 	, start_time : ts2
-	, end_time : ts
-	, score : 50
+	, end_time : ts1
+	, score : 5
 }
 
 //db.createPlay(tpass, tfail, dummyPlay);
@@ -98,12 +73,24 @@ tsB.setHours(tsB.getHours() - 3);
 tsC.setHours(tsC.getHours() - 1);
 
 var filters = {
-	//user_id : 3
-	//game_id : "game2"
+	//user_id : 1,
+	//username : 'user2',
+	//game_id : "game1",
 	time_range : {
-		start : ts
-	//	, end : null
+		start : tsB, 
+		end : tsC,
 	}
-}
+};
 
-db.getScores(tpass, tfail, filters, {column: 'score', direction: 'DESC'}, null);
+var order = {column: 'id', direction: 'DESC'};
+
+//db.getScores(tpass, tfail, filters, order, null);
+
+//require('./creation_things/buildDB.js')(tpass, tfail, 'test');
+
+var tsN = new Date()
+	, tsM = new Date(Date.now() - 1000);
+
+//console.log(tsN);
+//console.log(tsM);
+validateDetails(tpass, tfail, {end_time: tsM});
