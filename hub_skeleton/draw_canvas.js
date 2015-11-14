@@ -1,9 +1,9 @@
-// Contains a fair few hacks to position canvas in the centre, and fit it to the screen.
-// Assuming these will be taken out and done with CSS.
+// This is a temp object to represent pre-loaded images (will deal with where scale etc. is added depending on pre-loader functionality).
+var images	= JSON.parse('{"background": {"name": "background", "id": "background"}, "sprites": [{"name": "mirror", "id": "mirror", "left": "0.74", "top": "0.26", "scale": 0.75, "select_scale": 1}, {"name": "backpack", "id": "backpack", "left": 0.45, "top": 0.5, "scale": 0.75, "select_scale": 1.1}]}')
 
 var canvas					= new fabric.Canvas('canvas');
 
-var background_img			= document.getElementById('background');
+var background_img			= document.getElementById(images.background.id);
 var	background_img_width	= background_img.width;
 var	background_img_height	= background_img.height;
 
@@ -18,10 +18,6 @@ if(img_w_to_h >= screen_w_to_h)
 	canvas.setHeight(scaled_height);
 
 	var top_offset		= (window.innerHeight - scaled_height) / 2;
-	//canvas.setTop(top_offset);
-
-	//var canvasNode = document.getElementById('canvas');
-	//canvasNode.style.top	= top_offset + "px";
 }
 else
 {
@@ -30,71 +26,46 @@ else
 	canvas.setWidth(scaled_width);
 
 	var left_offset		= (window.innerWidth - scaled_width) / 2;
-	//canvas.setLeft(left_offset)
-
-	//var canvasNode	= document.getElementById('canvas');
-	//canvasNode.style.left	= left_offset + "px";
 }
 
-// Sets the canvas dimensions equal to the larger of the image dimensions, scales the other.
-/*
-if(background_img_width >= background_img_height)
-{
-	canvas.setWidth(window.innerWidth);
-	var temp		= (window.innerWidth / background_img_width) * background_img_height;
-	canvas.setHeight(temp);
-}
-else
-{
-	canvas.setHeight(window.innerHeight);
-	var temp		= (window.innerHeight / background_img_height) * background_img_width;
-	canvas.setWidth(temp);
-};
-*/
-
-canvas.setBackgroundImage('background.png', canvas.renderAll.bind(canvas), {
+var blah = 'images/' + images.background.name + '.png';
+//canvas.setBackgroundImage('images/background.png', canvas.renderAll.bind(canvas), {
+canvas.setBackgroundImage(blah, canvas.renderAll.bind(canvas), {
 	width:		canvas.width,
 	height: 	canvas.height,
 	originX:	'left',
 	originY: 	'top'  
 });
 
-// Do I need to have all images in the HTML to begin with?
-var backpack_element	= document.getElementById('backpack');
+var mirror_element	= document.getElementById(images.sprites[0].id);
+var mirror_instance	= new fabric.Image(mirror_element, {
+	name:			images.sprites[0].name,
+
+	left:			images.sprites[0].left * canvas.width,
+	top:			images.sprites[0].top * canvas.height,
+	scaleX:			images.sprites[0].scale,
+	scaleY:			images.sprites[0].scale,
+
+	default_scale:	images.sprites[0].scale,
+	select_scale:	images.sprites[0].select_scale,
+	orig_left:		images.sprites[0].left * canvas.width,
+	orig_top:		images.sprites[0].top * canvas.height
+});
+
+var backpack_element	= document.getElementById(images.sprites[1].id);
 var backpack_instance	= new fabric.Image(backpack_element, {
-	name:			'backpack',
+	name:			images.sprites[1].name,
 
-	left:			325,
-	top:			285,
-	scaleX:			0.8,
-	scaleY:			0.8,
+	left:			images.sprites[1].left * canvas.width,
+	top:			images.sprites[1].top * canvas.height,
+	scaleX:			images.sprites[1].scale,
+	scaleY:			images.sprites[1].scale,
 
-	default_scale:	0.8,
-	select_scale:	1.2,
-	orig_left:		325,
-	orig_top:		285
+	default_scale:	images.sprites[1].scale,
+	select_scale:	images.sprites[1].select_scale,
+	orig_left:		images.sprites[1].left * canvas.width,
+	orig_top:		images.sprites[1].top * canvas.height
 });
-
-var mirror_element		= document.getElementById('mirror');
-var mirror_instance		= new fabric.Image(mirror_element, {
-	name:			'mirror',
-
-	left:			535,
-	top:			145,
-	scaleX:			0.65,
-	scaleY:			0.65,
-
-	default_scale:	0.65,
-	select_scale:	0.9,
-	orig_left:		535,
-	orig_top:		145	 
-});
-
-/*
-mirror_instance.on('selected', function() {
-	window.alert('Mirror selected.');
-});
-*/
 
 canvas.on('mouse:over', function(i) {
 	var x 			= i.target.getLeft();
