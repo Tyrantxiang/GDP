@@ -30,3 +30,6 @@ node_modules
 # Temporary database folder ignores
 database/build.sql
 database/.server_settings
+
+# Temporary hub folder ignores.
+hub_skeleton/images
