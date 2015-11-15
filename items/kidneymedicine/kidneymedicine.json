@@ -1,0 +1,11 @@
+{
+  "id": 102,
+  "name": "Kidney Medicine",
+  "sprite": "/items/kidneymedicine/sprite.png",
+  "effects": [
+    {
+      "name": "renal_status",
+      "amount": 20
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": 101,
+  "name": "Apple",
+  "sprite": "/items/apple/sprite.png",
+  "effects": [
+    {
+      "name": "Blood Sugar",
+      "amount": 3
+    },
+    {
+      "name": "hp",
+      "amount": 10
+    }
+  ]
+}
