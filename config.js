@@ -107,14 +107,17 @@ function configReaderFactory(directory){
                         data = JSON.parse(data);
 
                         // Check required elements are present
-                        if(data.name && data.id && data.entryObject){
+                        if(data.name && data.id){
+                            console.log("          Config read: " + path.join(dir, configFileName));
                             data.directory = dir;
                             configs[data.id] = data;
                         }else{
-                            throw new Error("Required settings missing");
+                            throw new Error("Required settings (ID and name) missing");
                         }
                     }catch(e){
                         // Report error here
+                        console.error("          Error reading config: " + path.join(dir, configFileName));
+                        console.error("          ", e);
                     }
                 });
             }else{
@@ -131,8 +134,10 @@ function configReaderFactory(directory){
                     configWatchers[dir].close();
                 }
 
-                // Always delete dir from games directory list
-                delete gameDirectories[dir];
+                // Always delete subdir from the directory list
+                delete subDirectories[dir];
+
+                console.log("          Unloaded config: " + path.join(dir, configFileName));
             }
         });
     }
@@ -165,11 +170,15 @@ function configReaderFactory(directory){
         fs.stat(file, function(err, stat){
             if(!err && stat.isFile()){
 
+                console.log("     Watching: " + file);
                 var watcher = fs.watch(file, { persistent : false }, function(event, filename){
                     updateConfig(d);
                 });
 
                 configWatchers[d] = watcher;
+            }else{
+                // Fail
+                console.log("     Not watching: " + file);
             }
         });
     }
@@ -194,6 +203,7 @@ function configReaderFactory(directory){
     // Inital watch on games directory (for when new games are placed in)
     fs.watch(directory, { persistent : false }, function(event, filename){
         if(filename){
+            filename = path.join(directory, filename);
             updateConfig(filename);
             updateWatcher(filename);
         }else{
@@ -265,6 +275,7 @@ function configReaderFactory(directory){
  * Self calling
  */
 module.exports.games = (function(){
+    console.log("Loading configs for games");
     // Variables
     var gamesDir = config.app.gamesDir || __dirname + "/games",
 
@@ -333,6 +344,7 @@ module.exports.games = (function(){
  *
  */
 module.exports.items = (function(){
+    console.log("Loading configs for items");
     var itemsDir = config.app.itemsDir || __dirname + "/items",
         itemsSpritesExt = ".png",
 
@@ -376,6 +388,7 @@ module.exports.items = (function(){
  *
  */
 module.exports.conditions = (function(){
+    console.log("Loading configs for conditions");
 
     var conditionsDir = config.app.conditionsDir || __dirname + "/conditions",
 
@@ -390,6 +403,7 @@ module.exports.conditions = (function(){
 })();
 
 module.exports.statuses = (function(){
+    console.log("Loading configs for statuses");
 
     var conditionsDir = config.app.statusesDir || __dirname + "/statuses",
 

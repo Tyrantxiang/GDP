@@ -1,9 +1,0 @@
-{
-	id: 3,
-	name: "Status #3",
-	min: 10,
-	max: 50,
-	healthy_min: 10,
-	healthy_max: 20,
-	isNumber: true
-}
