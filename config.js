@@ -390,4 +390,16 @@ module.exports.conditions = (function(){
 
 })();
 
+module.exports.statuses = (function(){
 
+    var conditionsDir = config.app.statusesDir || __dirname + "/statuses",
+
+        // Generate the config readers and extract generated functions
+        configReader = configReaderFactory(conditionsDir),
+
+        functions = configReader.functions;
+
+
+    return functions;
+
+})();

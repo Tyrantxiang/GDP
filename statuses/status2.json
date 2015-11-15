@@ -1,0 +1,14 @@
+{
+  id: 2,
+  name: "Status #2",
+  min: 0,
+  max: 100,
+  healthy_min: 30,
+  healthy_max: 50,
+  isNumber: false,
+  words: {
+    0: "Low",
+    30: "Healthy",
+    50: "High"
+  }
+}

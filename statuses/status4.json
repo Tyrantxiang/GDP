@@ -1,0 +1,16 @@
+{
+	id: 4,
+	name: "Status #4",
+	min: 0,
+	max: 100,
+	healthy_min: 40,
+	healthy_max: 60,
+	isNumber: false,
+	words: {
+		0: "ExtremeLow",
+		20: "Low",
+		40: "Healthy",
+		60: "High"
+		80: "ExtremeHigh"
+	}
+}
