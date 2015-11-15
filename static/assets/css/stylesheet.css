@@ -13,6 +13,22 @@ body {
   font-family: "Aileron";
 }
 
+/* Message boxes */
+#messages {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+
+  font-size: larger;
+  font-weight: bolder;
+
+  z-index: 10000;
+}
+#messages .alert {
+  display: none;
+}
+
+
 /* Containers */
 .container {
   padding-bottom: 20px;

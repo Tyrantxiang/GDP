@@ -1,18 +1,83 @@
 $(function() {
 
 
+  var errorMessageNumber = 0,
+    errorMessageParent = $("#messages .alert-danger");
+  function addError(text){
+    var li = $(document.createElement("li"));
+
+    li.html(text);
+    li.appendTo(errorMessageParent.children("ul"));
+
+    errorMessageNumber++;
+    if(errorMessageNumber > 0){
+      errorMessageParent.fadeIn();
+    }
+
+    window.setTimeout(function(){
+      errorMessageNumber--;
+      if(errorMessageNumber < 1){
+        errorMessageParent.fadeOut(function(){
+          li.remove();
+        });
+      }else{
+        li.remove();
+      }
+    }, 5000);
+  }
+
+
+
+  var successMessageNumber = 0,
+    successMessageParent = $("#messages .alert-success");
+  function addSuccess(text){
+    var li = $(document.createElement("li"));
+
+    li.html(text);
+    li.appendTo(successMessageParent.children("ul"));
+
+    successMessageNumber++;
+    if(successMessageNumber > 0){
+      successMessageParent.fadeIn();
+    }
+
+    window.setTimeout(function(){
+      successMessageNumber--;
+      if(successMessageNumber < 1){
+        successMessageParent.fadeOut(function(){
+          li.remove();
+        });
+      }else{
+        li.fadeOut(function(){
+          li.remove();
+        });
+      }
+    }, 5000);
+  }
+
+  if(!window.utils){
+    window.utils = {};
+  }
+  window.utils.addSuccess = addSuccess;
+  window.utils.addError = addError;
+
+
   // Functions for changing the view
-  $(document).on('click', '.signup-btn', function () {
+  function loadSignup(){
     $.get("/views/signup.html", function(data){
       $("#main-content-area").html(data);
+      document.title = "Sign up for the hub";
     });
-  });
-
-  $(document).on('click', '.login-btn', function () {
+  }
+  function loadLogin() {
     $.get("/views/login.html", function(data){
       $("#main-content-area").html(data);
+      document.title = "Log in";
     });
-  });
+  }
+
+  $(document).on('click', '.signup-btn', loadSignup);
+  $(document).on('click', '.login-btn', loadLogin);
 
 
   // Login submission button
@@ -27,9 +92,10 @@ $(function() {
 
     comms.authenticate(username, password, function(data){
       if(data.authenticated){
-        console.log("authenticated");
+        addSuccess("Login Successful");
+
       }else{
-        console.log("not authenticated");
+        addError("Invalid username or password");
       }
     });
   });
@@ -38,20 +104,20 @@ $(function() {
 
   // Signup scripts!
   function signup_validUsername(username, cb){
-      comms.user_management.validate_username(user, function(data){
+      comms.user_management.validate_username(username, function(data){
         cb(data.valid);
       });
   }
 
   function signup_validatePassword(password, cb){
-    cb(v.length >= 6);
+    cb(password.length >= 6);
   }
 
   function signup_comparePasswords(password1, password2, cb){
     cb(password1 === password2);
   }
 
-  function signup_validateDob(dob, db){
+  function signup_validateDob(dob, cb){
     cb(dob < new Date(Date.now() - (1000 * 60 * 60 * 24 * 365 * 10)));
   }
 
@@ -87,7 +153,7 @@ $(function() {
     var v = $(event.currentTarget).val(),
       v2 = $("#signup_password").val();
 
-    signup_comparePasswords(v, v2, function(valid){ 
+    signup_comparePasswords(v, v2, function(valid){
       if(valid){
           $(".signup_repeatPassword-error").addClass("hidden");
           $(".signup_repeatPassword-ok").removeClass("hidden");
@@ -100,7 +166,7 @@ $(function() {
 
   $(document).on('change', '#signup_dob', function (event){
     var v = new Date($(event.currentTarget).val());
-    
+
     signup_validateDob(v, function(valid){
       if(valid){
           $(".signup_dob-error").addClass("hidden");
@@ -123,27 +189,29 @@ $(function() {
 
     signup_validUsername(username, function(valid){
       if(!valid){
-        console.error("username not valid");
+        addError("Username not valid");
         return;
       }
       signup_validatePassword(password, function(valid){
         if(!valid){
-          console.error("password not valid");
+          addError("Password not valid");
           return;
         }
         signup_comparePasswords(password, repeatPassword, function(valid){
           if(!valid){
-            console.error("password do not match");
+            addError("Passwords do not match");
             return;
           }
           signup_validateDob(dob, function(valid){
             if(!valid){
-              console.error("password do not match");
+              addError("Invalid date of birth");
               return;
             }
 
             comms.user_management.sign_up(username, password, dob, function(data){
               console.log(data);
+              addSuccess("Sign up successful");
+              loadLogin();
             });
 
           });
