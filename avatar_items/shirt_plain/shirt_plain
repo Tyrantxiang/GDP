@@ -1,0 +1,8 @@
+{
+  "id": 202,
+  "name": "Plain shirt",
+  "description": "A plain tshirt",
+  "slot": "SHIRT",
+  "price": 0,
+  "sprite": "/avatar_items/shirt_plain/sprite.jpg",
+}
