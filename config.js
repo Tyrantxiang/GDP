@@ -78,12 +78,11 @@ function configReaderFactory(directory){
             fs.readdir(directory, function(err, list){
                 subDirectories = list.map(function(f){
                     // Make sure it is a directory
-                    var dir = path.join(directory, f);
-                    fs.stat(dir, function(err, stat){
-                        if(!err && stat.isDirectory()){
-                            return dir;
-                        }
-                    });
+                    var dir = path.join(directory, f),
+                        stat = fs.statSync(dir);
+                    if(stat.isDirectory()){
+                        return dir;
+                    }
                 });
                 cb(subDirectories);
             });
@@ -158,9 +157,9 @@ function configReaderFactory(directory){
         var file = path.join(d, configFileName);
 
         // Close any already active watchers
-        if(configWatchers[dir]){
-            configWatchers[dir].close();
-            delete configWatchers[dir];
+        if(configWatchers[d]){
+            configWatchers[d].close();
+            delete configWatchers[d];
         }
 
         fs.stat(file, function(err, stat){
@@ -170,7 +169,7 @@ function configReaderFactory(directory){
                     updateConfig(d);
                 });
 
-                configWatchers[dir] = watcher;
+                configWatchers[d] = watcher;
             }
         });
     }
