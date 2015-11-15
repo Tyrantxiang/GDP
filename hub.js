@@ -112,7 +112,7 @@ Hub.prototype.eventListeners = {
     get_user_equipped_items : function(data, fn){
         db.getEquippedForUser(
             function(results){
-				var sendBack = {head: results.head, eyes: results.eyes, skin: results.skin, "top":results."top"};
+				var sendBack = {head: results.head, eyes: results.eyes, skin: results.skin, shirt:results.shirt};
 				fn(sendBack);
 
             },
@@ -129,7 +129,7 @@ Hub.prototype.eventListeners = {
 			head: data.head,
 			eyes: data.eyes,
 			skin: data.skin,
-			"top": data."top"
+			shirt: data.shirt
 		};
 		
 		db.createEqippedItems(

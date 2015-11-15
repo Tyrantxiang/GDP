@@ -62,6 +62,8 @@ function startApp(db){
 
 	// Set up Socket.io connection
 	var comms = require("./server-comms.js")(server, auth, config, hub);
+	
+	console.log("INITIALISED");
 }
 
 
