@@ -1,0 +1,10 @@
+{
+  "id": 1001,
+  "name": "Racing",
+  "description": "Super fun racing game",
+  "image": "",
+  "scripts": [
+    ""
+  ],
+  "entry_point": ""
+}
