@@ -3,6 +3,5 @@
   "name": "Brown eyes",
   "description": "Brown eyes",
   "slot": "EYES",
-  "price": 0,
-  "sprite": "/avatar_items/eyes_brown/sprite.png",
+  "price": 0
 }

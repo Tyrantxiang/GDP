@@ -3,6 +3,5 @@
   "name": "Baseball Cap",
   "description": "Super fun baseball cap",
   "slot": "HEAD",
-  "price": 0,
-  "sprite": "/avatar_items/head_baseballcap/sprite.png",
+  "price": 0
 }
