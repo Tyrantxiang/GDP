@@ -86,7 +86,7 @@ function isDobValid(dob, cb){
 
 function isPasswordValid(pw, cb){
     cb({
-        valid : (pw && pw.length > 6)
+        valid : (pw && pw.length >= 6)
     });
 }
 

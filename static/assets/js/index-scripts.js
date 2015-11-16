@@ -217,8 +217,12 @@ $(function() {
 
             comms.user_management.sign_up(username, password, dob, function(data){
               console.log(data);
-              addSuccess("Sign up successful");
-              loadLogin();
+              if(data.error){
+                addFail("Sign up failed");
+              }else{
+                addSuccess("Sign up successful");
+                loadLogin();
+              }
             });
 
           });
