@@ -42,10 +42,8 @@ function Hub(userId, comms){
 
     this.bag = new Bag();
 
-    this.health = {};
-
     // Where the player currently resides, always starts in the hub
-    this.location = locations.IN_HUB;
+    this.currentlocation = locations.IN_HUB;
 
     // The minigame ID that the player is currently in
     this.gameId = null;
@@ -56,11 +54,29 @@ function Hub(userId, comms){
     // Time they logged on (this object was created)
     this.connectedTime = new Date();
 
+	this.statuses = {};
+	
     // Get the user data from the db
     db.createSession(function(){},
                         function(){},
                             {userId: userId, start_time: this.connectedTime.toISOString()}
                     );
+					
+	//load the users statuses here
+	db.getConditionsForUser(function(results){
+				this.statuses.push(new Status("hp", 100));
+				for(var i=0; i<results.length; i++){
+					//loop over all statuses and start
+					var statuses = config.conditions.getConfig(results[i]).statuses;
+					for(var j=0; j<statuses.length; j++){
+						var currentStatus = config.statuses.getConfig(statuses[j]);
+						this.statues[currentStatus.id] = new Status(currentStatus);
+					}
+				}
+			}, function(){
+				
+			},
+			this.userId);
 
 
 };
@@ -169,7 +185,7 @@ Hub.prototype.eventListeners = {
 
 
             // Set the game we are in
-            this.location = Hub.locations.IN_MINIGAME;
+            this.currentlocation = Hub.locations.IN_MINIGAME;
             this.gameId = id;
             this.gameStartTime = new Date();
 
@@ -200,7 +216,7 @@ Hub.prototype.eventListeners = {
                             score: score
                         };
 
-            this.location = Hub.locations.IN_HUB;
+            this.currentlocation = Hub.locations.IN_HUB;
             this.gameId = undefined;
             this.gameStartTime = undefined;
 
@@ -255,12 +271,16 @@ Hub.prototype.eventListeners = {
                     );
     },
 
-    set_hp : function(data, fn){
-
-    },
-
-    set_status : function(data, fn){
-
+    set_status_value : function(data, fn){
+		var arr = config.statuses.listAll();
+		for(cfg in arr){
+			if(cfg.name === data["status"]){
+				this.statuses[cfg.id].addToValue(data.value);
+			}
+		}
+		
+		fn({});
+		//TODO: return any health changes
     }
 };
 
@@ -280,6 +300,35 @@ function Bag(){
     }
 }
 
+function Status(configObj){
+	var id = configObj.id;
+	var name = configObj.name;
+	var value = parseInt((configObj.healthy_min + configObj.healthy_max) / 2, 10);
+	var healthy_min = configObj.healthy_min;
+	var healthy_max = configObj.healthy_max;
+	var min = configObj.min;
+	var max = configObj.max;
+	
+	function setValue(newValue){
+		this.value = newValue;
+	}
+	
+	//the addValue may be negative, allow subtraction
+	function addToValue(addValue){
+		this.value += addValue;
+		if(this.value<this.min){
+			this.value = this.min;
+		}else if(this.value>this.max){
+			this.value = this.max;
+		}
+		
+		if(this.value < this.healthy_min){
+			//do unhealty avatar stuff
+		}else if(this.value > this.healthy_max){
+			//do unhealthy stuff
+		}
+	}
+}
 
 
 module.exports = function (cfg, db){

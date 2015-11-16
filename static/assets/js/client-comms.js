@@ -420,14 +420,11 @@ function get_scores(optionnum, user_id, game_id, cb){
 }
 
 //MINIGAME
-function set_hp(value, cb){
-	client_socket_call(	'set_hp',
-						{value: value},
-						cb
-					);
+function set_hp_value(value, cb){
+	window.comms.minigame.set_status_value("hp", value, cb);
 }
 
-function set_status(statuss, value, cb){
+function set_status_value(statuss, value, cb){
 	client_socket_call(	'set_status',
 						{"status": statuss, value: value},
 						cb
@@ -500,7 +497,7 @@ window.comms = {
 		launch_minigame : launch_minigame,
 		get_scores : get_scores,
 		set_hp : set_hp,
-		set_status : set_status
+		set_status_value : set_status_value
 	}
 	
 }

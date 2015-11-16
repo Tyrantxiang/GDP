@@ -261,7 +261,6 @@ function configReaderFactory(directory){
                 }
                 return configs[id][configName];
             }
-
         }
     };
 
