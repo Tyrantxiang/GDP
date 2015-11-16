@@ -486,36 +486,37 @@ window.comms = {
 	get_hub_backgroud_image : get_hub_backgroud_image,
 
 
-	user_management : {
-		get_conditions_list : get_conditions_list,
-		validate_username : validate_username,
-		validate_dob : validate_dob,
-		validate_conditions : validate_conditions,
-		sign_up : sign_up,
-		change_user_details : change_user_details,
-		get_options : get_options,
-		set_options : set_options
-	},
+	// User management
+	get_conditions_list : get_conditions_list,
+	validate_username : validate_username,
+	validate_dob : validate_dob,
+	validate_conditions : validate_conditions,
+	sign_up : sign_up,
+	change_user_details : change_user_details,
+	get_options : get_options,
+	set_options : set_options,
+
+
+	// Items
+	get_all_item_info : get_all_item_info,
+	get_single_item_info : get_single_item_info,
+	get_user_equipped_items : get_user_equipped_items,
+	update_equipped_items : update_equipped_items,
+
 	
-	customise : {
-		get_all_item_info : get_all_item_info,
-		get_single_item_info : get_single_item_info,
-		get_user_equipped_items : get_user_equipped_items,
-		update_equipped_items : update_equipped_items
-	},
-		
-	bag : {
-		get_bag : get_bag,
-		set_bag : set_bag
-	},
-	
-	minigame : {
-		list_minigames : list_minigames,
-		launch_minigame : launch_minigame,
-		get_scores : get_scores,
-		set_hp : set_hp,
-		set_status_value : set_status_value
-	}
+	// Bag / carriables
+	get_bag : get_bag,
+	set_bag : set_bag,
+	use_carriable : use_carriable,
+
+
+	// In game
+	list_minigames : list_minigames,
+	launch_minigame : launch_minigame,
+	get_scores : get_scores,
+	modify_hp_value : modify_hp_value,
+	modify_status_value : modify_status_value
+
 	
 }
 

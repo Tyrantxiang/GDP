@@ -111,7 +111,7 @@ $(function() {
 
   // Signup scripts!
   function signup_validUsername(username, cb){
-      comms.user_management.validate_username(username, function(data){
+      comms.validate_username(username, function(data){
         cb(data.valid);
       });
   }
@@ -215,7 +215,7 @@ $(function() {
               return;
             }
 
-            comms.user_management.sign_up(username, password, dob, function(data){
+            comms.sign_up(username, password, dob, function(data){
               console.log(data);
               if(data.error){
                 addFail("Sign up failed");
