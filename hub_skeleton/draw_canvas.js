@@ -23,7 +23,7 @@ else
 	canvas.setWidth(scaled_width);
 
 	var left_offset		= (window.innerWidth - scaled_width) / 2;
-}
+};
 
 canvas.setBackgroundImage(background_img.src, canvas.renderAll.bind(canvas), {
 	width:		canvas.width,
@@ -103,6 +103,6 @@ for(i = 0; i < images.sprites.length; i++)
 	canvas.item(i).lockScalingX		= canvas.item(i).lockScalingY	= true;
 	canvas.item(i).lockMovementX	= canvas.item(i).lockMovementY	= true;
 	canvas.item(i).hasControls		= canvas.item(i).hasBorders		= false;
-}
+};
 
 canvas.hoverCursor = 'pointer';
