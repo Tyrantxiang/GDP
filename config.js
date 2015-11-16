@@ -52,6 +52,12 @@ module.exports.database = {
     }
 };
 
+module.exports.hub = {
+    getBackgroundImages : function(){
+        return config.hub.backgroundImages;
+    }
+};
+
 
 /*
  * Function takes a directory and sets up watchers on the config files within the subdirectories

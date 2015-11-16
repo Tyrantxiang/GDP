@@ -268,10 +268,16 @@ function remove_inventory(id, cb){
 
 
 
+function get_hub_backgroud_image(cb){
+	client_socket_call(	'get_hub_backgroud_image',
+						{},
+						cb
+					);
+}
 
 
 //USER MANAGEMENT - Ajax request
-function get_conditions_list(cd){
+function get_conditions_list(cb){
 	postRequest(	'/user/get_conditions_list',
 					null,
 					cb	
@@ -476,6 +482,8 @@ window.comms = {
 
 	setEventListener : setEventListener,
 	clearEventListeners : clearEventListeners,
+
+	get_hub_backgroud_image : get_hub_backgroud_image,
 
 
 	user_management : {

@@ -114,6 +114,10 @@ Hub.prototype.eventListeners = {
         fn(config.items.getConfig(data.id, undefined));
     },
 	
+    get_hub_backgroud_image : function(data, fn){
+        fn(config.hub.getBackgroundImages());
+    },
+
 	get_user_unlocked_items : function(data, fn){
 		db.getInventoryForUser(
 			function(results){
