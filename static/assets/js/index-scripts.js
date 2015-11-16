@@ -99,6 +99,8 @@ $(function() {
           $("#main-content-area").empty();
           $("body").removeClass("login");
 
+          document.title = "The hub";
+          
           hub.load();
         });
       }else{

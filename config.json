@@ -1,6 +1,12 @@
 {
 
 	"app" : {}
+
+	, "hub" : {
+		"backgroundImages" : {
+			"url" : "/assets/img/hub/background.png"
+		}
+	}
 	
 	, "defaultSchema" : "main"
 
