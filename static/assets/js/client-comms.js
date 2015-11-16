@@ -403,9 +403,9 @@ function launch_minigame(id, cb){
 				);
 }
 
-function finish_minigame(score, currency, cb){
+function finish_minigame(id, score, currency, cb){
 	client_socket_call( 'finish_minigame',
-						{score: score, currency: currency},
+						{gameId: id, score: score, currency: currency},
 						cb	
 				);
 }
@@ -420,17 +420,26 @@ function get_scores(optionnum, user_id, game_id, cb){
 }
 
 //MINIGAME
-function set_hp_value(value, cb){
-	window.comms.minigame.set_status_value("hp", value, cb);
-}
-
-function set_status_value(statuss, value, cb){
-	client_socket_call(	'set_status',
-						{"status": statuss, value: value},
+function modify_hp_value(value, cb){
+	client_socket_call( 'set_hp_value',
+						{value: value},
 						cb
 					);
 }
 
+function modify_status_value(status_name, value, cb){
+	client_socket_call(	'set_status',
+						{"status_name": status_name, value: value},
+						cb
+					);
+}
+
+function use_item(item_id, cb){
+	client_socket_call(	'use_item',
+						{item_id: item_id},
+						cb
+					);
+}
 
 
 

@@ -55,6 +55,7 @@ function Hub(userId, comms){
     this.connectedTime = new Date();
 
 	this.statuses = {};
+	this.health = 100;
 	
     // Get the user data from the db
     db.createSession(function(){},
@@ -64,7 +65,6 @@ function Hub(userId, comms){
 					
 	//load the users statuses here
 	db.getConditionsForUser(function(results){
-				this.statuses.push(new Status("hp", 100));
 				for(var i=0; i<results.length; i++){
 					//loop over all statuses and start
 					var statuses = config.conditions.getConfig(results[i]).statuses;
@@ -167,6 +167,21 @@ Hub.prototype.eventListeners = {
 
         fn();
     },
+	
+	use_item : function(data, fn){
+		var item_id = data.item_id;
+		var itemCfg = config.items.getConfig(item_id);
+		
+		for(obj in itemCfg.effects){
+			if(obj.id === "hp"){
+				this.eventListeners.modify_hp_value({value: obj.amount}, fn);
+			}else{
+				this.eventListeners.modify_status_value({"status": obj.id, value: obj.amount});
+			}
+		}
+		
+		//TODO: remove the item frm bag
+	},
 
     list_minigames : function(data, fn){
         fn(config.games.listAll());
@@ -271,7 +286,24 @@ Hub.prototype.eventListeners = {
                     );
     },
 
-    set_status_value : function(data, fn){
+	modify_hp_value : function(data, fn){
+		var value = data.value;
+		for(stat in this.statuses){
+			value *= stat.getMultiplier();
+		}
+		this.health += value;
+		
+		if(this.health < 30){
+			var imgLoc = getAvatarImageLocation();
+			fn({imageLocation: imgLoc});
+		}else{
+			fn({});
+		}
+		
+		fn({});
+	},
+	
+    modify_status_value : function(data, fn){
 		var arr = config.statuses.listAll();
 		for(cfg in arr){
 			if(cfg.name === data["status"]){
@@ -280,7 +312,6 @@ Hub.prototype.eventListeners = {
 		}
 		
 		fn({});
-		//TODO: return any health changes
     }
 };
 
@@ -328,8 +359,26 @@ function Status(configObj){
 			//do unhealthy stuff
 		}
 	}
+	
+	function getMultiplier(){
+		var multiplier = 1;
+		
+		if(this.value<this.healthy_min){
+			var difference = this.healthy_min-this.value;
+			multiplier *= (difference / this.heathy_min);
+		}else if(this.value>this.healthy_max){
+			var difference = this.value-this.healthy_max;
+			mutiplier *= (difference / this.healthy_max);
+		}
+		
+		return multiplier;
+	}
 }
 
+/////////////////////////////////////////////////////
+function getAvatarUnhealthyImage(){
+	return "/"
+}
 
 module.exports = function (cfg, db){
     setConfig(cfg);
@@ -352,4 +401,3 @@ module.exports = function (cfg, db){
         }
     };
 };
-
