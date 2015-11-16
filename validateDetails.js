@@ -15,7 +15,7 @@ validate.Promise = require('rsvp').Promise;
 //Date time validation functions
 validate.extend(validate.validators.datetime, {
 	parse: function(value, options) {
-		return Date.parse(value);
+		return new Date(value);
 	},
 	format: function(value, options) {
 		return value.toISOString();

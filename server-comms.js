@@ -46,6 +46,7 @@ module.exports = function (server, auth, config, hub){
     io.use(auth.socket_middleware);
 
     io.on("connection", function (socket){
+        console.log("      uid " + socket.userId + ": socket created");
         // On connection create a new Comms class and let that deal with creating bindings and sending data
         var h = hub.create(socket.userId, new Comms(socket));
 

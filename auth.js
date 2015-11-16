@@ -32,7 +32,8 @@ function authenticate(req, res){
 
         authenticated = function(user){
             // Generate web token
-            var token = generateToken(user.userId);
+            var token = generateToken(user.id);
+            console.log("     uid " + user.id + " authenticated");
             res.json({
                 token : token
             });
@@ -79,13 +80,14 @@ function express_middleware(req, res, next){
             res.status(403).json({ error : true, message : "unauthorised" });
             return;
         }
+
         req.userId = decoded.userId;
         next();
     });
 }
 
 function socket_middleware(socket, next){
-	//console.log(socket.request);
+    //console.log(socket.request);
     var token = socket.request._query.token;
     if(!token){
         // Fail here
@@ -96,9 +98,9 @@ function socket_middleware(socket, next){
     jwt.verify(token, secret, function(err, decoded){
         if(err){
             next(new Error('not authorized'));
-			return;
+            return;
         }
-		
+
         socket.userId = decoded.userId;
         next();
     });

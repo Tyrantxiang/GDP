@@ -124,7 +124,7 @@ function authenticate(username, password, cb){
 	);
 }
 
-function createSocket(){
+function createSocket(cb){
 	var t = getToken();
 	if(!t){
 		throw new Error("Authentication required first");
@@ -153,6 +153,8 @@ function createSocket(){
 				socket.on(name, l);
 			});
 		}
+
+		cb();
 	});
 }
 
@@ -173,7 +175,7 @@ function socketOpen(){
 }
 
 function client_socket_call(name, data, cb){
-	socket.emit(name, data, cb);	
+	socket.emit(name, data, cb || function(){});	
 }
 
 
@@ -365,7 +367,7 @@ function get_user_unlocked_items(id, cb){
 }
 
 function get_user_equipped_items(cb){
-	client_socket_call( 'get_user_eqipped_items',
+	client_socket_call( 'get_user_equipped_items',
 						{},
 						cb
 					);
