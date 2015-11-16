@@ -93,7 +93,14 @@ $(function() {
     comms.authenticate(username, password, function(data){
       if(data.authenticated){
         addSuccess("Login Successful");
+        
+        comms.loadScriptFile("/p/js/hub.js", function(){
+          // Remove the login stuff
+          $("#main-content-area").empty();
+          $("body").removeClass("login");
 
+          hub.load();
+        });
       }else{
         addError("Invalid username or password");
       }

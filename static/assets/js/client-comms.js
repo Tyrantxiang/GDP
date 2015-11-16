@@ -69,6 +69,26 @@ function getToken(){
 	return token;
 }
 
+function tokeniseGetRequest(path){
+	return path + "?t=" + getToken();
+}
+
+function loadScriptFile(url, cb, tokenise){
+	if(tokenise !== false){
+		url = tokeniseGetRequest(url);
+	}
+
+
+    var script = document.createElement("script");
+    if(cb){
+    	script.addEventListener("load", cb);
+    }
+    script.src = url;
+
+    var stag = document.getElementsByTagName('script')[0];
+    stag.parentNode.insertBefore(script, stag);
+}
+
 
 
 function setEventListener(name, func){
@@ -444,6 +464,8 @@ window.comms = {
 	logout : logout,
 
 	getToken : getToken,
+	tokeniseGetRequest : tokeniseGetRequest,
+	loadScriptFile : loadScriptFile,
 	ajaz : ajaz,
 
 	setEventListener : setEventListener,

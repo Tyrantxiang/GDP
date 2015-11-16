@@ -4,7 +4,7 @@ html {
   min-height:100%;
 }
 
-body {
+body.login {
   background-image: url("../img/bg4.png");
   margin-bottom: 50px;
 }
@@ -212,3 +212,11 @@ body {
   font-style: italic;
 }
 
+
+/** Hub **/
+.loading-container {
+  width: 40%;
+  margin: auto;
+  margin-top: 50px;
+  text-align: center;
+}
