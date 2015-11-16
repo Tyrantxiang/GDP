@@ -386,9 +386,9 @@ function get_bag(cb){
 					);
 }
 
-function set_bag(items, cb){
+function set_bag(carriables, cb){
 	client_socket_call(	'set_bag',
-						{items: items},
+						{carriables: carriables},
 						cb
 					);
 }
@@ -440,9 +440,9 @@ function modify_status_value(status_name, value, cb){
 					);
 }
 
-function use_item(item_id, cb){
-	client_socket_call(	'use_item',
-						{item_id: item_id},
+function use_carriable(carriable_id, cb){
+	client_socket_call(	'use_carriable',
+						{carriable_id: carriable_id},
 						cb
 					);
 }

@@ -54,29 +54,29 @@ function Hub(userId, comms){
     // Time they logged on (this object was created)
     this.connectedTime = new Date();
 
-	this.statuses = {};
-	this.health = 100;
-	
+    this.statuses = {};
+    this.health = 100;
+    
     // Get the user data from the db
     db.createSession(function(){},
                         function(){},
                             {userId: userId, start_time: this.connectedTime.toISOString()}
                     );
-					
-	//load the users statuses here
-	db.getConditionsForUser(function(results){
-				for(var i=0; i<results.length; i++){
-					//loop over all statuses and start
-					var statuses = config.conditions.getConfig(results[i]).statuses;
-					for(var j=0; j<statuses.length; j++){
-						var currentStatus = config.statuses.getConfig(statuses[j]);
-						this.statues[currentStatus.id] = new Status(currentStatus);
-					}
-				}
-			}, function(){
-				
-			},
-			this.userId);
+                    
+    //load the users statuses here
+    db.getConditionsForUser(function(results){
+                for(var i=0; i<results.length; i++){
+                    //loop over all statuses and start
+                    var statuses = config.conditions.getConfig(results[i]).statuses;
+                    for(var j=0; j<statuses.length; j++){
+                        var currentStatus = config.statuses.getConfig(statuses[j]);
+                        this.statues[currentStatus.id] = new Status(currentStatus);
+                    }
+                }
+            }, function(){
+                
+            },
+            this.userId);
 
 
 };
@@ -113,79 +113,79 @@ Hub.prototype.eventListeners = {
     get_single_item_info : function(data, fn){
         fn(config.items.getConfig(data.id, undefined));
     },
-	
+    
     get_hub_backgroud_image : function(data, fn){
         fn(config.hub.getBackgroundImages());
     },
 
-	get_user_unlocked_items : function(data, fn){
-		db.getInventoryForUser(
-			function(results){
-				fn(results);
-			}, function(err){
-				fn({err: err});
-			},
-			this.userId
-		);
-	},
+    get_user_unlocked_items : function(data, fn){
+        db.getInventoryForUser(
+            function(results){
+                fn(results);
+            }, function(err){
+                fn({err: err});
+            },
+            this.userId
+        );
+    },
 
     get_user_equipped_items : function(data, fn){
         db.getEquippedForUser(
             function(results){
-				var sendBack = {head: results.head, eyes: results.eyes, skin: results.skin, shirt:results.shirt};
-				fn(sendBack);
+                var sendBack = {head: results.head, eyes: results.eyes, skin: results.skin, shirt:results.shirt};
 
+                fn(sendBack);
             },
             function(){
-				fn({err: "Error in db"});
+                fn({err: "Error in db"});
             },
             this.user_id
         );
     },
 
     update_equipped_items : function(data, fn){
-		var invObj = {
-			user_id : this.userId,
-			head: data.head,
-			eyes: data.eyes,
-			skin: data.skin,
-			shirt: data.shirt
-		};
-		
-		db.createEqippedItems(
-			function(results){
-				fn({success: "success"});
-			}, function(){
-				fn({err: "Error in db"});
-			},
-			invObj
-		);
+        var invObj = {
+            user_id : this.userId,
+            head: data.head,
+            eyes: data.eyes,
+            skin: data.skin,
+            shirt: data.shirt
+        };
+        
+        db.createEqippedItems(
+            function(results){
+                fn({success: "success"});
+            }, function(){
+                fn({err: "Error in db"});
+            },
+            invObj
+        );
     },
 
     get_bag : function(data, fn){
-        fn( {items: this.bag.getItems()} );
+        fn( {carriables: this.bag.getCarriables()} );
     },
 
     set_bag : function(data, fn){
-        this.bag.setItems(data.items);
+        this.bag.setCarriables(data.carriables);
 
         fn();
     },
-	
-	use_item : function(data, fn){
-		var item_id = data.item_id;
-		var itemCfg = config.items.getConfig(item_id);
-		
-		for(obj in itemCfg.effects){
-			if(obj.id === "hp"){
-				this.eventListeners.modify_hp_value({value: obj.amount}, fn);
-			}else{
-				this.eventListeners.modify_status_value({"status": obj.id, value: obj.amount});
-			}
-		}
-		
-		//TODO: remove the item frm bag
-	},
+    
+    use_carriable : function(data, fn){
+        var carriable_id = data.carriable_id,
+            carriableCfg = config.carriables.getConfig(carriable_id);
+        
+        for(obj in carriableCfg.effects){
+            if(obj.id === "hp"){
+                this.eventListeners.modify_hp_value({value: obj.amount}, fn);
+            }else{
+                this.eventListeners.modify_status_value({"status": obj.id, value: obj.amount});
+            }
+        }
+        
+        //TODO: remove the carriable frm bag
+    },
 
     list_minigames : function(data, fn){
         fn(config.games.listAll());
@@ -290,98 +290,98 @@ Hub.prototype.eventListeners = {
                     );
     },
 
-	modify_hp_value : function(data, fn){
-		var value = data.value;
-		for(stat in this.statuses){
-			value *= stat.getMultiplier();
-		}
-		this.health += value;
-		
-		if(this.health < 30){
-			var imgLoc = getAvatarImageLocation();
-			fn({imageLocation: imgLoc});
-		}else{
-			fn({});
-		}
-		
-		fn({});
-	},
-	
+    modify_hp_value : function(data, fn){
+        var value = data.value;
+        for(stat in this.statuses){
+            value *= stat.getMultiplier();
+        }
+        this.health += value;
+        
+        if(this.health < 30){
+            var imgLoc = getAvatarImageLocation();
+            fn({imageLocation: imgLoc});
+        }else{
+            fn({});
+        }
+        
+        fn({});
+    },
+    
     modify_status_value : function(data, fn){
-		var arr = config.statuses.listAll();
-		for(cfg in arr){
-			if(cfg.name === data["status"]){
-				this.statuses[cfg.id].addToValue(data.value);
-			}
-		}
-		
-		fn({});
+        var arr = config.statuses.listAll();
+        for(cfg in arr){
+            if(cfg.name === data["status"]){
+                this.statuses[cfg.id].addToValue(data.value);
+            }
+        }
+        
+        fn({});
     }
 };
 
 
 
-/* Class representing a 'bag', that is the items the player currently holds */
+/* Class representing a 'bag', that is the carriables the player currently holds */
 function Bag(){
-    // Modelled as an array of items contained in the bag
-    var items = [];
+    // Modelled as an array of carriables contained in the bag
+    var carriables = [];
 
-    function getItems(){
-        return this.items;
+    function getCarriables(){
+        return this.carriables;
     }
 
-    function setItems(itemArray){
-        if(Array.isArray(itemArray)) this.items = itemArray;
+    function setCarriables(carriablesArray){
+        if(Array.isArray(carriablesArray)) this.carriables = carriablesArray;
     }
 }
 
 function Status(configObj){
-	var id = configObj.id;
-	var name = configObj.name;
-	var value = parseInt((configObj.healthy_min + configObj.healthy_max) / 2, 10);
-	var healthy_min = configObj.healthy_min;
-	var healthy_max = configObj.healthy_max;
-	var min = configObj.min;
-	var max = configObj.max;
-	
-	function setValue(newValue){
-		this.value = newValue;
-	}
-	
-	//the addValue may be negative, allow subtraction
-	function addToValue(addValue){
-		this.value += addValue;
-		if(this.value<this.min){
-			this.value = this.min;
-		}else if(this.value>this.max){
-			this.value = this.max;
-		}
-		
-		if(this.value < this.healthy_min){
-			//do unhealty avatar stuff
-		}else if(this.value > this.healthy_max){
-			//do unhealthy stuff
-		}
-	}
-	
-	function getMultiplier(){
-		var multiplier = 1;
-		
-		if(this.value<this.healthy_min){
-			var difference = this.healthy_min-this.value;
-			multiplier *= (difference / this.heathy_min);
-		}else if(this.value>this.healthy_max){
-			var difference = this.value-this.healthy_max;
-			mutiplier *= (difference / this.healthy_max);
-		}
-		
-		return multiplier;
-	}
+    var id = configObj.id;
+    var name = configObj.name;
+    var value = parseInt((configObj.healthy_min + configObj.healthy_max) / 2, 10);
+    var healthy_min = configObj.healthy_min;
+    var healthy_max = configObj.healthy_max;
+    var min = configObj.min;
+    var max = configObj.max;
+    
+    function setValue(newValue){
+        this.value = newValue;
+    }
+    
+    //the addValue may be negative, allow subtraction
+    function addToValue(addValue){
+        this.value += addValue;
+        if(this.value<this.min){
+            this.value = this.min;
+        }else if(this.value>this.max){
+            this.value = this.max;
+        }
+        
+        if(this.value < this.healthy_min){
+            //do unhealty avatar stuff
+        }else if(this.value > this.healthy_max){
+            //do unhealthy stuff
+        }
+    }
+    
+    function getMultiplier(){
+        var multiplier = 1;
+        
+        if(this.value<this.healthy_min){
+            var difference = this.healthy_min-this.value;
+            multiplier *= (difference / this.heathy_min);
+        }else if(this.value>this.healthy_max){
+            var difference = this.value-this.healthy_max;
+            mutiplier *= (difference / this.healthy_max);
+        }
+        
+        return multiplier;
+    }
 }
 
 /////////////////////////////////////////////////////
 function getAvatarUnhealthyImage(){
-	return "/"
+    return "/"
 }
 
 module.exports = function (cfg, db){

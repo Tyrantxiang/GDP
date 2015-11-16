@@ -346,12 +346,12 @@ module.exports.games = (function(){
 
 
 
-/* Wrapper for item configs
+/* Wrapper for item and carriable configs
  *
  */
-module.exports.items = (function(){
-    console.log("Loading configs for items");
-    var itemsRelativeDir = "items",
+function itemsConfigGenerator(relativeDir){
+
+    var itemsRelativeDir = relativeDir,
         itemsDir = config.app.itemsDir || path.join(__dirname, itemsRelativeDir),
         itemsSpritesExt = ".png",
 
@@ -387,7 +387,21 @@ module.exports.items = (function(){
 
     return functions;
 
+}
+
+module.exports.items = (function(){
+    console.log("Loading configs for items");
+
+    return itemsConfigGenerator("items");
 })();
+
+
+module.exports.carriables = (function(){
+    console.log("Loading configs for carriables");
+
+    return itemsConfigGenerator("carriables");
+})();
+
 
 
 
