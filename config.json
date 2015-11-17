@@ -5,6 +5,19 @@
 	, "hub" : {
 		"backgroundImages" : {
 			"url" : "/assets/img/hub/background.png"
+		},
+
+		"itemMetaData" : {
+			"MIRROR" : {
+				"default" : 1000,
+				"left": 0.74, "top": 0.26, "scale": 1, "select_scale": 1.5
+			},
+			"BACKPACK" : {
+				"default" : 2000,
+				"left": 0.45, "top": 0.51, "scale": 1, "select_scale": 1.5
+			}
+
+
 		}
 	}
 	

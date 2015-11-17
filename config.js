@@ -55,6 +55,10 @@ module.exports.database = {
 module.exports.hub = {
     getBackgroundImages : function(){
         return config.hub.backgroundImages;
+    },
+
+    getItemMetaData : function(){
+        return config.hub.itemMetaData;
     }
 };
 
@@ -68,7 +72,7 @@ function configReaderFactory(directory){
         // Map of a subdirectory to it's watcher
         configWatchers = {},
         // Subdirectories in directory, they don't have to have a config file in to work
-        subDirectories =[],
+        subDirectories = [],
         // The actual configs
         configs = {};
 
