@@ -78,6 +78,7 @@ function Hub(userId, comms){
             },
             this.userId);
 
+	this.imgMaker = require("./imageCompositer")(300);
 
 };
 // Set the locations as "class constants"
@@ -164,6 +165,8 @@ Hub.prototype.eventListeners = {
             },
             this.user_id
         );
+		
+		
     },
 
     update_equipped_items : function(data, fn){
@@ -320,14 +323,27 @@ Hub.prototype.eventListeners = {
         }
         this.health += value;
         
+		//var base_image = getBaseImage();
+		var urls = [];
+		
         if(this.health < 30){
-            var imgLoc = getAvatarImageLocation();
-            fn({imageLocation: imgLoc});
+			urls.push(""); //getHealthyImage();
         }else{
-            fn({});
+			urls.push(""); //getUnhealthyImage();
         }
+		
+		var imgs = this.eventListeners.get_user_equipped_items(
+			{},
+			function(data){
+				for(var key in data){
+					var obj = data[key];
+					urls.push(obj.url);
+				}
+			}
+		);
         
-        fn({});
+		var base64string = this.imgMaker(urls);
+        fn({img: base64string});
     },
     
     modify_status_value : function(data, fn){

@@ -5,7 +5,7 @@ var Canvas = require('canvas'),
 	Image = Canvas.Image;
 
 function setImageSize(size){
-	function generateImage(outputname, parts){
+	function generateImage(parts){
 		var imgSize = size;
 		
 		var canvas = new Canvas(imgSize, imgSize),
@@ -20,12 +20,6 @@ function setImageSize(size){
 			img.src = __dirname + '/' + part + '.png';
 			part = parts.shift();
 		}
-
-		canvas.toBuffer(function(err, buf){
-		  if (err){}
-		  else
-			fs.writeFile(__dirname + '/output.png', buf, function(){});
-		});
 		
 		return canvas.toBuffer().toString('base64');
 	}
