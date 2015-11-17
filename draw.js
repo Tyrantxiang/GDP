@@ -12,13 +12,16 @@ Return:
 Functionality:
 	Scales the canvas to suit the window size, scales and adds the background image.
 */
-function initialise_canvas(canvas_name, images)
+//function initialise_canvas(canvas_name, images)
+function initialise_canvas(cnvs, background)
 {
-	var canvas			= new fabric.Canvas(canvas_name);
+	//var canvas			= new fabric.Canvas(canvas_name);
+	var canvas			= new fabric.Canvas(cnvs);
 	canvas.hoverCursor	= 'pointer';
 
 	// TODO: This will be gotten from the images item itself, rather than getElem.
-	var background_img	= document.getElementById(images.background.id);
+	//var background_img	= document.getElementById(images.background.id);
+	var background_img	= background.image;
 	var img_w_to_h		= background_img.width / background_img.height;
 	var screen_w_to_h	= window.innerWidth / window.innerHeight;
 
@@ -61,12 +64,15 @@ Return:
 Functionality:
 	Adds the sprites to the canvas, setting their attributes and locking them in place.
 */
-function attach_sprites(canvas, images)
+//function attach_sprites(canvas, images)
+function attach_sprites(canvas, background, sprites)
 {
 	// TODO: This will be gotten from the images item itself, rather than getElem.
-	var background_img	= document.getElementById(images.background.id);
+	//var background_img	= document.getElementById(images.background.id);
+	var background_img	= background.image;
 
-	for(var i = 0; i < images.sprites.length; i++)
+	//for(var i = 0; i < images.sprites.length; i++)
+	for(var i = 0; i < sprites.length; i++)
 	{
 		// TODO: This will be gotten from the images item itself, rather than getElem.
 		var sprite_element	= document.getElementById(images.sprites[i].id);
@@ -89,10 +95,7 @@ function attach_sprites(canvas, images)
 		});
 
 		canvas.add(sprite_instance);
-	};
 
-	for(i = 0; i < images.sprites.length; i++)
-	{
 		canvas.item(i).lockRotation		= true;
 		canvas.item(i).lockScalingX		= canvas.item(i).lockScalingY	= true;
 		canvas.item(i).lockMovementX	= canvas.item(i).lockMovementY	= true;
@@ -170,3 +173,11 @@ var canvas	= initialise_canvas('canvas', images);
 attach_sprites(canvas, images);
 attach_event_listeners(canvas);
 */
+
+window.draw			= {};
+window.draw.init	= function(cnvs, background, sprites)
+{
+	var canvas	= initialise_canvas(cnvs, background);
+	attach_sprites(canvas, background, sprites);
+	attach_event_listeners(canvas);
+};
