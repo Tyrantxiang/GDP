@@ -132,7 +132,30 @@ Hub.prototype.eventListeners = {
     get_user_equipped_items : function(data, fn){
         db.getEquippedForUser(
             function(results){
-                var sendBack = {head: results.head, eyes: results.eyes, skin: results.skin, shirt:results.shirt};
+                // Get the meta data for the items
+                var itemMetaData = config.hub.getItemMetaData(),
+                    sendBack = {},
+                    slot;
+                for(slot in itemMetaData){
+                    let md = itemMetaData[slot],
+                        itemConfig = config.items.getConfig(results[slot] || md.default),
+                        url = config.items.getSpriteURL(itemConfig.id);
+
+                    sendBack[slot] = {
+                        id : itemConfig.id,
+                        name : itemConfig.name,
+                        description : itemConfig.description,
+                        price : itemConfig.price,
+
+                        left: md.left,
+                        top: md.top,
+                        scale: md.scale,
+                        select_scale: md.select_scale,
+
+                        slot : slot,
+                        url : url
+                    };
+                }
 
                 fn(sendBack);
             },

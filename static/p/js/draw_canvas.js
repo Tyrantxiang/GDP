@@ -2,10 +2,10 @@
 //var images			= JSON.parse('{"background": {"name": "background", "id": "background"}, "sprites": [{"name": "mirror", "id": "mirror", "left": "0.74", "top": "0.26", "scale": 1, "select_scale": 1.5}, {"name": "backpack", "id": "backpack", "left": 0.45, "top": 0.51, "scale": 1, "select_scale": 1.5}]}')
 
 window.draw = {};
-window.draw.init = function(background, sprites){
-	var canvas			= new fabric.Canvas('canvas');
+window.draw.init = function(canvas, images){
+	var canvas			= new fabric.Canvas(canvas);
 
-	var background_img	= background.image;
+	var background_img	= images.background.image;
 	var img_w_to_h		= background_img.width / background_img.height;
 	var screen_w_to_h	= window.innerWidth / window.innerHeight;
 
@@ -75,31 +75,31 @@ window.draw.init = function(background, sprites){
 		};
 	});
 
-	for(i = 0; i < sprites.length; i++)
+	for(i in images.items)
 	{
-		var sprite_element	= sprites[i].image;
+		var sprite_element	= images.items[i].image;
 		var sprite_instance	= new fabric.Image(sprite_element, {
-			name:			sprites[i].slot,
+			name:			images.items[i].slot,
 
-			left:			sprites[i].left * canvas.width,
-			top:			sprites[i].top * canvas.height,
+			left:			images.items[i].left * canvas.width,
+			top:			images.items[i].top * canvas.height,
 
 			width:			sprite_element.width * (canvas.width / background_img.width),
 			height:			sprite_element.height * (canvas.height / background_img.height),
 
-			scaleX:			sprites[i].scale,
-			scaleY:			sprites[i].scale,
+			scaleX:			images.items[i].scale,
+			scaleY:			images.items[i].scale,
 
-			default_scale:	sprites[i].scale,
-			select_scale:	sprites[i].select_scale,
-			orig_left:		sprites[i].left * canvas.width,
-			orig_top:		sprites[i].top * canvas.height
+			default_scale:	images.items[i].scale,
+			select_scale:	images.items[i].select_scale,
+			orig_left:		images.items[i].left * canvas.width,
+			orig_top:		images.items[i].top * canvas.height
 		});
 
 		canvas.add(sprite_instance);
 	};
 
-	for(i = 0; i < sprites.length; i++)
+	for(i = 0; i < Object.keys(images.items).length; i++)
 	{
 		canvas.item(i).lockRotation		= true;
 		canvas.item(i).lockScalingX		= canvas.item(i).lockScalingY	= true;

@@ -2,12 +2,42 @@
     "use strict";
 
     var assets = {
-        images : [],
-        audio : []
+        images : {},
+        audio : {}
     },
         initalFilesLoaded = false,
         canvas,
         container = document.getElementById("main-content-area");
+
+
+
+    // Gets a clone of an assets object (eg images, audio), given by type
+    function getAssetsByType(type){
+        var t = assets[type];
+        if(!t){
+            return undefined;
+        }
+
+        var o = {};
+        for(var i in t){
+            if(t.hasOwnProperty(i)){
+                o[i] = t[i];
+            }
+        }
+
+        return o;
+    }
+
+    function getCloneOfAssets(){
+        var o = {};
+        for(i in assets){
+            if(assets.hasOwnProperty(i)){
+                o[i] = getAssetsByType(i);
+            }
+        }
+
+        return o;
+    }
 
 
     // Creates the DOM bootstrap loading bar
@@ -59,25 +89,12 @@
                     // Get the list of images
                     comms.get_hub_backgroud_image(function(background){
                         comms.get_user_equipped_items(function(items){
-                            // For now we will set these manually
-                            items = [
-                                {
-                                    "id": 1,
-                                    "slot": "MIRROR",
-                                    "url": "/assets/img/hub/mirror.png",
-                                    "left": "0.74", "top": "0.26", "scale": 1, "select_scale": 1.5
-                                },
-                                {
-                                    "id": 2,
-                                    "slot": "BACKPACK",
-                                    "url": "/assets/img/hub/backpack.png",
-                                    "left": 0.45, "top": 0.51, "scale": 1, "select_scale": 1.5
-                                }
-                            ];
 
                             // How much do we load?
-                            var toLoad = items.length,
+                            var toLoad = Object.keys(items).length + 1,
+                                // How much have we loaded
                                 loaded = 0,
+                                // Is there an error?
                                 error = false;
 
                             function fileLoaded(){
@@ -94,15 +111,20 @@
                                 utils.addError(this.src);
                             }
 
-                            items.forEach(function(item){
-                                var i = document.createElement("img");
-                                i.addEventListener("load", function(){
-                                    item.image = this;
-                                    fileLoaded();
-                                });
-                                i.addEventListener("error", fail);
-                                i.src = item.url;
-                            });
+                            // Load the item images
+                            for(var item in items){
+                                (function(item){
+                                    var i = document.createElement("img");
+                                    i.addEventListener("load", function(){
+                                        item.image = this;
+                                        fileLoaded();
+                                    });
+                                    i.addEventListener("error", fail);
+                                    i.src = item.url;
+                                })(items[item]);
+                            };
+
+                            // Load the background image
                             var i = document.createElement("img");
                             i.addEventListener("load", function(){
                                 background.image = this;
@@ -113,6 +135,10 @@
                             
 
                             function loadComplete(){
+                                // Add to the images object
+                                assets.images.background = background;
+                                assets.images.items = items;
+
                                 comms.loadScriptFile("/assets/libs/fabric.js", function(){
                                     comms.loadScriptFile("/p/js/draw_canvas.js", function(){
                                         canvas = document.createElement("canvas");
@@ -125,7 +151,7 @@
 
                                         initalFilesLoaded = true;
 
-                                        window.draw.init(background, items);
+                                        window.draw.init(canvas, getAssetsByType("images"));
                                     });
                                 }, false);
                             }
@@ -135,51 +161,10 @@
 
                 }
 
-                // Load all those images into memory
-
-                /*
-
-                // TEMP LOADING FUNCTION
-                var p = 0, i = 0;
-                while(p <= 100){
-                    (function(p, i){
-                        window.setTimeout(function(){
-                            loadingBar.setProgress(p);
-                        }, i * 100);
-                    })(p, i);
-                    p = p + 10;
-                    i++;
-                }
-
-                window.setTimeout(function(){
-                    // Load in the hub script
-                    canvas = document.createElement("canvas");
-                    canvas.id = "canvas";
-
-                    // Temp add the images into the dom
-                    var i = ["background", "backpack", "mirror"];
-                        els = i.map(function(ii){
-                            var e = document.createElement("img");
-                                e.src = comms.tokeniseGetRequest("/p/images/" + ii +".png");
-                                e.id = ii;
-                                e.style.display = "none";
-                            return e;
-                        });
-
-                    container.removeChild(loadingContainer);
-
-                    container.appendChild(canvas);
-                    els.forEach(container.appendChild.bind(container));
-
-
-                    comms.loadScriptFile("/p/js/fabric.js", function(){
-                        comms.loadScriptFile("/p/js/draw_canvas.js");
-                    });
-
-                }, ++i * 100);*/
-
             });
-        }
+        },
+
+        getAssetsByType : getAssetsByType
     }
 
 
