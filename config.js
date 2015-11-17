@@ -286,8 +286,8 @@ function configReaderFactory(directory){
 module.exports.games = (function(){
     console.log("Loading configs for games");
     // Variables
-    var gamesRelativeDir = "games",
-        gamesDir = config.app.gamesDir || path.join(__dirname, gamesRelativeDir),
+    var gamesRelativeDir = config.app.gamesDir || "games",
+        gamesDir = path.join(__dirname, gamesRelativeDir),
 
         configReader = configReaderFactory(gamesDir),
         gameConfigs = configReader.configs,
@@ -298,7 +298,7 @@ module.exports.games = (function(){
     /* Get the URLs of the scripts for the given game */
     functions.getScripts = function(id){
         var scripts = gameConfigs[id].scripts.map(function(s){
-            return gamesDir + "/" + dir + "/" + "scripts" + "/" + s;
+            return gamesRelativeDir + "/" + id + "/" + "scripts" + "/" + s;
         });
 
         return scripts;
@@ -306,9 +306,7 @@ module.exports.games = (function(){
 
     /* Get the base URL directory that contains the assets for the given game */
     functions.getAssetsBaseURL = function(id){
-        var dir = gameConfigs[id].directory;
-        
-        return gamesRelativeDir + "/" + dir + "/" + "assets";
+        return gamesRelativeDir + "/" + id + "/" + "assets/";
     };
 
     /* Gets the object that the `run` function will be called on client side to start the game */
@@ -325,16 +323,16 @@ module.exports.games = (function(){
             var fileType = req.params.fileType,
                 filename = req.params.filename,
                 dir = gameConfigs[gameId].directory,
-                path;
+                p;
 
             if(fileType === "scripts"){
-                path = path.join(gamesDir, dir, "scripts", filename);
+                p = path.join(dir, "scripts", filename);
             }
             if(fileType === "assets"){
-                path = path.join(gamesDir, dir, "assets", filename);
+                p = path.join(dir, "assets", filename);
             }
 
-            res.sendFile(path);
+            res.sendFile(p);
         }else{
             res.status(404).send("error, no game with that ID");
         }
@@ -355,8 +353,8 @@ module.exports.games = (function(){
  */
 function itemsConfigGenerator(relativeDir){
 
-    var itemsRelativeDir = relativeDir,
-        itemsDir = config.app.itemsDir || path.join(__dirname, itemsRelativeDir),
+    var itemsRelativeDir = config.app.itemsDir || relativeDir,
+        itemsDir = path.join(__dirname, itemsRelativeDir),
         itemsSpritesExt = ".png",
 
 
@@ -365,24 +363,21 @@ function itemsConfigGenerator(relativeDir){
         itemConfigs = configReader.configs,
         functions = configReader.functions;
 
-
     // Add the additional item functions
 
     /* Get the full URL of the sprite that represents this item */
     functions.getSpriteURL = function(id){
-        var dir = itemConfigs[id].directory;
-        
-        return itemsRelativeDir + "/" + dir + "/" + "sprite" + itemsSpritesExt;
+        return itemsRelativeDir + "/" + id + "/" + "sprite" + itemsSpritesExt;
     };
     functions.serveFile = function(req, res){
         var itemId = req.params.item,
             filename = req.params.filename;
 
-        if(itemConfigs[itemId] && filename.substr(filename.lastIndexOf(".")) === ".png"){
+        if(itemConfigs[itemId] && filename.substr(filename.lastIndexOf(".")) === itemsSpritesExt){
             var dir = itemConfigs[itemId].directory,
-                path = path.join(itemsDir, dir, filename);
+                p = path.join(dir, filename);
 
-                res.sendFile(path);
+                res.sendFile(p);
         }else{
             res.status(404).send("error, no item with that ID");
         }
@@ -415,8 +410,8 @@ module.exports.carriables = (function(){
 module.exports.conditions = (function(){
     console.log("Loading configs for conditions");
 
-    var conditionsRelativeDir = "conditions",
-        conditionsDir = config.app.conditionsDir || path.join(__dirname, conditionsRelativeDir),
+    var conditionsRelativeDir = config.app.conditionsDir || "conditions",
+        conditionsDir = path.join(__dirname, conditionsRelativeDir),
 
         // Generate the config readers and extract generated functions
         configReader = configReaderFactory(conditionsDir),
@@ -431,8 +426,8 @@ module.exports.conditions = (function(){
 module.exports.statuses = (function(){
     console.log("Loading configs for statuses");
 
-    var statusesRelativeDir = "statuses",
-        statusesDir = config.app.statusesDir || path.join(__dirname, statusesRelativeDir),
+    var statusesRelativeDir = config.app.statusesDir || "statuses",
+        statusesDir = path.join(__dirname, statusesRelativeDir),
 
         // Generate the config readers and extract generated functions
         configReader = configReaderFactory(statusesDir),

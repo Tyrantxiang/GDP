@@ -49,7 +49,7 @@ function startApp(db){
 
 	// Routes to serve semi static files
 	app.get("/games/:game/:fileType/:filename", config.games.serveFile);
-	app.get("/items/sprites/:item/:filename", config.items.serveFile);
+	app.get("/items/:item/:filename", config.items.serveFile);
 
 
 
