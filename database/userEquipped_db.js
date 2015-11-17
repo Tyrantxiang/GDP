@@ -30,7 +30,7 @@ user_equipped.readUserEquippedById = function(pass, fail, id){
 }
 
 user_equipped.getEquippedForUser = function(pass, fail, user_id){
-	dbutils.readSingle(pass, fail, TABLE_NAME, ["item_id"], {"user_id": user_id}, "ORDER BY id DESC");
+	dbutils.read(pass, fail, TABLE_NAME, ["*"], {"user_id": user_id}, "ORDER BY id DESC");
 }
 
 //Deletes the entry that matches the id
