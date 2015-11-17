@@ -4,7 +4,7 @@
   "sprite": "/items/kidneymedicine/sprite.png",
   "effects": [
     {
-      "name": "renal_status",
+      "name": "3",
       "amount": 20
     }
   ]

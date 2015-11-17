@@ -4,7 +4,7 @@
   "sprite": "/items/insulin/sprite.png",
   "effects": [
     {
-      "name": "Blood Sugar",
+      "id": 1,
       "amount": -10
     }
   ]

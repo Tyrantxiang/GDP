@@ -4,11 +4,11 @@
   "sprite": "/items/apple/sprite.png",
   "effects": [
     {
-      "name": "Blood Sugar",
+      "id": 1,
       "amount": 3
     },
     {
-      "name": "hp",
+      "id": "hp",
       "amount": 10
     }
   ]
