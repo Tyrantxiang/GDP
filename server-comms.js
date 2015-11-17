@@ -52,6 +52,7 @@ module.exports = function (server, auth, config, hub){
 
         // Exit the hub on disconnect, so it can clean itself up gracefully
         socket.on("disconnect", function (){
+            console.log("      uid " + socket.userId + ": socket disconnect");
             h.exit();
         });
 		

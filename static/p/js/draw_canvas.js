@@ -99,7 +99,7 @@ window.draw.init = function(background, sprites){
 		canvas.add(sprite_instance);
 	};
 
-	for(i = 0; i < images.sprites.length; i++)
+	for(i = 0; i < sprites.length; i++)
 	{
 		canvas.item(i).lockRotation		= true;
 		canvas.item(i).lockScalingX		= canvas.item(i).lockScalingY	= true;

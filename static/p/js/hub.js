@@ -5,6 +5,7 @@
         images : [],
         audio : []
     },
+        initalFilesLoaded = false,
         canvas,
         container = document.getElementById("main-content-area");
 
@@ -116,8 +117,12 @@
                                     canvas = document.createElement("canvas");
                                     canvas.id = "canvas";
 
-                                    container.removeChild(loadingContainer);
+                                    try{
+                                        container.removeChild(loadingContainer);
+                                    }catch(e){}
                                     container.appendChild(canvas);
+
+                                    initalFilesLoaded = true;
 
                                     window.draw.init(background, items);
                                 });
