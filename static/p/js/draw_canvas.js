@@ -27,7 +27,7 @@ window.draw.init = function(background, sprites){
 		var left_offset		= (window.innerWidth - scaled_width) / 2;
 	}
 
-	canvas.setBackgroundImage(background_img.src, canvas.renderAll.bind(canvas), {
+	canvas.setBackgroundImage(new fabric.Image(background_img), canvas.renderAll.bind(canvas), {
 		width:		canvas.width,
 		height: 	canvas.height,
 		originX:	'left',
