@@ -4,37 +4,33 @@ var Canvas = require('canvas'),
 	fs = require('fs'),
 	Image = Canvas.Image;
 
-function generateImage(outputname, parts, cb){
-	var canvas = new Canvas(45, 45),
-		ctx = canvas.getContext('2d');
-
-	drawParts();
-
-	function drawParts(){
+function setImageSize(size){
+	function generateImage(outputname, parts){
+		var imgSize = size;
+		
+		var canvas = new Canvas(imgSize, imgSize),
+			ctx = canvas.getContext('2d');
+		
 		var part = parts.shift();
-		if (!part){
-			saveCanvas();
-		}else{
+		while(part){
 			var img = new Image;
 			img.onload = function(){
-				ctx.drawImage(img, 0, 0, 45, 45);
-				drawParts();
+				ctx.drawImage(img, 0, 0, imgSize, imgSize);
 			};
 			img.src = __dirname + '/' + part + '.png';
+			part = parts.shift();
 		}
-	}
 
-  function saveCanvas(){
-    canvas.toBuffer(function(err, buf){
-      if (err){
-        cb(err);
-      }else{
-        fs.writeFile(__dirname + '/' + outputname, buf, function(){
-          cb();
-        });
-	  }
-    });
-  }
+		canvas.toBuffer(function(err, buf){
+		  if (err){}
+		  else
+			fs.writeFile(__dirname + '/output.png', buf, function(){});
+		});
+		
+		return canvas.toBuffer().toString('base64');
+	}
+	
+	return generateImage;
 }
 
-module.exports = generateImage;
+module.exports = setImageSize;
