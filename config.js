@@ -59,6 +59,10 @@ module.exports.hub = {
 
     getItemMetaData : function(){
         return config.hub.itemMetaData;
+    },
+
+    getItemSlots : function(){
+        return Object.keys(config.hub.itemMetaData);
     }
 };
 
@@ -155,7 +159,7 @@ function configReaderFactory(directory){
 
 
 
-    /* Function runs through the game config directory and loads the configs into memory */ 
+    /* Function runs through the game config directory and loads the configs into memory */
     function updateConfigs(){
         // Reset the configs
         configs = {};
@@ -292,7 +296,7 @@ module.exports.games = (function(){
         configReader = configReaderFactory(gamesDir),
         gameConfigs = configReader.configs,
         functions = configReader.functions;
-    
+
 
 
     /* Get the URLs of the scripts for the given game */
@@ -391,14 +395,98 @@ function itemsConfigGenerator(relativeDir){
 module.exports.items = (function(){
     console.log("Loading configs for items");
 
-    return itemsConfigGenerator("items");
+    var itemsRelativeDir = config.app.itemsDir || "items",
+        itemsDir = path.join(__dirname, itemsRelativeDir),
+        spritesExt = ".png",
+        slots = module.exports.hub.getItemSlots(),
+        funcs = {},
+
+        slotFunctions = slots.map(function(slot){
+            return configReaderFactory(path.join(itemsDir, slot)).functions;
+        });
+
+    // Fill in config reader factory functions
+    for(var func in slotFunctions[0]){
+        funcs[func] = (function(func){
+            return function(){
+                var id = arguments[0];
+                for(var slot in slots){
+                    if(slotFunctions[slot].exists(id)){
+                        return slotFunctions[slot][func].apply(null, arguments);
+                    }
+                }
+                if(func === "exists"){
+                    return false;
+                }else{
+                    return undefined;
+                }
+            }
+        })(func);
+    }
+
+
+    funcs.getSpriteURL = function(id){
+        return itemsRelativeDir + "/" + id + "/" + "sprite" + spritesExt;
+    };
+    funcs.serveFile = function(req, res){
+        var itemId = req.params.item,
+            filename = req.params.filename;
+        if(filename.substr(filename.lastIndexOf(".")) === spritesExt){
+            for(var slot in slotFunctions){
+                if(slotFunctions[slot].exists(itemId)){
+                    var dir = slotFunctions[slot].getConfig(itemId, "directory"),
+                        p = path.join(dir, filename);
+                    console.log(p);
+
+                    res.sendFile(p);
+                    return true;
+                }
+            }
+        }
+
+        res.status(404).send("error, no item with that ID");
+        return false;
+    };
+
+    return funcs;
 })();
 
 
 module.exports.carriables = (function(){
     console.log("Loading configs for carriables");
 
-    return itemsConfigGenerator("carriables");
+    var carriablesRelativeDir = config.app.carriablesDir || "carriables",
+        carriablesDir = path.join(__dirname, carriablesRelativeDir),
+        carriablesSpritesExt = ".png",
+
+
+        // Generate the config readers and extract generated functions
+        configReader = configReaderFactory(carriablesDir),
+        carriableConfigs = configReader.configs,
+        functions = configReader.functions;
+
+    // Add the additional carriable functions
+
+    /* Get the full URL of the sprite that represents this carriable */
+    functions.getSpriteURL = function(id){
+        return carriablesRelativeDir + "/" + id + "/" + "sprite" + carriablesSpritesExt;
+    };
+    functions.serveFile = function(req, res){
+        var carriableId = req.params.carriable,
+            filename = req.params.filename;
+
+        if(carriableConfigs[carriableId] && filename.substr(filename.lastIndexOf(".")) === carriablesSpritesExt){
+            var dir = carriableConfigs[carriableId].directory,
+                p = path.join(dir, filename);
+
+                res.sendFile(p);
+        }else{
+            res.status(404).send("error, no item with that ID");
+        }
+    };
+
+
+    return functions;
 })();
 
 
