@@ -175,8 +175,12 @@ attach_event_listeners(canvas);
 */
 
 window.draw			= {};
-window.draw.init	= function(cnvs, background, sprites)
+//window.draw.init	= function(cnvs, background, sprites)
+window.draw.init	= function(cnvs, images)
 {
+	background	= images.background;
+	sprites		= images.sprites;
+	
 	var canvas	= initialise_canvas(cnvs, background);
 	attach_sprites(canvas, background, sprites);
 	attach_event_listeners(canvas);
