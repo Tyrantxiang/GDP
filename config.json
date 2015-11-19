@@ -15,9 +15,23 @@
 			"BACKPACK" : {
 				"default" : 2000,
 				"left": 0.45, "top": 0.51, "scale": 1, "select_scale": 1.5
+			},
+			"EYES" : {
+				"default" : 201,
+				"left": 0.74, "top": 0.26, "scale": 1, "select_scale": 1.5
+			},
+			"HEAD" : {
+				"default" : 301,
+				"left": 0.74, "top": 0.26, "scale": 1, "select_scale": 1.5
+			},
+			"SHIRT" : {
+				"default" : 401,
+				"left": 0.74, "top": 0.26, "scale": 1, "select_scale": 1.5
+			},
+			"SKIN" : {
+				"default" : 500,
+				"left": 0.74, "top": 0.26, "scale": 1, "select_scale": 1.5
 			}
-
-
 		}
 	}
 	
@@ -26,8 +40,8 @@
 	, "databases" : {
 		"main" : {
 			"hostname" : "localhost"
-			, "username" : "suser"
-			, "password" : "UUmtEAstuwsy4Bhs"
+			, "username" : "postgres"
+			, "password" : "password"
 			, "database" : "sgames"
 			, "schema" : "sschema"
 		}		
