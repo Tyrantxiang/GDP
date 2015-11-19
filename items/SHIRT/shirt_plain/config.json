@@ -1,7 +1,7 @@
 {
-  "id": 202,
-  "name": "Plain shirt",
-  "description": "A plain tshirt",
+  "id": 400,
+  "name": "Plain black shirt",
+  "description": "A plain black tshirt",
   "slot": "SHIRT",
   "price": 0
 }
