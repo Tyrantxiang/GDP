@@ -108,22 +108,26 @@ function clearEventListeners(name){
 }
 
 function authenticate(username, password, cb){
-	if(t) cb({authenticated : true});
-
-	ajaz("/authenticate", "POST",
-		{ username : username, password : password },
-		function(){
-			setToken(this.response.token);
-			cb({
-				authenticated : true
-			});
-		},
-		function(){
-			cb({
-				authenticated : false
-			});
-		}
-	);
+	if(authenticated()){
+		cb({
+					authenticated : false
+		});
+	}else{
+		ajaz("/authenticate", "POST",
+			{ username : username, password : password },
+			function(){
+				setToken(this.response.token);
+				cb({
+					authenticated : true
+				});
+			},
+			function(){
+				cb({
+					authenticated : false
+				});
+			}
+		);
+	}
 }
 
 function createSocket(cb){
@@ -520,6 +524,8 @@ window.comms = {
 	get_single_item_info : get_single_item_info,
 	get_user_equipped_items : get_user_equipped_items,
 	update_equipped_items : update_equipped_items,
+	get_all_carriables : get_all_carriables,
+	get_single_carriable : get_single_carriable,
 
 	
 	// Bag / carriables
