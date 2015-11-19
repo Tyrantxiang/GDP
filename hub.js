@@ -180,7 +180,7 @@ Hub.prototype.eventListeners = {
         
         db.createEqippedItems(
             function(results){
-                fn({success: "success"});
+				this.eventListeners.modify_hp_value(0, fn);
             }, function(){
                 fn({err: "Error in db"});
             },
@@ -335,10 +335,15 @@ Hub.prototype.eventListeners = {
 		var imgs = this.eventListeners.get_user_equipped_items(
 			{},
 			function(data){
-				for(var key in data){
+				var main = 0;
+				for(var i=0; i<data.length; i++){
 					var obj = data[key];
+					if(obj.slot==="SKIN") main = i;
 					urls.push(obj.url);
 				}
+				var tmp = urls[0];
+				urls[0]	= urls[i];
+				urls[i] = tmp;
 			}
 		);
         

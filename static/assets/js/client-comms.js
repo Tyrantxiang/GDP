@@ -359,9 +359,9 @@ function get_single_item_info(id, cb){
 					);
 }
 
-function get_user_unlocked_items(id, cb){
+function get_user_unlocked_items(cb){
 	client_socket_call( 'get_user_unlocked_items',
-						{id: id},
+						{},
 						cb
 					);
 }
@@ -375,7 +375,7 @@ function get_user_equipped_items(cb){
 
 function update_equipped_items(items, cb){
 	client_socket_call(	'update_eqipped_items',
-						{items: items},
+						items,
 						cb
 					);
 }
