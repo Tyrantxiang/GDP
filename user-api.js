@@ -141,9 +141,24 @@ var routes = {
                         db.createUser(
                             // Pass
                             function(id){
-                                res.json({
-                                    error : false    
-                                })
+								db.readUserByName(function(results){
+									var dbres = setUpDefaultItems(results.id);
+									console.log(dbres);
+									if(dbres[0]){
+										res.json({
+											error : false    
+										});
+									}else{
+										console.log("HERE2");
+										res.status(400).json({
+											error : dbres[1]
+										});
+									}
+								}, function(error){
+									res.status(400).json({
+										error : error
+									});
+								}, username);
                             },
                             // Fail
                             function(error){
@@ -169,7 +184,14 @@ var routes = {
 
 };
 
-
+function setUpDefaultItems(userid){
+	var okay = true, error = undefined;
+	var default_items = [200, 201, 300, 301, 400, 401, 500, 501];
+	for(var iid in default_items){
+		db.createUserInventory(function(){console.log("ok");}, function(err){error = err; console.log("" + iid);}, {"user_id": userid, "item_id": iid.toString(), "active": true});
+	}
+	return [okay, error];
+}
 
 
 
