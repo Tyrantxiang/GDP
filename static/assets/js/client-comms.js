@@ -108,6 +108,8 @@ function clearEventListeners(name){
 }
 
 function authenticate(username, password, cb){
+	if(t) cb(authenticated : true});
+
 	ajaz("/authenticate", "POST",
 		{ username : username, password : password },
 		function(){
