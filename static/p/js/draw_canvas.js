@@ -70,6 +70,7 @@ function attach_items(canvas, background, items)
 		var item_element	= items[i].image;
 		var item_instance	= new fabric.Image(item_element, {
 			name:			items[i].slot,
+			blah:			items[i].test,
 
 			left:			items[i].left * canvas.width,
 			top:			items[i].top * canvas.height,
@@ -132,7 +133,15 @@ function attach_event_listeners(canvas)
 	canvas.on('mouse:down', function(i) {
 		if(typeof i.target !== 'undefined')
 		{
-			utils.addSuccess('Selected ' + i.target.name + '.');
+			//utils.addSuccess('Selected ' + i.target.blah + '.');
+			comms.loadScriptFile("/p/js/launch_menu.js", function(){
+          		// Remove the login stuff
+          		//$("#main-content-area").empty();
+          		//$("body").removeClass("hub");
+
+          		//document.title = "The hub";
+          		launch_menu.load();
+        	});
 			i.target.setLeft(i.target.orig_left);
 			i.target.setTop(i.target.orig_top);
 			i.target.scale(i.target.default_scale);
@@ -146,7 +155,7 @@ window.draw.init	= function(cnvs, images)
 {
 	var background	= images.background;
 	var items		= images.items;
-	
+
 	var canvas	= initialise_canvas(cnvs, background);
 	attach_items(canvas, background, items);
 	attach_event_listeners(canvas);
