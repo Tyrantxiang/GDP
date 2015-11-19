@@ -251,11 +251,9 @@ function configReaderFactory(directory){
             /* Return a list of objects representing the avalible games */
             listAll : function(){
                 var a = [];
-                for(cfg in configs){
-                    a.push({
-                        id : cfg,
-                        name : config[cfg].name
-                    });
+				console.log(configs);
+                for(var cfg in configs){
+                    a.push(configs[cfg]);
                 }
                 return a;
             },
