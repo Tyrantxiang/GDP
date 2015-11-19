@@ -40,8 +40,8 @@
 	, "databases" : {
 		"main" : {
 			"hostname" : "localhost"
-			, "username" : "postgres"
-			, "password" : "password"
+			, "username" : "suser"
+			, "password" : "UUmtEAstuwsy4Bhs"
 			, "database" : "sgames"
 			, "schema" : "sschema"
 		}		
