@@ -197,6 +197,14 @@ Hub.prototype.eventListeners = {
 
         fn();
     },
+
+	get_all_carriables : function(data, fn){
+		fn(config.carriables.listAll());
+	},
+
+	get_single_carriable : function(data, fn){
+		fn(config.carriables.getConfig(data.id));
+	},
     
     use_carriable : function(data, fn){
         var carriable_id = data.carriable_id,
@@ -421,11 +429,6 @@ function Status(configObj){
         
         return multiplier;
     }
-}
-
-/////////////////////////////////////////////////////
-function getAvatarUnhealthyImage(){
-    return "/"
 }
 
 module.exports = function (cfg, db){

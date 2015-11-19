@@ -397,6 +397,20 @@ function set_bag(carriables, cb){
 					);
 }
 
+function get_all_carriables(cb){
+	client_socket_call(	'get_all_carriables',
+						{},
+						cb
+					);
+}
+
+function get_single_carriable(id, cb){
+	client_socket_call( 'get_single_carriable',
+						{"id": id},
+						cb
+					);
+}
+
 //MINIGAME SELECTION
 function list_minigames(cb){
 	client_socket_call(	'list_minigames',
