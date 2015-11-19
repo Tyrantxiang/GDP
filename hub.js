@@ -27,6 +27,12 @@ function getDatabase(){
     return db;
 }
 
+
+function generateSessionId(gameId){
+    return Math.floor(Math.random() * 10000);
+}
+
+
 var locations = {
     IN_HUB : 0,
     IN_MINIGAME : 1
@@ -47,6 +53,8 @@ function Hub(userId, comms){
 
     // The minigame ID that the player is currently in
     this.gameId = null;
+    // The ID for the current game session, generated randomly
+    this.gameSessionId = null;
 
     // The time the player started the current game
     this.gameStartTime = null;
@@ -238,12 +246,15 @@ Hub.prototype.eventListeners = {
                 assetBaseURL = config.games.getAssetsBaseURL(id),
                 scriptURLs = config.games.getScripts(id),
                 entryObject = config.games.getEntryObject(id),
-                version = config.games.getConfig(id, "version");
+                version = config.games.getConfig(id, "version"),
+
+                sessionId = generateSessionId(id);
 
 
             // Set the game we are in
             this.currentlocation = Hub.locations.IN_MINIGAME;
             this.gameId = id;
+            this.gameSessionId = sessionId;
             this.gameStartTime = new Date();
 
             fn({
@@ -252,7 +263,8 @@ Hub.prototype.eventListeners = {
                 assetBaseURL : assetBaseURL,
                 scriptURLs : scriptURLs,
                 entryObject : entryObject,
-                version : version
+                version : version,
+                sessionId : sessionId
             });
         }else{
             fn({
@@ -275,6 +287,7 @@ Hub.prototype.eventListeners = {
 
             this.currentlocation = Hub.locations.IN_HUB;
             this.gameId = undefined;
+            this.gameSessionId = undefined;
             this.gameStartTime = undefined;
 
             //update the users currency
