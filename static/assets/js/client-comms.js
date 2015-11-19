@@ -526,6 +526,7 @@ window.comms = {
 	update_equipped_items : update_equipped_items,
 	get_all_carriables : get_all_carriables,
 	get_single_carriable : get_single_carriable,
+	get_user_unlocked_items : get_user_unlocked_items,
 
 	
 	// Bag / carriables
