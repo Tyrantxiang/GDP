@@ -425,8 +425,8 @@ module.exports.items = (function(){
             return function(){
                 var id = arguments[0];
                 for(var i = 0; i < slots.length; i++){
-                    if(slotFunctions[slot[i]].exists(id)){
-                        return slotFunctions[slot[i]][func].apply(null, arguments);
+                    if(slotFunctions[i].exists(id)){
+                        return slotFunctions[i][func].apply(null, arguments);
                     }
                 }
                 if(func === "exists"){
