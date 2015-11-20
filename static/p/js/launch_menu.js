@@ -40,14 +40,15 @@
 			window.comms.get_all_carriables(function(data) {
 				for(var d in data)
 				{
-					var id	= 'carriable_' + data[d].id;
-					$('#backpack_available').append('<div id=' + id + '>' + data[d].name + '</div>');
+					// TODO: Add event listener to images, too.
+					var id		= 'carriable_' + data[d].id;
+					$('#backpack_available').append('<div id="' + id + '">' + data[d].name + '</div>');
+					$('#backpack_available').append('<img class="packing_images" src="' + data[d].url + '">');
+
 					$('#' + id).on('click', function(obj) {
 						$('#backpack_addition').append('<div>' + obj.currentTarget.innerHTML + '</div>');
 						array_to_add.push(obj.currentTarget.id.split('_')[1]);
 					});
-
-					$('#backpack_available').append('<img class="packing_images" src="' + data[d].url + '">');
 				};
 			});
 
