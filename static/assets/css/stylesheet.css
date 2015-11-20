@@ -230,6 +230,9 @@ body.login {
      height:100%;
      text-align:center;
      z-index: 1000;
+     border-style: solid;
+     border-width: medium;
+     border-color: black;
 }
 /*
 #overlay div {

@@ -1,109 +1,76 @@
 (function(){
 	window.launch_menu = {
 		load : function(){
-			canvas.style.visibility = "hidden";
+			var array_to_add	= [];
 
-			var array = [];
+			// Change test back to overlay in the two lines below once done testing.
+			$('#main-content-area').append('<div class="grey-box" id="test"></div>');
+			$('#test').html('');
 
-			var cont		= document.getElementById("main-content-area");
-			var container	= document.createElement("div");
-			container.id	= 'overlay';
+			$('#test').append('<div id="test2"></div>');
+			$('#test').append('<div id="overlay" class="col-md-8 grey-box">.col-md-8</div>');
 
-			var title			= document.createElement("div");
-			title.innerHTML 	= 'Pack your backpack!';
+//			$('#test').append('<div id="test2" class="row"><div>');
 
-			var current			= document.createElement("div");
-			current.innerHTML 	= 'Current contents:';
-			//window.comms.get_bag(function() {});
+//			$('#test2').append('<div id="overlay" class="col-md-8"></div>')
+			$('#overlay').append('<div id="title_container" class="row"></div>');
+			$('#title_container').append('<div class="col-md-12">Pack your backpack!</div>');
+//			$('#overlay').append('<div class="col-md-12">Pack your backpack!</div>');
+			$('#overlay').append('<div id="available_container" class="row"></div>');
+			$('#overlay').append('<div id="select_container" class="row"></div>');
 
-			var available		= document.createElement("div");
-			available.innerHTML = 'Available items:';
+//			$('#overlay').append('<div id="backpack_contents">Current contents:</div>');
+			$('#available_container').append('<div id="backpack_available" class="col-md-12">Available items:</div>');
+			$('#select_container').append('<div id="backpack_contents" class="col-md-6">Current contents:</div>');
+			$('#select_container').append('<div id="backpack_addition" class="col-md-6">To add:</div>');
+			$('#overlay').append('<div id="button_container" class="row"></div>');
+			$('#button_container').append('<button id="backpack_accept" class="col-md-6">Accept</button>');
+			$('#button_container').append('<button id="backpack_cancel" class="col-md-6">Cancel</button>');
+//			$('#overlay').append('<div id="backpack_available">Available items:</div>');
+//			$('#overlay').append('<div id="backpack_addition">To add:</div>');
+//			$('#overlay').append('<button id="backpack_accept">Accept</button>');
+//			$('#overlay').append('<button id="backpack_cancel">Cancel</button>');
+
+			window.comms.get_bag(function(data) {
+				// TODO: Call the individual items from ID.
+				console.log(data);
+				for(var d in data)
+				{
+					$('#backpack_contents').append('<div>' + data[d].name + '</div>');
+				};
+			});
+
 			window.comms.get_all_carriables(function(data) {
 				for(var d in data)
 				{
-					elem = document.createElement("div");
-					elem.innerHTML = data[d].name;
-					elem.addEventListener('click', function(){
-						el = document.createElement("div");
-						el.innerHTML = data[d].name;
-						to_add.appendChild(el);
-						array.push(data[d].id);
+					var id	= 'carriable_' + data[d].id;
+					$('#backpack_available').append('<div id=' + id + '>' + data[d].name + '</div>');
+					$('#' + id).on('click', function(obj) {
+						$('#backpack_addition').append('<div>' + obj.currentTarget.innerHTML + '</div>');
+						array_to_add.push(obj.currentTarget.id.split('_')[1]);
+						//console.log(array_to_add);
 					});
-					available.appendChild(elem);
+
+					// TODO: Fix sprite insertion (source appears to be wrong).
+					$('#backpack_available').append('<img src="' + data[d].sprite + '">');
 				};
 			});
 
-			var to_add			= document.createElement("div");
-			to_add.innerHTML 	= 'To add:';
-
-			/*
-			// Ignore for now, will revisit when comes to properly styling this.
-			var test = document.createElement("button");
-			test.class = "btn btn-primary";
-			var test2 = document.createElement("span");
-			test2.class = "glyphicon-ok";
-
-			test.appendChild(test2);
-			*/
-
-			var accept			= document.createElement("button");
-			accept.innerHTML 	= 'Accept';
-
-			var cancel			= document.createElement("button");
-			cancel.innerHTML 	= 'Cancel';
-
-
-			container.appendChild(title);
-
-			container.appendChild(current);
-			container.appendChild(available);
-			container.appendChild(to_add);
-			container.appendChild(accept);
-			container.appendChild(cancel);
-			//container.appendChild(test);
-
-			cont.appendChild(container);
-
-			accept.addEventListener('click', function(){
-    			container.style.visibility = (container.style.visibility == 'visible') ? 'hidden' : 'visible';
-    			canvas.style.visibility = 'visible';
-    			console.log('accepted');
+			$('#backpack_accept').on('click', function(obj) {
+				$('#overlay').css('visibility', 'hidden');
+				$('#canvas').css('visibility', 'visible');
+				// Fix tomorrow, what is this meant to take?
+				console.log(array_to_add);
+				window.comms.set_bag(array_to_add, function() {});
 			});
 
-			cancel.addEventListener('click', function(){
-    			container.style.visibility = (container.style.visibility == 'visible') ? 'hidden' : 'visible';
-    			canvas.style.visibility = 'visible';
-    			console.log('cancelled');
+			$('#backpack_cancel').on('click', function(obj) {
+				$('#overlay').css('visibility', 'hidden');
+				$('#canvas').css('visibility', 'visible');
 			});
 
-			window.comms.get_bag(function(data) {
-				console.log(data);
-			});
-
-			/*
-			window.comms.get_bag(function(data) {
-				for(var d in data)
-				{
-
-				};
-			});
-			*/
-
-			/*
-			window.comms.get_single_carriable(101, function(data) {
-				console.log('hi2');
-				console.log(data);
-			})
-			*/
-
-			/*
-			window.comms.get_single_item_info(501, function(obj) {
-				console.log('hi2');
-				console.log(obj);
-			});
-			*/
-
-			container.style.visibility = (container.style.visibility == 'visible') ? 'hidden' : 'visible';
+			$('#canvas').css('visibility', 'hidden');
+			$('#overlay').css('visibility', 'visible');
 		}
 	};
 })();
