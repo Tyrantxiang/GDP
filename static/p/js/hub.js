@@ -22,11 +22,13 @@
     function clearWindowFunctions(){
         delete window.comms;
         delete window.draw;
+        delete window.hub;
     }
 
     function recoverWindowFunctions(){
         window.comms = comms;
         window.draw = draw;
+        window.hub = hub;
     }
 
 
