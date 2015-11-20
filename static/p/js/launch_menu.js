@@ -32,11 +32,14 @@
 //			$('#overlay').append('<button id="backpack_cancel">Cancel</button>');
 
 			window.comms.get_bag(function(data) {
-				// TODO: Call the individual items from ID.
-				console.log(data);
+				//console.log(data);
 				for(var d in data)
 				{
-					$('#backpack_contents').append('<div>' + data[d].name + '</div>');
+					//$('#backpack_contents').append('<div>' + data[d].name + '</div>');
+					window.comms.get_single_carriable(data[d], function(obj) {
+						console.log(obj);
+						$('#backpack_contents').append('<div>' + obj.name + '</div>');
+					});
 				};
 			});
 
@@ -52,7 +55,7 @@
 					});
 
 					// TODO: Fix sprite insertion (source appears to be wrong).
-					$('#backpack_available').append('<img src="' + data[d].sprite + '">');
+					$('#backpack_available').append('<img src="' + data[d].url + '">');
 				};
 			});
 
