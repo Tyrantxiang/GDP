@@ -18,19 +18,19 @@
 			},
 			"EYES" : {
 				"default" : 201,
-				"left": 0.74, "top": 0.26, "scale": 1, "select_scale": 1.5
+				"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
 			},
 			"HEAD" : {
 				"default" : 301,
-				"left": 0.74, "top": 0.26, "scale": 1, "select_scale": 1.5
+				"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
 			},
 			"SHIRT" : {
 				"default" : 401,
-				"left": 0.74, "top": 0.26, "scale": 1, "select_scale": 1.5
+				"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
 			},
 			"SKIN" : {
 				"default" : 500,
-				"left": 0.74, "top": 0.26, "scale": 1, "select_scale": 1.5
+				"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
 			}
 		}
 	}
