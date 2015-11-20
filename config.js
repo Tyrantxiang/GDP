@@ -90,15 +90,32 @@ function configReaderFactory(directory){
         if(update || subDirectories.length === 0){
 
             fs.readdir(directory, function(err, list){
-                subDirectories = list.map(function(f){
-                    // Make sure it is a directory
-                    var dir = path.join(directory, f),
-                        stat = fs.statSync(dir);
-                    if(stat.isDirectory()){
-                        return dir;
+                if(err){
+                    throw new Error("Count not get subdirs");
+                }
+                var latch = (function(num, complete){
+                    return function(){
+                        num--;
+                        if(num === 0){
+                            complete();
+                        }
                     }
+                })(list.length, function(){
+                    cb(subDirectories);
+                })
+
+                subDirectories = [];
+
+                list.forEach(function(f){
+                    // Make sure it is a directory
+                    var dir = path.join(directory, f);
+                    fs.stat(dir, function(err, stat){
+                        if(stat.isDirectory()){
+                            subDirectories.push(dir);
+                            latch();
+                        }
+                    });
                 });
-                cb(subDirectories);
             });
 
         }else{
