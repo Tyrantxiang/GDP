@@ -1,7 +1,6 @@
 {
   "id": 103,
   "name": "Kidney Medicine",
-  "sprite": "/items/kidneymedicine/sprite.png",
   "effects": [
     {
       "name": "3",

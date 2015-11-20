@@ -213,6 +213,7 @@ Hub.prototype.eventListeners = {
 	get_all_carriables : function(data, fn){
 		fn(config.carriables.listAll().map(function(l){
             l.url = config.items.getSpriteURL(l.id);
+            return l;
         }));
 	},
 

@@ -1,7 +1,6 @@
 {
   "id": 101,
   "name": "Apple",
-  "sprite": "/items/apple/sprite.png",
   "effects": [
     {
       "id": 1,

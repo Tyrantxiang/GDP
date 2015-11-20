@@ -1,7 +1,6 @@
 {
   "id": 102,
   "name": "Insulin",
-  "sprite": "/items/insulin/sprite.png",
   "effects": [
     {
       "id": 1,
