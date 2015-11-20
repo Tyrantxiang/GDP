@@ -108,26 +108,20 @@ function clearEventListeners(name){
 }
 
 function authenticate(username, password, cb){
-	if(authenticated()){
-		cb({
-					authenticated : false
-		});
-	}else{
-		ajaz("/authenticate", "POST",
-			{ username : username, password : password },
-			function(){
-				setToken(this.response.token);
-				cb({
-					authenticated : true
-				});
-			},
-			function(){
-				cb({
-					authenticated : false
-				});
-			}
-		);
-	}
+	ajaz("/authenticate", "POST",
+		{ username : username, password : password },
+		function(){
+			setToken(this.response.token);
+			cb({
+				authenticated : true
+			});
+		},
+		function(){
+			cb({
+				authenticated : false
+			});
+		}
+	);
 }
 
 function createSocket(cb){
