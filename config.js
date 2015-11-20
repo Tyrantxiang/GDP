@@ -268,7 +268,6 @@ function configReaderFactory(directory){
             /* Return a list of objects representing the avalible games */
             listAll : function(){
                 var a = [];
-				console.log(configs);
                 for(var cfg in configs){
                     a.push(configs[cfg]);
                 }
@@ -462,6 +461,13 @@ module.exports.items = (function(){
         res.status(404).send("error, no item with that ID");
         return false;
     };
+    funcs.listAll = function(){
+        var a = [];
+        for(var slot in slotFunctions){
+            a.concat(slotFunctions[slot].listAll());
+        }
+        return a;
+    }
 
     return funcs;
 })();
