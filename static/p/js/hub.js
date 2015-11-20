@@ -8,7 +8,7 @@
         // Whether we have loaded already
         initalFilesLoaded = false,
         // The hub canvas
-        canvas,
+        hubCanvas,
         // The content area to put the canvas
         container = document.getElementById("main-content-area"),
         // The local comms object
@@ -164,13 +164,12 @@
 
                             comms.loadScriptFile("//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js", function(){
                                 comms.loadScriptFile("/p/js/draw_canvas.js", function(){
-                                    canvas = document.createElement("canvas");
-                                    canvas.id = "canvas";
+                                    hubCanvas = document.createElement("canvas");
 
                                     try{
                                         container.removeChild(loadingContainer);
                                     }catch(e){}
-                                    container.appendChild(canvas);
+                                    container.appendChild(hubCanvas);
 
                                     initalFilesLoaded = true;
 
@@ -178,7 +177,7 @@
                                     comms = window.comms;
                                     draw = window.draw;
 
-                                    draw.init(canvas, getAssetsByType("images"));
+                                    draw.init(hubCanvas, getAssetsByType("images"));
                                 });
                             }, false);
                         }
@@ -225,6 +224,8 @@
                     }
                 }
             })(data.scripts, function(){
+                container.appendChild(canvas);
+                container.removeChild(hubCanvas);
                 var e = window[entryObject];
                 e.call(e, api, canvas, assetsDir);
             });
@@ -247,7 +248,6 @@
 
     // Object for a Game API system
     function GameAPI(gameId, gameName, sessionId, canvas, assetBaseURL, version){
-        this.canvas = canvas;
         this.gameName = gameName;
         this.assetBaseURL = assetBaseURL;
         this.version = version;
@@ -255,10 +255,13 @@
 
         this.getGameId = function(){
             return gameId;
-        }
+        };
         this.getSessionId = function(){
             return sessionId;
-        }
+        };
+        this.getCanvas = function(){
+            return canvas;
+        };
     }
     // Add to the prototype
     (function(proto){
@@ -269,6 +272,11 @@
                 }
 
                 //return to hub here!
+                container.removeChild(this.getCanvas());
+                container.appendChild(hubCanvas);
+
+                // Recover the window functions
+                recoverWindowFunctions();
             });
         };
 
