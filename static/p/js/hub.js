@@ -12,7 +12,7 @@
         // The content area to put the canvas
         container = document.getElementById("main-content-area"),
         // The local comms object
-        comms,
+        comms = window.comms,
         // Local draw object
         draw;
 
@@ -85,10 +85,10 @@
             return value;
         };
 
-        return loadingBar;        
+        return loadingBar;
     }
 
-    
+
     // The hub object
     var hub = {};
 
@@ -155,7 +155,7 @@
                         });
                         i.addEventListener("error", fail);
                         i.src = background.url;
-                        
+
 
                         function loadComplete(){
                             // Add to the images object
@@ -213,6 +213,25 @@
                 );
 
 
+            // Remove window functions
+            clearWindowFunctions();
+
+            // Load the scripts into memory
+            var latch = (function(num, complete){
+                return function(){
+                    num--;
+                    if(num === 0){
+                        complete();
+                    }
+                }
+            })(data.scripts, function(){
+                var e = window[entryObject];
+                e.call(e, api, canvas, assetsDir);
+            });
+
+            data.scripts.forEach(function(script){
+                comms.loadScriptFile(script, latch);
+            });
 
 
         });
@@ -222,4 +241,60 @@
 
 
 
+
+
+
+
+    // Object for a Game API system
+    function GameAPI(gameId, gameName, sessionId, canvas, assetBaseURL, version){
+        this.canvas = canvas;
+        this.gameName = gameName;
+        this.assetBaseURL = assetBaseURL;
+        this.version = version;
+
+
+        this.getGameId = function(){
+            return gameId;
+        }
+        this.getSessionId = function(){
+            return sessionId;
+        }
+    }
+    // Add to the prototype
+    (function(proto){
+        proto.finishGame = function(score, currency){
+            comms.finish_minigame(this.getGameId(), score, currency, function(data){
+                if(err){
+                    utils.setError(JSON.stringify(err));
+                }
+
+                //return to hub here!
+            });
+        };
+
+        proto.useItem = function(itemId, cb){
+            comms.use_item(itemId, cb);
+        };
+
+        proto.modifyHealth = function(changeVal){
+            comms.modify_hp_value(changeVal, cb);
+        };
+
+        proto.modifyStatus = function(statusName, changeVal){
+            comms.set_status_value(statusName, changeVal, cb);
+        };
+
+        proto.getAvatarImage = function(){
+
+        };
+
+        proto.getAssetURL = function(asset){
+            return this.assetBaseURL + "/" + asset;
+        };
+
+    })(GameAPI.prototype);
+
+
+
+    window.hub = hub;
 })();
