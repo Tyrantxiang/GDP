@@ -366,45 +366,6 @@ module.exports.games = (function(){
 
 
 
-/* Wrapper for item and carriable configs
- *
- */
-function itemsConfigGenerator(relativeDir){
-
-    var itemsRelativeDir = config.app.itemsDir || relativeDir,
-        itemsDir = path.join(__dirname, itemsRelativeDir),
-        itemsSpritesExt = ".png",
-
-
-        // Generate the config readers and extract generated functions
-        configReader = configReaderFactory(itemsDir),
-        itemConfigs = configReader.configs,
-        functions = configReader.functions;
-
-    // Add the additional item functions
-
-    /* Get the full URL of the sprite that represents this item */
-    functions.getSpriteURL = function(id){
-        return itemsRelativeDir + "/" + id + "/" + "sprite" + itemsSpritesExt;
-    };
-    functions.serveFile = function(req, res){
-        var itemId = req.params.item,
-            filename = req.params.filename;
-
-        if(itemConfigs[itemId] && filename.substr(filename.lastIndexOf(".")) === itemsSpritesExt){
-            var dir = itemConfigs[itemId].directory,
-                p = path.join(dir, filename);
-
-                res.sendFile(p);
-        }else{
-            res.status(404).send("error, no item with that ID");
-        }
-    };
-
-
-    return functions;
-
-}
 
 module.exports.items = (function(){
     console.log("Loading configs for items");
