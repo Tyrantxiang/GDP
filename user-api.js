@@ -189,7 +189,7 @@ function setUpDefaultItems(userid){
 	var default_items = [200, 201, 300, 301, 400, 401, 500, 501];
 	for(var i=0; i<default_items.length; i++){
 		var iid = default_items[i];
-		db.createUserInventory(function(){console.log("ok");}, function(err){error = err; console.log("" + iid);}, {"user_id": userid, "item_id": iid.toString(), "active": true});
+		db.createUserInventory(function(){}, function(err){error = err;}, {"user_id": userid, "item_id": iid.toString(), "active": true});
 	}
 	return [okay, error];
 }
