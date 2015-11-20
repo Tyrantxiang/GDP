@@ -219,7 +219,7 @@ function configReaderFactory(directory){
     /* Sets up all the watchers to check if the config files change */
     function updateWatchers(){
         // Close all open watchers
-        for(w in configWatchers){
+        for(var w in configWatchers){
             configWatchers[w].close();
             delete configWatchers[w];
         }
