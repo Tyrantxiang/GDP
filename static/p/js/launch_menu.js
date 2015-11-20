@@ -9,7 +9,7 @@
 
 			// TODO: Do I need both of these?
 			$('#test').append('<div id="test2"></div>');
-			$('#test2').append('<div id="overlay" class="col-md-8 grey-box">.col-md-8</div>');
+			$('#test2').append('<div id="overlay" class="col-md-8 grey-box"></div>');
 
 			$('#overlay').append('<div id="title_container" class="row"></div>');
 			$('#overlay').append('<div id="available_container" class="row"></div>');
