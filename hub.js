@@ -189,7 +189,11 @@ Hub.prototype.eventListeners = {
     },
 
     get_bag : function(data, fn){
-        fn( {carriables: this.bag.getCarriables()} );
+		if(this.bag === undefined){
+			this.bag = new Bag();
+		}
+		var bagret = this.bag.getCarriables();
+        fn( {carriables: bagret} );
     },
 
     set_bag : function(data, fn){
@@ -378,11 +382,11 @@ function Bag(){
     // Modelled as an array of carriables contained in the bag
     var carriables = [];
 
-    function getCarriables(){
+    this.getCarriables = function(){
         return this.carriables;
     }
 
-    function setCarriables(carriablesArray){
+    this.setCarriables = function(carriablesArray){
         if(Array.isArray(carriablesArray)) this.carriables = carriablesArray;
     }
 }
