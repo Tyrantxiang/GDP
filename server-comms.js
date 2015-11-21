@@ -18,11 +18,17 @@ function Comms(socket){
     this.listeners = {};
 };
 
-Comms.prototype.setEventListeners = function (funcs){
+Comms.prototype.setEventListeners = function (funcs, thisValue){
     for(var name in funcs){
-        this.socket.on(name, funcs[name]);
-        this.listeners[name] = funcs[name];
+        this.addEventListener(name, funcs[name], thisValue);
     }
+};
+Comms.prototype.addEventListener = function (name, func, thisValue){
+    if(thisValue){
+        func = func.bind(thisValue);
+    }
+    this.socket.on(name, func);
+    this.listeners[name] = func;
 };
 Comms.prototype.send = {
     notification : function (level, message){

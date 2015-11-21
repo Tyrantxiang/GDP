@@ -197,9 +197,6 @@ Hub.prototype.eventListeners = {
     },
 
     get_bag : function(data, fn){
-		if(this.bag === undefined){
-			this.bag = new Bag();
-		}
 		var bagret = this.bag.getCarriables();
         fn( {carriables: bagret} );
     },
@@ -242,7 +239,7 @@ Hub.prototype.eventListeners = {
 
     launch_minigame : function(data, fn){
         // Get all of the items required for the game and send them to the client
-        var id = data.gameId;
+        var id = data.id;
 
         if(config.games.exists(id)){
             var name = config.games.getName(id),
@@ -285,7 +282,7 @@ Hub.prototype.eventListeners = {
                             game_id: id,
                             start_time: this.gameStartTime.toISOString(),
                             end_time: (new Date()).toISOString(),
-                            score: score
+                            score: score || 0
                         };
 
             this.currentlocation = Hub.locations.IN_HUB;
@@ -297,15 +294,13 @@ Hub.prototype.eventListeners = {
             db.readUserById(function(result){
                                 db.updateUserCurrency(function(){}, function(){}, result.currency+data.currency, this.user_id);
                             },
-                            function(err){
-                                fn( {err: "Error reading user ID or "} );
-                            },
+                            function(){},
                             this.user_id
             );
 
             // Save score in database
             db.createPlay(  function(){ fn(); },
-                            function(){ fn({err: "An error occured"}); },
+                            function(err){ fn({err: err}); },
                             playObj
                         );
         }else{
@@ -381,8 +376,8 @@ Hub.prototype.eventListeners = {
     
     modify_status_value : function(data, fn){
         var arr = config.statuses.listAll();
-        for(cfg in arr){
-            if(cfg.name === data["status"]){
+        for(var cfg in arr){
+            if(this.statuses[cfg.id] && cfg.name === data["status"]){
                 this.statuses[cfg.id].addToValue(data.value);
             }
         }
@@ -466,7 +461,7 @@ module.exports = function (cfg, db){
             var h = new Hub(userId, comms);
 
             // Set up the hub event listeners for the comms module
-            comms.setEventListeners(h.eventListeners);
+            comms.setEventListeners(h.eventListeners, h);
 
             return h;
         }
