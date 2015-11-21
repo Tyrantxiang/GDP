@@ -7,6 +7,8 @@
         },
         // Whether we have loaded already
         initalFilesLoaded = false,
+        // Hub canvas container
+        hubCanvasContainer,
         // The hub canvas
         hubCanvas,
         // The content area to put the canvas
@@ -164,12 +166,17 @@
 
                             comms.loadScriptFile("//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js", function(){
                                 comms.loadScriptFile("/p/js/draw_canvas.js", function(){
+                                    // Remove loading bar and load the canvas
+                                    hubCanvasContainer = document.createElement("div");
                                     hubCanvas = document.createElement("canvas");
 
                                     try{
                                         container.removeChild(loadingContainer);
                                     }catch(e){}
-                                    container.appendChild(hubCanvas);
+
+                                    hubCanvasContainer.appendChild(hubCanvas);
+
+                                    container.appendChild(hubCanvasContainer);
 
                                     initalFilesLoaded = true;
 
@@ -200,6 +207,7 @@
 
             // Create a new canvas for the game
             var canvas = document.createElement("canvas"),
+                canvasContainer = document.createElement("div"),
 
                 // Create the API object
                 api = new GameAPI(
@@ -207,6 +215,7 @@
                     data.name,
                     data.sessionId,
                     canvas,
+                    canvasContainer,
                     data.assetBaseURL,
                     data.version
                 );
@@ -223,15 +232,17 @@
                         complete();
                     }
                 }
-            })(data.scripts, function(){
-                container.appendChild(canvas);
-                container.removeChild(hubCanvas);
-                var e = window[entryObject];
-                e.call(e, api, canvas, assetsDir);
+            })(data.scriptURLs.length, function(){
+                container.removeChild(hubCanvasContainer);
+                canvasContainer.appendChild(canvas);
+                container.appendChild(canvasContainer);
+
+                var e = window[data.entryObject];
+                e.run.call(e, api, canvas, data.assetBaseURL);
             });
 
-            data.scripts.forEach(function(script){
-                comms.loadScriptFile(script, latch);
+            data.scriptURLs.forEach(function(script){
+                comms.loadScriptFile(script, latch, false);
             });
 
 
@@ -247,10 +258,11 @@
 
 
     // Object for a Game API system
-    function GameAPI(gameId, gameName, sessionId, canvas, assetBaseURL, version){
+    function GameAPI(gameId, gameName, sessionId, canvas, canvasContainer, assetBaseURL, version){
         this.gameName = gameName;
         this.assetBaseURL = assetBaseURL;
         this.version = version;
+        this.canvas = canvas;
 
 
         this.getGameId = function(){
@@ -259,25 +271,25 @@
         this.getSessionId = function(){
             return sessionId;
         };
-        this.getCanvas = function(){
-            return canvas;
+        this.getCanvasContainer = function(){
+            return canvasContainer;
         };
     }
     // Add to the prototype
     (function(proto){
         proto.finishGame = function(score, currency){
             comms.finish_minigame(this.getGameId(), score, currency, function(data){
-                if(err){
-                    utils.setError(JSON.stringify(err));
+                if(data.err){
+                    utils.addError(JSON.stringify(data.err));
                 }
 
                 //return to hub here!
-                container.removeChild(this.getCanvas());
-                container.appendChild(hubCanvas);
+                container.removeChild(this.getCanvasContainer());
+                container.appendChild(hubCanvasContainer);
 
                 // Recover the window functions
                 recoverWindowFunctions();
-            });
+            }.bind(this));
         };
 
         proto.useItem = function(itemId, cb){

@@ -316,7 +316,7 @@ module.exports.games = (function(){
     /* Get the URLs of the scripts for the given game */
     functions.getScripts = function(id){
         var scripts = gameConfigs[id].scripts.map(function(s){
-            return gamesRelativeDir + "/" + id + "/" + "scripts" + "/" + s;
+            return "/" + gamesRelativeDir + "/" + id + "/" + "scripts" + "/" + s;
         });
 
         return scripts;
@@ -324,7 +324,7 @@ module.exports.games = (function(){
 
     /* Get the base URL directory that contains the assets for the given game */
     functions.getAssetsBaseURL = function(id){
-        return gamesRelativeDir + "/" + id + "/" + "assets/";
+        return "/" + gamesRelativeDir + "/" + id + "/" + "assets/";
     };
 
     /* Gets the object that the `run` function will be called on client side to start the game */

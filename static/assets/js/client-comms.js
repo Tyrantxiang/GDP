@@ -534,7 +534,9 @@ window.comms = {
 	launch_minigame : launch_minigame,
 	get_scores : get_scores,
 	modify_hp_value : modify_hp_value,
-	modify_status_value : modify_status_value
+	modify_status_value : modify_status_value,
+
+	finish_minigame : finish_minigame
 
 	
 }
