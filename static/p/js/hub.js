@@ -279,7 +279,7 @@
     (function(proto){
         proto.finishGame = function(score, currency){
             comms.finish_minigame(this.getGameId(), score, currency, function(data){
-                if(data.err){
+                if(data && data.err){
                     utils.addError(JSON.stringify(data.err));
                 }
 
