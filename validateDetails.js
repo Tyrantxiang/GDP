@@ -1,9 +1,11 @@
 'use strict';
 
 /*
- * buildDB.js
+ * validateDetails.js
  * 
- * Runs the build script on the database
+ * Used to validate common things throughout app
+ * Just add new properties to constraints objects to add more things to validate!
+ * See http://validatejs.org/
  *
  * @authors Joe Ringham
 */
