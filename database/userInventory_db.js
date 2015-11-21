@@ -1,22 +1,23 @@
 'use strict';
 
 /*
- * user_inventory.js
+ * userInventory_db.js
  * 
  * Queries for the user_inventory database table
  *
  * @authors Joe Ringham
 */
 
-var user_inventory = {}
+var userInventoryDB = {}
 	, TABLE_NAME = "user_inventory"
 	, dbutils = require('./dbutils.js')
+	, validateDetails = require("../validateDetails.js")
 	;
 
 //Creates a user_inventory entry
-user_inventory.createUserInventory = function(pass, fail, inventoryObj) {
+userInventoryDB.createUserInventory = function(pass, fail, inventoryObj) {
 	//Validates the details given
-	validateInventoryDetails(queryExecution, fail, inventoryObj);
+	validateDetails(queryExecution, fail, inventoryObj);
 	
 	//After validation, persists the play obj
 	function queryExecution(){
@@ -25,11 +26,11 @@ user_inventory.createUserInventory = function(pass, fail, inventoryObj) {
 }
 
 //Gets the user_inventory entry that matches the given id
-user_inventory.readUserInventoryById = function(pass, fail, id){
+userInventoryDB.readUserInventoryById = function(pass, fail, id){
 	dbutils.readById(pass, fail, TABLE_NAME, ["id", "user_id", "item_id", "active", "created"], id);
 }
 
-user_inventory.getInventoryForUser = function(pass, fail, user_id){
+userInventoryDB.getInventoryForUser = function(pass, fail, user_id){
 	dbutils.readLatestActive(resultsFormatting, fail, TABLE_NAME, 
 		["item_id"], ["user_id, item_id"], {active: true, user_id: user_id});
 
@@ -46,16 +47,8 @@ user_inventory.getInventoryForUser = function(pass, fail, user_id){
 }
 
 //Deletes the entry that matches the id
-user_inventory.deleteUserInventory = function(pass, fail, id){
+userInventoryDB.deleteUserInventory = function(pass, fail, id){
 	dbutils.deleteById(pass, fail, TABLE_NAME, id);
 }
 
-/*
- * HELPER FUNCTIONS
-*/
-
-function validateInventoryDetails(pass, fail, inventoryObj){
-	pass();
-}
-
-module.exports = user_inventory;
+module.exports = userInventoryDB;

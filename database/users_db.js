@@ -1,14 +1,14 @@
 'use strict';
 
 /*
- * usersData.js
+ * users_db.js
  * 
  * Queries for the Users database table
  *
  * @authors Joe Ringham
 */
 
-var usersData = {}
+var usersDB = {}
 	, TABLE_NAME = "users"
 	, dbutils = require('./dbutils.js')
 	, bcrypt = require('bcrypt')
@@ -17,7 +17,7 @@ var usersData = {}
 
 //Creates an entry on the user table
 // Includes validation of details and password salting
-usersData.createUser = function(pass, fail, userObj) {
+usersDB.createUser = function(pass, fail, userObj) {
 	//Validates the details given
 	validateDetails(saltPassword, fail, userObj);
 	
@@ -36,19 +36,19 @@ usersData.createUser = function(pass, fail, userObj) {
 }
 
 //Reads a user entry given an id
-usersData.readUserById = function(pass, fail, id){
+usersDB.readUserById = function(pass, fail, id){
 	dbutils.readById(pass, fail, TABLE_NAME, ["id", "username", "dob", "currency", "created", "modified"], id);
 }
 
 //Reads a user entry given a username
-usersData.readUserByName = function(pass, fail, username){
+usersDB.readUserByName = function(pass, fail, username){
 	dbutils.readSingle(pass, fail, TABLE_NAME, ["id", "username", "dob", "currency", "created", "modified"],
 		{"username": username}, null);
 }
 
 //Authenticates a user given a username and password
 // Verifies the password is correct against the stored saltedpassword
-usersData.authenticateUser = function(pass, fail, username, givenpw){
+usersDB.authenticateUser = function(pass, fail, username, givenpw){
 	dbutils.readSingle(comparePasswords, fail, TABLE_NAME, ["id", "username", "saltedpw", "dob", "currency", "created", "modified"],
 		{"username": username});
 
@@ -73,7 +73,7 @@ usersData.authenticateUser = function(pass, fail, username, givenpw){
 }
 
 // This will always succed, as a "fail" is it not existing, which actually means it doesn't exist
-usersData.checkUsernameExists = function(pass, fail, username){
+usersDB.checkUsernameExists = function(pass, fail, username){
 	dbutils.readSingle(exists, notExists, TABLE_NAME, [ "id" ], { username : username });
 
 	function exists(){
@@ -89,7 +89,7 @@ usersData.checkUsernameExists = function(pass, fail, username){
 }
 
 //Updates all user details provided in the updatedUserObj
-usersData.updateUserDetails = function(pass, fail, updatedUserObj, id){
+usersDB.updateUserDetails = function(pass, fail, updatedUserObj, id){
 	//Validates the details given
 	validateDetails(saltPasswordIfExists, fail, updatedUserObj);
 
@@ -112,7 +112,7 @@ usersData.updateUserDetails = function(pass, fail, updatedUserObj, id){
 }
 
 //Updates only currency for a user entry
-usersData.updateUserCurrency = function(pass, fail, newCurrency, id){
+usersDB.updateUserCurrency = function(pass, fail, newCurrency, id){
 	validateDetails(queryExecution, fail, {currency: newCurrency});
 
 	function queryExecution(){
@@ -121,7 +121,7 @@ usersData.updateUserCurrency = function(pass, fail, newCurrency, id){
 }
 
 //Deletes a user entry given an id
-usersData.deleteUser = function(pass, fail, id){
+usersDB.deleteUser = function(pass, fail, id){
 	dbutils.deleteById(pass, fail, TABLE_NAME, id);
 }
 
@@ -141,4 +141,4 @@ function createSaltedPassword(pass, fail, password){
 	});
 }
 
-module.exports = usersData;
+module.exports = usersDB;

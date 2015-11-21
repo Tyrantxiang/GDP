@@ -10,7 +10,6 @@
 */
 
 var db = {}
-	//, dbutils = 
 	, databaseReq = [
 		require('./dbutils.js')
 		, require('./users_db.js')

@@ -1,20 +1,20 @@
 'use strict';
 
 /*
- * playsData.js
+ * plays_db.js
  * 
  * Queries for the Plays database table
  *
  * @authors Joe Ringham
 */
 
-var playsData = {}
+var playsDB = {}
 	, TABLE_NAME = "plays"
 	, dbutils = require('./dbutils.js')
 	, validateDetails = require("../validateDetails.js")
 	;
 
-playsData.createPlay = function(pass, fail, playObj) {
+playsDB.createPlay = function(pass, fail, playObj) {
 	//Validates the details given
 	validateDetails(queryExecution, fail, playObj);
 	
@@ -25,7 +25,7 @@ playsData.createPlay = function(pass, fail, playObj) {
 }
 
 //Gets the play entry that matches the given id
-playsData.readPlayById = function(pass, fail, id){
+playsDB.readPlayById = function(pass, fail, id){
 	dbutils.readById(pass, fail, TABLE_NAME, ["id", "user_id", "game_id", "start_time", "end_time", "score", "created"], id);
 }
 
@@ -49,7 +49,7 @@ orderBy = {
 limit = 10
 ======> LIMIT 10
 */
-playsData.getScores = function(pass, fail, filterConds, orderBy, limit){
+playsDB.getScores = function(pass, fail, filterConds, orderBy, limit){
 
 	dbutils.prepareFilterString(queryCreation, fail, filterConds);
 
@@ -88,8 +88,8 @@ playsData.getScores = function(pass, fail, filterConds, orderBy, limit){
 }
 
 //Deletes the entry that matches the id
-playsData.deletePlay = function(pass, fail, id){
+playsDB.deletePlay = function(pass, fail, id){
 	dbutils.deleteById(pass, fail, TABLE_NAME, id);
 }
 
-module.exports = playsData;
+module.exports = playsDB;

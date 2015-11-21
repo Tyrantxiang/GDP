@@ -3,8 +3,7 @@
 /*
  * test.js
  * 
- * Interface for all database interaction
- * Maps all functions in different modules into this one interface
+ * Scrap file used for testing
  *
  * @authors Joe Ringham
 */
