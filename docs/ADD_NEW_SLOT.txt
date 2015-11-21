@@ -1,0 +1,9 @@
+Database:
+
+ALTER TABLE user_equipped ADD COLUMN {slot_name} text NULL;
+
+
+Directory Structure:
+(assuming in root folder of application)
+
+mkdir items/{slot_name}
