@@ -33,7 +33,7 @@ function startApp(db){
 	app.use(parser.urlencoded({ extended : true }));
 
 	// Set up the authentication middleware
-	app.use(["/games", "/p"], auth.express_middleware);
+	app.use([/*"/games",*/ "/p"], auth.express_middleware);
 
 
 	// Set the static files to be served
