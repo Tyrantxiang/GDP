@@ -42,7 +42,9 @@ var constraints = {
 	}
 	, dob : {
 		datetime : {
-			latest : new Date(Date.now() - (1000 * 60 * 60 * 24 * 365 * 10))
+			get latest () {
+			    return new Date(Date.now() - (1000 * 60 * 60 * 24 * 365 * 10));
+			}
 		}
 	}
 	, currency : {
@@ -53,13 +55,13 @@ var constraints = {
 	}
 	, start_time : {
 		datetime : {
-			latest : new Date(Date.now())
+			get latest () { return new Date() }
 		}
 	}
 	, end_time : {
 		datetime : {
 			earliest : "start_time"
-			, latest : new Date(Date.now())
+			, get latest () { return new Date() }
 		} 
 	}
 	, score : {
