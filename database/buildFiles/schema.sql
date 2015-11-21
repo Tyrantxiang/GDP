@@ -79,10 +79,10 @@ CREATE TABLE "{schema}".user_inventory
 CREATE TABLE "{schema}".user_equipped
 ( id 				serial 		NOT NULL
 , user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
+, created			timestamp   NOT NULL DEFAULT current_timestamp
 , hair 				text		NULL
 , eyes				text		NULL
 , skin				text		NULL
 , shirt				text		NULL
-, created			timestamp   NOT NULL DEFAULT current_timestamp
 , PRIMARY KEY(id)
 );
