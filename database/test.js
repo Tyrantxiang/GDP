@@ -8,12 +8,15 @@
  *
  * @authors Joe Ringham
 */
-
+/*
 var config = require('../config.js')
-	, validateDetails = require("../validateDetails.js")
 	, db = require('./database.js').init(function(){console.log("PASS\n********************");},
 											tfail, config.database.getSettings("test"));
 	;
+*/
+
+var validateDetails = require("../validateDetails.js")
+	;	
 
 function tpass(results){
 	console.log("PASS");
@@ -88,9 +91,10 @@ var order = {column: 'id', direction: 'DESC'};
 
 //require('./creation_things/buildDB.js')(tpass, tfail, 'test');
 
-var tsN = new Date()
-	, tsM = new Date(Date.now() - 1000);
+var tsN = new Date(Date.now() + (1000 * 40))
+	, tsM = new Date(Date.now() + (1000 * 30));
 
-//console.log(tsN);
-//console.log(tsM);
-validateDetails(tpass, tfail, {end_time: tsM});
+console.log(tsN);
+console.log(tsM);
+
+validateDetails(tpass, tfail, {start_time: tsN, end_time: tsM});

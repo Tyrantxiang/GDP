@@ -72,17 +72,28 @@ var constraints = {
 }
 
 module.exports = function(pass, fail, obj){
-	//If end_time exists, check against start_time to make sure it is later!
-	if(obj.end_time && (!obj.start_time || obj.end_time < obj.start_time)) {
-		return fail({
-			name : "ERR_VALIDATION_FAILED"
-			, message : "Validation has failed for given properties"
-			, detail : {
-				end_time : "end_time must not be earlier than given start_time"
-			}
-		});
+	//If end_time exists, validate against start_time to make sure it is later!
+	if(obj.end_time){
+		//Error if start_time doesn't exist to compare against
+		if(!obj.start_time) {
+			return handleFail({
+					end_time : "A start_time property must be provided, so that end_time can be compared against it."
+				});
+		} 
+
+		//Error if start_time is not before end_time
+		if(obj.end_time < obj.start_time) {
+			return handleFail({
+					end_time : [
+						"end_time("+obj.end_time.toISOString()+")"
+						, "must not be earlier than given"
+						, "start_time("+obj.start_time.toISOString()+")"
+					].join(" ")
+				});
+		}
 	}
 
+	//Asynchronously call the validation
 	validate.async(obj, constraints).then(pass, handleFail);
 
 	function handleFail(error){
@@ -91,7 +102,8 @@ module.exports = function(pass, fail, obj){
   		
 		fail({
 			name : "ERR_VALIDATION_FAILED"
-			, message : "Validation has failed for given properties"
+			// Message lists all the properties the validation failed for
+			, message : "Validation has failed for properties: "+Object.keys(error).join(', ')
 			, detail : error
 		});
 	}
