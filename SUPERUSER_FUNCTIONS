@@ -1,0 +1,89 @@
+
+/**** I am removing superuser commands for now, these are likely to be done via a web interface and so will use ajax
+//SUPER USER
+function add_bag_item(id, name, sprite, effects, cb){
+	client_socket_call(	'add_bag_item', 
+						{id: id, 'name': name, 'sprite': sprite, 'effects': effects}, 
+						cb
+					);
+}
+
+function remove_bag_item(id, cb){
+	client_socket_call(	'remove_bag_item', 
+						{'id': id},
+						cb
+					);
+}
+
+function add_status(id, name, min_val, max_val, healthy_min, healthy_max, isNumber, words, cb){
+	client_socket_call(	'add_status',
+						{'id': id, 'name': name, 'min': min_val, 'max': max_val, 'healthy_min': healthy_min,
+							'healthy_max': healthy_max, 'isNumber': isNumber, 'words': words},
+						cb
+	);
+}
+
+function remove_status(id, cb){
+	client_socket_call(	'remove_status',
+						{'id': id},
+						cb
+		);
+}
+
+function add_condition(name, statuses, cb){
+	client_socket_call(	'add_condition',
+						{name: name, statuses: statuses},
+						cb
+		);
+}
+
+function remove_condition(id, cb){
+	client_socket_call(	'remove_condition',
+						{id: id},
+						function(data){ cb(data)}
+					);
+}
+
+function add_store_item(id, name, description, slot, price, sprite, cb){
+	client_socket_call(	'add_store_item',
+						{id: id, name: name, description: description, slot: slot, price: price, sprite: sprite},
+						cb;
+		);
+}
+
+function remove_store_item(id, cb){
+	client_socket_call(	'remove_store_item',
+						{id: id},
+						cb
+		);
+}
+
+function add_minigame(id, name, description, image, scripts, entry_point, cb){
+	client_socket_call(	'add_minigame',
+						{id: id, name: name, description: description, image: image, scripts: scripts, entry_point: entry_point},
+						cb
+					);
+}
+
+function remove_minigame(id, cb){
+	client_socket_call(	'remove_minigame',
+						{id: id},
+						cb
+					);
+}
+
+function add_inventory(id, cb){
+	client_socket_call(	'add_inventory',
+						{id: id},
+						cb
+					);
+}
+
+function remove_inventory(id, cb){
+	client_socket_call(	'remove_inventory',
+						{id:id},
+						cb
+					);
+	
+}
+******/
