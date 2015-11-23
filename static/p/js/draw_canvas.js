@@ -133,19 +133,22 @@ function attach_event_listeners(canvas)
 	canvas.on('mouse:down', function(i) {
 		if(typeof i.target !== 'undefined')
 		{
-			//utils.addSuccess('Selected ' + i.target.blah + '.');
-			comms.loadScriptFile("/p/js/launch_menu.js", function(){
-          		// Remove the login stuff
-          		//$("#main-content-area").empty();
-          		//$("body").removeClass("hub");
-
-          		//document.title = "The hub";
-          		launch_menu.load();
-        	});
 			i.target.setLeft(i.target.orig_left);
 			i.target.setTop(i.target.orig_top);
 			i.target.scale(i.target.default_scale);
 			canvas.renderAll();
+			
+			switch(i.target.name)
+			{
+				case 'BACKPACK':
+					comms.loadScriptFile("/p/js/launch_menu.js", function(){
+		          		launch_menu.load();
+		        	});
+					break;
+				case 'MIRROR':
+					console.log('mirror clicked');
+					break;
+			;}
 		};
 	});
 };
