@@ -62,6 +62,13 @@
         return o;
     }
 
+    // Convert base64 to Img object
+    function base64ToImg(base64){
+        var i = document.createElement("img");
+        i.src = "data:image/png;base64," + base64;
+        return i;
+    }
+
 
     // Creates the DOM bootstrap loading bar
     function generateLoadingBar(){
@@ -92,7 +99,14 @@
 
 
     // The hub object
-    var hub = {};
+    var hub = {
+        // The current health
+        health : 100,
+        // The users statuses
+        statuses : {}
+
+
+    };
 
     hub.load = function(){
         // Show loading sign
@@ -197,6 +211,23 @@
         });
     };
 
+    hub.getHealth = function(cb){
+        comms.get_hp_value(function(data){
+            hub.health = data.health;
+            if(cb){
+                cb(health);
+            }
+        });
+    };
+
+    hub.modifyHealth = function(changeVal, cb){
+        comms.modify_hp_value(changeVal, function(data) {
+            hub.health = data.newhp;
+            hub.avatarImage = base64ToImg(data.avatarImage);
+            cb(hub.health, hub.avatarImage);
+        });
+    };
+
     hub.launchGame = function(gameId){
         // Get the minigame info
         comms.launch_minigame(gameId, function(data){
@@ -217,6 +248,8 @@
                     canvas,
                     canvasContainer,
                     data.assetBaseURL,
+                    100, // TEMP FOR HEALTH
+                    {}, // TEMP FOR STATUSES
                     data.version
                 );
 
@@ -247,7 +280,7 @@
 
 
         });
-    }
+    };
 
     hub.getAssetsByType = getAssetsByType;
 
@@ -258,11 +291,15 @@
 
 
     // Object for a Game API system
-    function GameAPI(gameId, gameName, sessionId, canvas, canvasContainer, assetBaseURL, version){
+    function GameAPI(gameId, gameName, sessionId, canvas, canvasContainer, assetBaseURL, health, statuses, avatarImage, version){
         this.gameName = gameName;
         this.assetBaseURL = assetBaseURL;
         this.version = version;
         this.canvas = canvas;
+
+        this.health = health;
+        this.statuses = statuses;
+        this.avatarImage = avatarImage;
 
 
         this.getGameId = function(){
@@ -292,20 +329,35 @@
             }.bind(this));
         };
 
-        proto.useItem = function(itemId, cb){
-            comms.use_item(itemId, cb);
+        proto.useCarriable = function(itemId, cb){
+            comms.use_carriable(itemId, function(data){
+                if(!data.err){
+                    this.health = data.newhp;
+                    this.statuses = data.newStatuses;
+                    this.avatarImage = base64ToImg(data.avatarImage);
+                }
+                cb.call(this, this.health, this.statuses, this.avatarImage);
+            });
         };
 
-        proto.modifyHealth = function(changeVal){
-            comms.modify_hp_value(changeVal, cb);
+        proto.modifyHealth = function(changeVal, cb){
+            var t = this;
+            hub.getHealth(changeVal, function(data){
+                cb.call(t, data.health, data.avatarImage);
+            });
         };
 
-        proto.modifyStatus = function(statusName, changeVal){
-            comms.set_status_value(statusName, changeVal, cb);
+        proto.modifyStatus = function(statusName, changeVal, cb){
+            comms.set_status_value(statusName, changeVal, function(data){
+                this.statuses[data.id] && (
+                    this.statuses[data.id] = data.newValue
+                );
+                cb.call(this, data.id, data.newValue);
+            });
         };
 
         proto.getAvatarImage = function(){
-
+            return this.avatarImage;
         };
 
         proto.getAssetURL = function(asset){

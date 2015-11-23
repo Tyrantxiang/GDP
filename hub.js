@@ -32,6 +32,15 @@ function generateSessionId(gameId){
     return Math.floor(Math.random() * 10000);
 }
 
+function latch(num, complete){
+    return function(){
+        if(!--num){
+            complete();
+        }
+    }
+}
+
+
 
 var locations = {
     IN_HUB : 0,
@@ -64,13 +73,13 @@ function Hub(userId, comms){
 
     this.statuses = {};
     this.health = 100;
-    
+
     // Get the user data from the db
     db.createSession(function(){},
                         function(){},
                             {userId: userId, start_time: this.connectedTime.toISOString()}
                     );
-                    
+
     //load the users statuses here
     db.getConditionsForUser(function(results){
                 for(var i=0; i<results.length; i++){
@@ -82,11 +91,11 @@ function Hub(userId, comms){
                     }
                 }
             }, function(){
-                
+
             },
             this.userId);
 
-	this.imgMaker = require("./imageCompositer")(300);
+    this.imgMaker = require("./imageCompositer")(300);
 
 };
 // Set the locations as "class constants"
@@ -102,8 +111,41 @@ Hub.prototype.exit = function(){
     db.endSession(function(){}, function(){}, disconnectTime.toISOString(), this.userId);
 };
 
+Hub.prototype.generateAvatarImage = function(fn){
+    //var base_image = getBaseImage();
+    var urls = [],
+        h = this;
+
+    if(this.health < 30){
+        urls.push(""); //getHealthyImage();
+    }else{
+        urls.push(""); //getUnhealthyImage();
+    }
+
+    // Equipt items could possibly be saved locally?
+    this.get_user_equipped_items(
+        {},
+        function(data){
+            var main = 0;
+            for(var i=0; i<data.length; i++){
+                var obj = data[key];
+                if(obj.slot==="SKIN") main = i;
+                urls.push(obj.url);
+            }
+            var tmp = urls[0];
+            urls[0] = urls[i];
+            urls[i] = tmp;
+
+
+            var base64string = h.imgMaker(urls);
+            fn(base64string);
+        });
+}
+
+
+
 // Define functions here
-Hub.prototype.eventListeners = {
+var commsEventListeners = {
     //options are unused, here for completions sake. Can be implemented in future for
     //options such as colour blindness etc.
     //UNUSED
@@ -122,7 +164,7 @@ Hub.prototype.eventListeners = {
     get_single_item_info : function(data, fn){
         fn(config.items.getConfig(data.id, undefined));
     },
-    
+
     get_hub_backgroud_image : function(data, fn){
         fn(config.hub.getBackgroundImages());
     },
@@ -173,8 +215,8 @@ Hub.prototype.eventListeners = {
             },
             this.user_id
         );
-		
-		
+        
+        
     },
 
     update_equipped_items : function(data, fn){
@@ -185,10 +227,10 @@ Hub.prototype.eventListeners = {
             skin: data.skin,
             shirt: data.shirt
         };
-        
+
         db.createEqippedItems(
             function(results){
-				this.eventListeners.modify_hp_value(0, fn);
+                this.modify_hp_value(0, fn);
             }, function(){
                 fn({err: "Error in db"});
             },
@@ -197,7 +239,7 @@ Hub.prototype.eventListeners = {
     },
 
     get_bag : function(data, fn){
-		var bagret = this.bag.getCarriables();
+        var bagret = this.bag.getCarriables();
         fn( {carriables: bagret} );
     },
 
@@ -207,30 +249,65 @@ Hub.prototype.eventListeners = {
         fn();
     },
 
-	get_all_carriables : function(data, fn){
-		fn(config.carriables.listAll().map(function(l){
+    get_all_carriables : function(data, fn){
+        fn(config.carriables.listAll().map(function(l){
             l.url = config.carriables.getSpriteURL(l.id);
             return l;
         }));
-	},
+    },
 
-	get_single_carriable : function(data, fn){
-		fn(config.carriables.getConfig(data.id));
-	},
-    
+    get_single_carriable : function(data, fn){
+        fn(config.carriables.getConfig(data.id));
+    },
+
     use_carriable : function(data, fn){
         var carriable_id = data.carriable_id,
-            carriableCfg = config.carriables.getConfig(carriable_id);
-        
-        for(obj in carriableCfg.effects){
-            if(obj.id === "hp"){
-                this.eventListeners.modify_hp_value({value: obj.amount}, fn);
-            }else{
-                this.eventListeners.modify_status_value({"status": obj.id, value: obj.amount});
-            }
+            carriableCfg = config.carriables.getConfig(carriable_id),
+            effects = carriableCfg.effects,
+            h = this;
+
+        // Check this item is actually being held
+        try{
+            this.bag.useItem(carriable_id);
+        }catch(e){
+            fn({
+                err : "Item not in bag"
+            });
+            return;
         }
-        
-        //TODO: remove the carriable frm bag
+
+
+        // Apply the effects
+        latch(effects.length, function(){
+            var o = {};
+            // THIS WILL NEED TO INCLUDE THE NAME
+            for(var status in h.statuses){
+                o[status] = h.statuses[status].value;
+            }
+
+            // Generate the avatar image
+            this.generateAvatarImage(function(imageString){
+                fn({
+                    newhp : h.health,
+                    newStatuses : o,
+                    avatarImage : imageString
+                });
+            });
+        });
+
+
+        effects.forEach(function(effect){
+            if(effect.id === "hp"){
+                h.modify_hp_value({
+                    value: effect.amount
+                }, latch);
+            }else{
+                h.modify_status_value({
+                    status: effect.id,
+                    value: effect.amount
+                }, latch);
+            }
+        });
     },
 
     list_minigames : function(data, fn){
@@ -344,107 +421,117 @@ Hub.prototype.eventListeners = {
         for(stat in this.statuses){
             value *= stat.getMultiplier();
         }
-        this.health += value;
+        // Keep health between 100 and 0;
+        this.health = Math.max(0, Math.min(100, this.health + value));
+
+        var h = this;
         
-		//var base_image = getBaseImage();
-		var urls = [];
-		
-        if(this.health < 30){
-			urls.push(""); //getHealthyImage();
-        }else{
-			urls.push(""); //getUnhealthyImage();
-        }
-		
-		var imgs = this.eventListeners.get_user_equipped_items(
-			{},
-			function(data){
-				var main = 0;
-				for(var i=0; i<data.length; i++){
-					var obj = data[key];
-					if(obj.slot==="SKIN") main = i;
-					urls.push(obj.url);
-				}
-				var tmp = urls[0];
-				urls[0]	= urls[i];
-				urls[i] = tmp;
-			}
-		);
-        
-		var base64string = this.imgMaker(urls);
-        fn({img: base64string});
+        this.generateAvatarImage(function(imageString){
+            fn({
+                newhp: h.health,
+                avatarImage: imageString
+            });
+        });
+
     },
-    
+
     modify_status_value : function(data, fn){
-        var arr = config.statuses.listAll();
-        for(var cfg in arr){
-            if(this.statuses[cfg.id] && cfg.name === data["status"]){
-                this.statuses[cfg.id].addToValue(data.value);
-            }
-        }
-        
-        fn({});
+        var status = this.statuses[data.id];
+        status.addToValue(data.value);
+
+        fn({
+            id : status.id,
+            newValue : status.value
+        });
+    },
+
+    get_hp_value : function(data, fn){
+        fn({
+            health : this.health
+        });
     }
+
 };
+
+
+// Copy the event listeners into the Hub prototype
+(function(proto){
+    for(var e in commsEventListeners){
+        if(commsEventListeners.hasOwnProperty(e)){
+            proto[e] = commsEventListeners[e];
+        }
+    }
+})(Hub.prototype);
+
 
 
 
 /* Class representing a 'bag', that is the carriables the player currently holds */
 function Bag(){
     // Modelled as an array of carriables contained in the bag
-    var carriables = [];
-
-    this.getCarriables = function(){
-        return this.carriables;
-    }
-
-    this.setCarriables = function(carriablesArray){
-        if(Array.isArray(carriablesArray)) this.carriables = carriablesArray;
+    this.carriables = [];
+}
+Bag.prototype.getCarriables = function(){
+    return this.carriables;
+}
+Bag.prototype.setCarriables = function(carriablesArray){
+    if(Array.isArray(carriablesArray)) this.carriables = carriablesArray;
+}
+Bag.prototype.useItem = function(itemId){
+    var i = this.carriables.indexOf(itemId);
+    if(i > -1){
+        this.carriables.splice(i, 1);
+    }else{
+        throw new Error("Item not in bag");
     }
 }
 
+
+/* Class represeneting a status for the user */
 function Status(configObj){
-    var id = configObj.id;
-    var name = configObj.name;
-    var value = parseInt((configObj.healthy_min + configObj.healthy_max) / 2, 10);
-    var healthy_min = configObj.healthy_min;
-    var healthy_max = configObj.healthy_max;
-    var min = configObj.min;
-    var max = configObj.max;
-    
-    function setValue(newValue){
-        this.value = newValue;
+    this.id = configObj.id;
+    this.name = configObj.name;
+    this.value = parseInt((configObj.healthy_min + configObj.healthy_max) / 2, 10);
+    this.healthy_min = configObj.healthy_min;
+    this.healthy_max = configObj.healthy_max;
+    this.min = configObj.min;
+    this.max = configObj.max;
+
+}
+Status.prototype.setValue = function(newValue){
+    this.value = newValue;
+}
+//the addValue may be negative, allow subtraction
+Status.prototype.addToValue = function(addValue){
+    this.value += addValue;
+    if(this.value<this.min){
+        this.value = this.min;
+    }else if(this.value>this.max){
+        this.value = this.max;
     }
-    
-    //the addValue may be negative, allow subtraction
-    function addToValue(addValue){
-        this.value += addValue;
-        if(this.value<this.min){
-            this.value = this.min;
-        }else if(this.value>this.max){
-            this.value = this.max;
-        }
-        
-        if(this.value < this.healthy_min){
-            //do unhealty avatar stuff
-        }else if(this.value > this.healthy_max){
-            //do unhealthy stuff
-        }
-    }
-    
-    function getMultiplier(){
-        var multiplier = 1;
-        
-        if(this.value<this.healthy_min){
-            var difference = this.healthy_min-this.value;
-            multiplier *= (difference / this.heathy_min);
-        }else if(this.value>this.healthy_max){
-            var difference = this.value-this.healthy_max;
-            mutiplier *= (difference / this.healthy_max);
-        }
-        
-        return multiplier;
+
+    if(this.value < this.healthy_min){
+        //do unhealty avatar stuff
+    }else if(this.value > this.healthy_max){
+        //do unhealthy stuff
     }
 }
+Status.prototype.getMultiplier = function(){
+    var multiplier = 1;
+
+    if(this.value<this.healthy_min){
+        var difference = this.healthy_min-this.value;
+        multiplier *= (difference / this.heathy_min);
+    }else if(this.value>this.healthy_max){
+        var difference = this.value-this.healthy_max;
+        mutiplier *= (difference / this.healthy_max);
+    }
+
+    return multiplier;
+}
+
+
+
 
 module.exports = function (cfg, db){
     setConfig(cfg);
@@ -460,8 +547,8 @@ module.exports = function (cfg, db){
         create : function (userId, comms){
             var h = new Hub(userId, comms);
 
-            // Set up the hub event listeners for the comms module
-            comms.setEventListeners(h.eventListeners, h);
+            // Set up the hub event listeners for the comms module, bind them to the hub
+            comms.setEventListeners(commsEventListeners, h);
 
             return h;
         }

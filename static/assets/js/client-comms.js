@@ -189,6 +189,13 @@ window.comms = {
 						);
 	},
 
+	get_hp_value : function(cb){
+		client_socket_call(	'get_hp_value',
+							{},
+							cb
+						);
+	},
+
 
 //USER MANAGEMENT - Ajax request
 	get_conditions_list : function(cb){
