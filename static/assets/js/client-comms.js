@@ -187,7 +187,7 @@ window.comms = {
 							{},
 							cb
 						);
-	}
+	},
 
 
 //USER MANAGEMENT - Ajax request
@@ -196,49 +196,49 @@ window.comms = {
 						null,
 						cb	
 					);
-	}
+	},
 
 	validate_username : function(username, cb){
 		postRequest(	'/user/validate_username',
 						{username: username},
 						cb	
 					);
-	}
+	},
 
 	validate_dob : function(dob, cb){
 		postRequest(	'/user/validate_dob',
 						{dob: dob},
 						cb
 					);
-	}
+	},
 
 	validate_conditions : function(dob, cb){
 		postRequest(	'/user/validate_conditions',
 						{conditions: conditions},
 						cb
 					);
-	}
+	},
 
 	sign_up : function(username, password, dob, cb){
 		postRequest(	'/user/sign_up',
 						{username: username, password: password, dob: dob},
 						cb
 					);
-	}
+	},
 
 	add_conditions : function(conditions, cb){
 		postRequest(	'/user/validate_conditions',
 						{conditions: conditions},
 						cb
 					);
-	}
+	},
 
 	change_user_details : function(username, password, dob, conditions, cb){
 		postRequest(	'/user/change_details',
 						{username: username, password: password, dob: dob, conditions: conditions},
 						cb
 				);
-	}
+	},
 
 	// USER MANAGEMENT - Socket requests
 	get_options : function(cb){
@@ -246,14 +246,14 @@ window.comms = {
 							{},
 							cb
 						);
-	}
+	},
 
 	set_options : function(cb){
 		client_socket_call(	'set_options',
 							{},
 							cb
 						);
-	}
+	},
 
 	//AVATAR AND HOUSE CUSTOMIZATION
 	get_all_item_info : function(cb){	
@@ -262,35 +262,35 @@ window.comms = {
 							cb
 						);
 		
-	}
+	},
 
 	get_single_item_info : function(id, cb){
 			client_socket_call(	'get_single_item_info',
 							{id: id},
 							cb
 						);
-	}
+	},
 
 	get_user_unlocked_items : function(cb){
 		client_socket_call( 'get_user_unlocked_items',
 							{},
 							cb
 						);
-	}
+	},
 
 	get_user_equipped_items : function(cb){
 		client_socket_call( 'get_user_equipped_items',
 							{},
 							cb
 						);
-	}
+	},
 
 	update_equipped_items : function(items, cb){
 		client_socket_call(	'update_eqipped_items',
 							items,
 							cb
 						);
-	}
+	},
 
 	//BAG
 	get_bag : function(cb){
@@ -298,28 +298,28 @@ window.comms = {
 							{},
 							cb
 						);
-	}
+	},
 
 	set_bag : function(carriables, cb){
 		client_socket_call(	'set_bag',
 							{carriables: carriables},
 							cb
 						);
-	}
+	},
 
 	get_all_carriables : function(cb){
 		client_socket_call(	'get_all_carriables',
 							{},
 							cb
 						);
-	}
+	},
 
 	get_single_carriable : function(id, cb){
 		client_socket_call( 'get_single_carriable',
 							{"id": id},
 							cb
 						);
-	}
+	},
 
 	//MINIGAME SELECTION
 	list_minigames : function(cb){
@@ -328,21 +328,21 @@ window.comms = {
 							cb
 						);
 		
-	}
+	},
 
 	launch_minigame : function(id, cb){
 		client_socket_call(	'launch_minigame',
 							{id: id},
 							cb
 					);
-	}
+	},
 
 	finish_minigame : function(id, score, currency, cb){
 		client_socket_call( 'finish_minigame',
 							{gameId: id, score: score, currency: currency},
 							cb	
 					);
-	}
+	},
 
 	get_scores : function(optionnum, user_id, game_id, cb){
 		var valid_options = ['all_scores', 'all_scores_for_game', 'all_scores_for_user', 'all_scores_for_user_for_game'];
@@ -351,29 +351,29 @@ window.comms = {
 							{option_num: optionnum, option_text: valid_options[optionnum] || valid_options[0], user_id: user_id, game_id: game_id},
 							cb
 						);
-	}
+	},
 
 //MINIGAME
 	modify_hp_value : function(value, cb){
-		client_socket_call( 'set_hp_value',
+		client_socket_call( 'modify_hp_value',
 							{value: value},
 							cb
 						);
-	}
+	},
 
 	modify_status_value : function(status_name, value, cb){
-		client_socket_call(	'set_status',
+		client_socket_call(	'modify_status_value',
 							{"status_name": status_name, value: value},
 							cb
 						);
-	}
+	},
 
 	use_carriable : function(carriable_id, cb){
 		client_socket_call(	'use_carriable',
 							{carriable_id: carriable_id},
 							cb
 						);
-	}
+	},
 
 
 
