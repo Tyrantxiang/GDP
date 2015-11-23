@@ -137,7 +137,7 @@ function attach_event_listeners(canvas)
 			i.target.setTop(i.target.orig_top);
 			i.target.scale(i.target.default_scale);
 			canvas.renderAll();
-			
+
 			switch(i.target.name)
 			{
 				case 'BACKPACK':
@@ -145,6 +145,7 @@ function attach_event_listeners(canvas)
 		          		launch_menu.load();
 		        	});
 					break;
+					
 				case 'MIRROR':
 					console.log('mirror clicked');
 					break;
