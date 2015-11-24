@@ -278,7 +278,7 @@ var commsEventListeners = {
 
 
         // Apply the effects
-        latch(effects.length, function(){
+        var l = latch(effects.length, function(){
             var o = {};
             // THIS WILL NEED TO INCLUDE THE NAME
             for(var status in h.statuses){
@@ -300,12 +300,12 @@ var commsEventListeners = {
             if(effect.id === "hp"){
                 h.modify_hp_value({
                     value: effect.amount
-                }, latch);
+                }, l);
             }else{
                 h.modify_status_value({
                     status: effect.id,
                     value: effect.amount
-                }, latch);
+                }, l);
             }
         });
     },

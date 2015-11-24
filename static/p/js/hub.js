@@ -19,6 +19,14 @@
         draw;
 
 
+    function latch(num, complete){
+        return function(){
+            if(!--num){
+                complete();
+            }
+        };
+    }
+    utils.latch = latch;
 
     // Clear the window functions so games cannot use them
     function clearWindowFunctions(){
@@ -103,7 +111,12 @@
         // The current health
         health : 100,
         // The users statuses
-        statuses : {}
+        statuses : {},
+
+        // All carriables
+        carriables : {},
+        // In bag
+        bag : []
 
 
     };
@@ -154,17 +167,20 @@
                                 utils.addError(this.src);
                             }
 
+
+
+                            function imageLoader(item){
+                                var i = document.createElement("img");
+                                i.addEventListener("load", function(){
+                                    item.image = this;
+                                    fileLoaded();
+                                });
+                                i.addEventListener("error", fail);
+                                i.src = item.url;
+                            };
                             // Load the item images
                             for(var item in items){
-                                (function(item){
-                                    var i = document.createElement("img");
-                                    i.addEventListener("load", function(){
-                                        item.image = this;
-                                        fileLoaded();
-                                    });
-                                    i.addEventListener("error", fail);
-                                    i.src = item.url;
-                                })(items[item]);
+                                imageLoader(items[item]);
                             }
 
                             // Load the background image
@@ -216,12 +232,67 @@
         });
     };
 
+
+
+    // Getting carriables and those in the bag
+    hub.getAllCarriables = function(cb){
+        comms.get_all_carriables(function(data){
+            var needToLoad = data.filter(function(c){
+                    return hub.carriables[c.id];
+                }),
+                l = latch(needToLoad.length, function(){
+                    cb(hub.carriables);
+                });
+
+            needToLoad.forEach(function(c){
+                var i = document.createElement("img");
+                i.addEventListener("load", function(){
+                    c.image = this;
+                    hub.carriables[c.id] = c;
+                    l();
+                });
+                i.addEventListener("error", function(){
+                    utils.addError(this.src);
+                });
+                i.src = item.url;
+            });
+        });
+    };
+
+    hub.getCarriablesInBag = function(cb){
+        comms.get_bag(function(data){
+            cb(data);
+        });
+    };
+
+    hub.getCarriablesAndBag = function(cb){
+        var o = {},
+            l = latch(2, function(){
+                cb(o);
+            });
+        hub.getAllCarriables(function(carriables){
+            o.carriables = carriables;
+            l();
+        });
+        hub.getCarriablesInBag(function(bag){
+            o.bag = bag;
+            l();
+        });
+    };
+
+    // Set the bag
+    hub.setBag = function(carriables, cb){
+        comms.set_bag(carriables, function(){
+            cb && cb();
+        });
+    };
+
+
+    // Status modification functions
     hub.updateHealth = function(cb){
         comms.get_hp_value(function(data){
             hub.health = data.health;
-            if(cb){
-                cb(hub.health);
-            }
+            cb && cb(hub.health);
         });
     };
 
@@ -255,6 +326,9 @@
         });
     };
 
+
+
+
     hub.cloneStatuses = function(){
         var o = {};
         for(var s in hub.statuses){
@@ -264,6 +338,9 @@
     };
 
 
+
+
+    // Launches a game
     hub.launchGame = function(gameId){
         // Get the minigame info
         comms.launch_minigame(gameId, function(data){
@@ -292,14 +369,7 @@
             clearWindowFunctions();
 
             // Load the scripts into memory
-            var latch = (function(num, complete){
-                return function(){
-                    num--;
-                    if(num === 0){
-                        complete();
-                    }
-                };
-            })(data.scriptURLs.length, function(){
+            var l = latch(data.scriptURLs.length, function(){
                 container.removeChild(hubCanvasContainer);
                 canvasContainer.appendChild(canvas);
                 container.appendChild(canvasContainer);
@@ -309,7 +379,7 @@
             });
 
             data.scriptURLs.forEach(function(script){
-                comms.loadScriptFile(script, latch, false);
+                comms.loadScriptFile(script, l, false);
             });
 
 
