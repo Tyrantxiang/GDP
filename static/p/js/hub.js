@@ -114,9 +114,7 @@
         statuses : {},
 
         // All carriables
-        carriables : {},
-        // In bag
-        bag : []
+        carriables : {}
 
 
     };
@@ -310,8 +308,12 @@
                 hub.health = data.newhp;
                 hub.statuses = data.newStatuses;
                 hub.avatarImage = base64ToImg(data.avatarImage);
+                cb(hub.health, hub.statuses, hub.avatarImage);
+            }else{
+                cb({
+                    err : data.err
+                });
             }
-            cb(hub.health, hub.statuses, hub.avatarImage);
         });
     };
 
@@ -344,45 +346,46 @@
     hub.launchGame = function(gameId){
         // Get the minigame info
         comms.launch_minigame(gameId, function(data){
-            if(data.err){
-                window.utils.addError(data.err);
-                return;
-            }
+            hub.getCarriablesInBag(function(bag){
+                if(data.err){
+                    window.utils.addError(data.err);
+                    return;
+                }
 
-            // Create a new canvas for the game
-            var canvas = document.createElement("canvas"),
-                canvasContainer = document.createElement("div"),
+                // Create a new canvas for the game
+                var canvas = document.createElement("canvas"),
+                    canvasContainer = document.createElement("div"),
 
-                // Create the API object
-                api = new GameAPI(
-                    data.gameId,
-                    data.name,
-                    data.sessionId,
-                    canvas,
-                    canvasContainer,
-                    data.assetBaseURL,
-                    data.version
-                );
+                    // Create the API object
+                    api = new GameAPI(
+                        data.gameId,
+                        data.name,
+                        data.sessionId,
+                        canvas,
+                        canvasContainer,
+                        data.assetBaseURL,
+                        data.version
+                    );
 
 
-            // Remove window functions
-            clearWindowFunctions();
+                // Remove window functions
+                clearWindowFunctions();
 
-            // Load the scripts into memory
-            var l = latch(data.scriptURLs.length, function(){
-                container.removeChild(hubCanvasContainer);
-                canvasContainer.appendChild(canvas);
-                container.appendChild(canvasContainer);
+                // Load the scripts into memory
+                var l = latch(data.scriptURLs.length, function(){
+                    container.removeChild(hubCanvasContainer);
+                    canvasContainer.appendChild(canvas);
+                    container.appendChild(canvasContainer);
 
-                var e = window[data.entryObject];
-                e.run.call(e, api, canvas, data.assetBaseURL, hub.health, hub.cloneStatuses());
+                    var e = window[data.entryObject];
+                    e.run.call(e, api, canvas, data.assetBaseURL, hub.health, hub.cloneStatuses(), bag);
+                });
+
+                data.scriptURLs.forEach(function(script){
+                    comms.loadScriptFile(script, l, false);
+                });
+
             });
-
-            data.scriptURLs.forEach(function(script){
-                comms.loadScriptFile(script, l, false);
-            });
-
-
         });
     };
 

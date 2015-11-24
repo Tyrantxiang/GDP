@@ -238,8 +238,7 @@ var commsEventListeners = {
     },
 
     get_bag : function(data, fn){
-        var bagret = this.bag.getCarriables();
-        fn( {carriables: bagret} );
+        fn(this.bag.getCarriables());
     },
 
     set_bag : function(data, fn){
