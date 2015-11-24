@@ -141,7 +141,7 @@ function attach_event_listeners(canvas)
 			switch(i.target.name)
 			{
 				case 'BACKPACK':
-					comms.loadScriptFile("/p/js/launch_menu.js", function(){
+					comms.loadScriptFile("/p/js/pack_backpack.js", function(){
 		          		launch_menu.load();
 		        	});
 					break;
