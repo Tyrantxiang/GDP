@@ -437,7 +437,7 @@ var commsEventListeners = {
 
     modify_status_value : function(data, fn){
         var status = this.statuses[data.id];
-        if(status)
+        if(status){
             status.addToValue(data.value);
 
             fn({
