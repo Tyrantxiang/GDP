@@ -211,7 +211,7 @@
         });
     };
 
-    hub.getHealth = function(cb){
+    hub.updateHealth = function(cb){
         comms.get_hp_value(function(data){
             hub.health = data.health;
             if(cb){
@@ -227,6 +227,37 @@
             cb(hub.health, hub.avatarImage);
         });
     };
+
+    hub.useCarriable = function(carriableId, cb){
+        comms.use_carriable(itemId, function(data){
+            if(!data.err){
+                hub.health = data.newhp;
+                hub.statuses = data.newStatuses;
+                hub.avatarImage = base64ToImg(data.avatarImage);
+            }
+            cb(hub.health, hub.statuses, hub.avatarImage);
+        });
+    };
+
+    hub.modifyStatus = function(statusId, changeVal, cb){
+        comms.modify_status_value(statusId, changeVal, function(data){
+            if(!data.err){
+                if(hub.statuses[data.id]){
+                    hub.statuses[data.id] = data.newValue;
+                }
+                cb(data.id, data.newValue);
+            }
+        });
+    };
+
+    hub.cloneStatuses = function(){
+        var o = {};
+        for(var s in hub.statuses){
+            o[s] = hub.statuses[s];
+        }
+        return o;
+    };
+
 
     hub.launchGame = function(gameId){
         // Get the minigame info
@@ -248,8 +279,6 @@
                     canvas,
                     canvasContainer,
                     data.assetBaseURL,
-                    100, // TEMP FOR HEALTH
-                    {}, // TEMP FOR STATUSES
                     data.version
                 );
 
@@ -271,7 +300,7 @@
                 container.appendChild(canvasContainer);
 
                 var e = window[data.entryObject];
-                e.run.call(e, api, canvas, data.assetBaseURL);
+                e.run.call(e, api, canvas, data.assetBaseURL, hub.health, hub.cloneStatuses());
             });
 
             data.scriptURLs.forEach(function(script){
@@ -291,15 +320,11 @@
 
 
     // Object for a Game API system
-    function GameAPI(gameId, gameName, sessionId, canvas, canvasContainer, assetBaseURL, health, statuses, avatarImage, version){
+    function GameAPI(gameId, gameName, sessionId, canvas, canvasContainer, assetBaseURL, version){
         this.gameName = gameName;
         this.assetBaseURL = assetBaseURL;
         this.version = version;
         this.canvas = canvas;
-
-        this.health = health;
-        this.statuses = statuses;
-        this.avatarImage = avatarImage;
 
 
         this.getGameId = function(){
@@ -329,30 +354,24 @@
             }.bind(this));
         };
 
-        proto.useCarriable = function(itemId, cb){
-            comms.use_carriable(itemId, function(data){
-                if(!data.err){
-                    this.health = data.newhp;
-                    this.statuses = data.newStatuses;
-                    this.avatarImage = base64ToImg(data.avatarImage);
-                }
-                cb.call(this, this.health, this.statuses, this.avatarImage);
+        proto.useCarriable = function(carriableId, cb){
+            var t = this;
+            hub.useCarriable(carriableId, function(health, statuses, avatarImage){
+                cb.call(t, health, statuses, avatarImage);
             });
         };
 
         proto.modifyHealth = function(changeVal, cb){
             var t = this;
-            hub.getHealth(changeVal, function(data){
-                cb.call(t, data.health, data.avatarImage);
+            hub.modifyHealth(changeVal, function(health, avatarImage){
+                cb.call(t, health, avatarImage);
             });
         };
 
-        proto.modifyStatus = function(statusName, changeVal, cb){
-            comms.set_status_value(statusName, changeVal, function(data){
-                this.statuses[data.id] && (
-                    this.statuses[data.id] = data.newValue
-                );
-                cb.call(this, data.id, data.newValue);
+        proto.modifyStatus = function(statusId, changeVal, cb){
+            var t = this;
+            hub.modifyStatus(statusId, changeVal, function(data){
+                cb.call(t, data.id, data.newValue);
             });
         };
 

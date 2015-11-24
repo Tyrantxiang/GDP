@@ -140,7 +140,7 @@ Hub.prototype.generateAvatarImage = function(fn){
             var base64string = h.imgMaker(urls);
             fn(base64string);
         });
-}
+};
 
 
 
@@ -437,18 +437,52 @@ var commsEventListeners = {
 
     modify_status_value : function(data, fn){
         var status = this.statuses[data.id];
-        status.addToValue(data.value);
+        if(status)
+            status.addToValue(data.value);
 
-        fn({
-            id : status.id,
-            newValue : status.value
-        });
+            fn({
+                id : status.id,
+                newValue : status.value
+            });
+        }else{
+            fn({
+                err : "User does not have that status"
+            });
+        }
     },
 
     get_hp_value : function(data, fn){
         fn({
             health : this.health
         });
+    },
+
+    get_status_value : function(data, fn){
+        var status = this.statuses[data.id];
+        if(status){
+            fn({
+                id : status.id,
+                name : status.name,
+                value : status.value
+            });
+        }else{
+            fn({
+                err : "User does not have that status"
+            });
+        }
+    },
+
+    get_all_status_values : function(data, fn){
+        var statuses = {};
+        for(var id in this.statuses){
+            statuses[id] = {
+                id : id,
+                name : status.name,
+                value : status.value
+            };
+        }
+
+        fn(statuses);
     }
 
 };
