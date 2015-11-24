@@ -255,7 +255,7 @@ function configReaderFactory(directory){
 
 
 
-    return {
+    var rObject = {
         configs : configs,
 
         // Functions wrapped in their own object
@@ -269,7 +269,7 @@ function configReaderFactory(directory){
             listAll : function(){
                 var a = [];
                 for(var cfg in configs){
-                    a.push(configs[cfg]);
+                    a.push(rObject.functions.getConfig(cfg));
                 }
                 return a;
             },
@@ -281,17 +281,25 @@ function configReaderFactory(directory){
 
             /* Get a specific config from the game ID or all configs is 'configName' is falsy */
             getConfig : function(id, configName){
-                if(!configs[id]){
+                var cfg = configs[id];
+                if(!cfg){
                     return null;
                 }
                 if(!configName){
-                    return configs[id];
+                    var n = {};
+                    for(var c in cfg){
+                        n[c] = cfg[c];
+                    }
+                    delete n.directory;
+                    console.log(n, id);
+                    return n;
                 }
-                return configs[id][configName];
+                return cfg[configName];
             }
         }
     };
 
+    return rObject;
 }
 
 
