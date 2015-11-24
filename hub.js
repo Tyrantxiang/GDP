@@ -127,10 +127,9 @@ Hub.prototype.generateAvatarImage = function(fn){
         {},
         function(data){
             var main = 0;
-            for(var i=0; i<data.length; i++){
-                var obj = data[i];
-                if(obj.slot==="SKIN") main = i;
-                urls.push(obj.url);
+            for(var slotd in data){
+                if(slotd.slot==="SKIN") main = i;
+                urls.push(slotd.url);
             }
             var tmp = urls[0];
             urls[0] = urls[i];
