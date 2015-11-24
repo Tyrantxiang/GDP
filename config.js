@@ -291,7 +291,6 @@ function configReaderFactory(directory){
                         n[c] = cfg[c];
                     }
                     delete n.directory;
-                    console.log(n, id);
                     return n;
                 }
                 return cfg[configName];
