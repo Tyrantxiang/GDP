@@ -47,7 +47,7 @@ function authenticate(req, res){
 
     if(req.body.username && req.body.password){
         username = req.body.username.trim();
-        password = req.body.password.trim();
+        password = req.body.password;
 
         // Authenticate and get userId
         db.authenticateUser(authenticated, failed, username, password);
