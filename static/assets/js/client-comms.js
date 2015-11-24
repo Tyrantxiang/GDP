@@ -196,6 +196,20 @@ window.comms = {
 						);
 	},
 
+	get_status_value : function(statusId, cb){
+		client_socket_call(	'get_status_value',
+							{id: statusId},
+							cb
+						);
+	},
+
+	get_all_status_values : function(cb){
+		client_socket_call(	'get_all_status_values',
+							{},
+							cb
+						);
+	},
+
 
 //USER MANAGEMENT - Ajax request
 	get_conditions_list : function(cb){
