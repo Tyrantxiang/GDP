@@ -475,6 +475,7 @@ var commsEventListeners = {
     get_all_status_values : function(data, fn){
         var statuses = {};
         for(var id in this.statuses){
+            var status = this.statuses[id];
             statuses[id] = {
                 id : id,
                 name : status.name,
