@@ -128,81 +128,86 @@
                 // Get the list of images
                 comms.get_hub_backgroud_image(function(background){
                     comms.get_user_equipped_items(function(items){
+                        comms.get_all_status_values(function(statuses){
 
-                        // How much do we load?
-                        var toLoad = Object.keys(items).length + 1,
-                            // How much have we loaded
-                            loaded = 0,
-                            // Is there an error?
-                            error = false;
+                            // First add the statuses to hub.statuses
+                            hub.statuses = statuses;
 
-                        function fileLoaded(){
-                            loaded++;
-                            loadingBar.setProgress(loaded/toLoad * 100);
+                            // How much do we load?
+                            var toLoad = Object.keys(items).length + 1,
+                                // How much have we loaded
+                                loaded = 0,
+                                // Is there an error?
+                                error = false;
 
-                            if(loaded === toLoad){
-                                loadComplete();
+                            function fileLoaded(){
+                                loaded++;
+                                loadingBar.setProgress(loaded/toLoad * 100);
+
+                                if(loaded === toLoad){
+                                    loadComplete();
+                                }
                             }
-                        }
-                        function fail(){
-                            error = true;
-                            utils.addError("An image couldn't load");
-                            utils.addError(this.src);
-                        }
+                            function fail(){
+                                error = true;
+                                utils.addError("An image couldn't load");
+                                utils.addError(this.src);
+                            }
 
-                        // Load the item images
-                        for(var item in items){
-                            (function(item){
-                                var i = document.createElement("img");
-                                i.addEventListener("load", function(){
-                                    item.image = this;
-                                    fileLoaded();
-                                });
-                                i.addEventListener("error", fail);
-                                i.src = item.url;
-                            })(items[item]);
-                        };
+                            // Load the item images
+                            for(var item in items){
+                                (function(item){
+                                    var i = document.createElement("img");
+                                    i.addEventListener("load", function(){
+                                        item.image = this;
+                                        fileLoaded();
+                                    });
+                                    i.addEventListener("error", fail);
+                                    i.src = item.url;
+                                })(items[item]);
+                            };
 
-                        // Load the background image
-                        var i = document.createElement("img");
-                        i.addEventListener("load", function(){
-                            background.image = this;
-                            fileLoaded();
+                            // Load the background image
+                            var i = document.createElement("img");
+                            i.addEventListener("load", function(){
+                                background.image = this;
+                                fileLoaded();
+                            });
+                            i.addEventListener("error", fail);
+                            i.src = background.url;
+
+
+                            function loadComplete(){
+                                // Add to the images object
+                                assets.images.background = background;
+                                assets.images.items = items;
+
+                                comms.loadScriptFile("//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js", function(){
+                                    comms.loadScriptFile("/p/js/draw_canvas.js", function(){
+                                        // Remove loading bar and load the canvas
+                                        hubCanvasContainer = document.createElement("div");
+                                        hubCanvas = document.createElement("canvas");
+
+                                        try{
+                                            container.removeChild(loadingContainer);
+                                        }catch(e){}
+
+                                        hubCanvasContainer.appendChild(hubCanvas);
+
+                                        container.appendChild(hubCanvasContainer);
+
+                                        initalFilesLoaded = true;
+
+                                        // Pull the window instances of draw and comms
+                                        comms = window.comms;
+                                        draw = window.draw;
+
+                                        draw.init(hubCanvas, getAssetsByType("images"));
+                                    });
+                                }, false);
+                            }
+
                         });
-                        i.addEventListener("error", fail);
-                        i.src = background.url;
-
-
-                        function loadComplete(){
-                            // Add to the images object
-                            assets.images.background = background;
-                            assets.images.items = items;
-
-                            comms.loadScriptFile("//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js", function(){
-                                comms.loadScriptFile("/p/js/draw_canvas.js", function(){
-                                    // Remove loading bar and load the canvas
-                                    hubCanvasContainer = document.createElement("div");
-                                    hubCanvas = document.createElement("canvas");
-
-                                    try{
-                                        container.removeChild(loadingContainer);
-                                    }catch(e){}
-
-                                    hubCanvasContainer.appendChild(hubCanvas);
-
-                                    container.appendChild(hubCanvasContainer);
-
-                                    initalFilesLoaded = true;
-
-                                    // Pull the window instances of draw and comms
-                                    comms = window.comms;
-                                    draw = window.draw;
-
-                                    draw.init(hubCanvas, getAssetsByType("images"));
-                                });
-                            }, false);
-                        }
-
                     });
                 });
 
