@@ -11,12 +11,12 @@ function Comms(socket){
 
     // Define these as properties for the prototype to use
     Object.defineProperties(this, {
-        userId : { get: function () { return userId } },
-        socket : { get: function () { return socket } }
+        userId : { get: function () { return userId; } },
+        socket : { get: function () { return socket; } }
     });
 
     this.listeners = {};
-};
+}
 
 Comms.prototype.setEventListeners = function (funcs, thisValue){
     for(var name in funcs){

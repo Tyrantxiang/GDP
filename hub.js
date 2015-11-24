@@ -37,7 +37,7 @@ function latch(num, complete){
         if(!--num){
             complete();
         }
-    }
+    };
 }
 
 
@@ -97,7 +97,7 @@ function Hub(userId, comms){
 
     this.imgMaker = require("./imageCompositer")(300);
 
-};
+}
 // Set the locations as "class constants"
 Hub.locations = locations;
 
@@ -128,7 +128,7 @@ Hub.prototype.generateAvatarImage = function(fn){
         function(data){
             var main = 0;
             for(var i=0; i<data.length; i++){
-                var obj = data[key];
+                var obj = data[i];
                 if(obj.slot==="SKIN") main = i;
                 urls.push(obj.url);
             }
@@ -401,7 +401,7 @@ var commsEventListeners = {
         }else if(data.option_num === 2){
             filterConds = {user_id: data.user_id};
         }else if(data.option_num === 3){
-            filterConds = {user_id: data.user_id, game_id: data.game_id}
+            filterConds = {user_id: data.user_id, game_id: data.game_id};
         }else{
             fn({err: "Invalid score option selected"});
         }
@@ -418,8 +418,8 @@ var commsEventListeners = {
 
     modify_hp_value : function(data, fn){
         var value = data.value;
-        for(stat in this.statuses){
-            value *= stat.getMultiplier();
+        for(var stat in this.statuses){
+            value *= this.statuses[stat].getMultiplier();
         }
         // Keep health between 100 and 0;
         this.health = Math.max(0, Math.min(100, this.health + value));
@@ -507,10 +507,10 @@ function Bag(){
 }
 Bag.prototype.getCarriables = function(){
     return this.carriables;
-}
+};
 Bag.prototype.setCarriables = function(carriablesArray){
     if(Array.isArray(carriablesArray)) this.carriables = carriablesArray;
-}
+};
 Bag.prototype.useItem = function(itemId){
     var i = this.carriables.indexOf(itemId);
     if(i > -1){
@@ -518,7 +518,7 @@ Bag.prototype.useItem = function(itemId){
     }else{
         throw new Error("Item not in bag");
     }
-}
+};
 
 
 /* Class represeneting a status for the user */
@@ -534,7 +534,7 @@ function Status(configObj){
 }
 Status.prototype.setValue = function(newValue){
     this.value = newValue;
-}
+};
 //the addValue may be negative, allow subtraction
 Status.prototype.addToValue = function(addValue){
     this.value += addValue;
@@ -549,20 +549,21 @@ Status.prototype.addToValue = function(addValue){
     }else if(this.value > this.healthy_max){
         //do unhealthy stuff
     }
-}
+};
 Status.prototype.getMultiplier = function(){
-    var multiplier = 1;
+    var multiplier = 1,
+        difference;
 
     if(this.value<this.healthy_min){
-        var difference = this.healthy_min-this.value;
+        difference = this.healthy_min-this.value;
         multiplier *= (difference / this.heathy_min);
     }else if(this.value>this.healthy_max){
-        var difference = this.value-this.healthy_max;
-        mutiplier *= (difference / this.healthy_max);
+        difference = this.value-this.healthy_max;
+        multiplier *= (difference / this.healthy_max);
     }
 
     return multiplier;
-}
+};
 
 
 

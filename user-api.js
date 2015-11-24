@@ -185,7 +185,7 @@ var routes = {
 };
 
 function setUpDefaultItems(userid){
-	var okay = true, error = undefined;
+	var okay = true, error;
 	var default_items = [200, 201, 300, 301, 400, 401, 500, 501];
 	for(var i=0; i<default_items.length; i++){
 		var iid = default_items[i];

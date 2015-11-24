@@ -99,10 +99,10 @@ function configReaderFactory(directory){
                         if(num === 0){
                             complete();
                         }
-                    }
+                    };
                 })(list.length, function(){
                     cb(subDirectories);
-                })
+                });
 
                 subDirectories = [];
 
@@ -395,7 +395,7 @@ module.exports.items = (function(){
                 }else{
                     return undefined;
                 }
-            }
+            };
         })(func);
     }
 
@@ -428,7 +428,7 @@ module.exports.items = (function(){
             a.concat(slotFunctions[slot].listAll());
         }
         return a;
-    }
+    };
 
     return funcs;
 })();

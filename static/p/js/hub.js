@@ -53,7 +53,7 @@
 
     function getCloneOfAssets(){
         var o = {};
-        for(i in assets){
+        for(var i in assets){
             if(assets.hasOwnProperty(i)){
                 o[i] = getAssetsByType(i);
             }
@@ -165,7 +165,7 @@
                                     i.addEventListener("error", fail);
                                     i.src = item.url;
                                 })(items[item]);
-                            };
+                            }
 
                             // Load the background image
                             var i = document.createElement("img");
@@ -220,7 +220,7 @@
         comms.get_hp_value(function(data){
             hub.health = data.health;
             if(cb){
-                cb(health);
+                cb(hub.health);
             }
         });
     };
@@ -234,7 +234,7 @@
     };
 
     hub.useCarriable = function(carriableId, cb){
-        comms.use_carriable(itemId, function(data){
+        comms.use_carriable(carriableId, function(data){
             if(!data.err){
                 hub.health = data.newhp;
                 hub.statuses = data.newStatuses;
@@ -298,7 +298,7 @@
                     if(num === 0){
                         complete();
                     }
-                }
+                };
             })(data.scriptURLs.length, function(){
                 container.removeChild(hubCanvasContainer);
                 canvasContainer.appendChild(canvas);

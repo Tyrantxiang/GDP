@@ -15,7 +15,7 @@ function ajaz(url, verb, data, success, error, responseType, contentType){
 	// Attach data to the get request
 	if(verb === "GET"){
 		dataStrings = [];
-		for(d in data){
+		for(var d in data){
 			if(data.hasOwnProperty(d)){
 				dataStrings.push(d + "=" + encodeURIComponent(data[d]));
 			}
@@ -47,7 +47,7 @@ function ajaz(url, verb, data, success, error, responseType, contentType){
 	}
 
 	xhr.responseType = responseType || "json";
-	xhr.setRequestHeader("Content-Type", contentType || "application/json")
+	xhr.setRequestHeader("Content-Type", contentType || "application/json");
 
 	xhr.send(data);
 
@@ -148,7 +148,7 @@ function createSocket(cb){
 		console.log("connected");
 
 		// Bind the event listeners
-		for(name in eventListeners){
+		for(var name in eventListeners){
 			eventListeners[name].forEach(function(l){
 				socket.on(name, l);
 			});
@@ -415,6 +415,6 @@ window.comms = {
 	clearEventListeners : clearEventListeners,
 
 
-}
+};
 
 })();
