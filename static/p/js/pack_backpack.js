@@ -1,6 +1,6 @@
 (function(){
 	window.menu = {};
-	window.menu.launch_menu = {
+	window.menu.backpack = {
 		load : function(){
 			// TODO: load_max should really be set somewhere and passed in, not defined here.
 			var array_to_add	= [];
@@ -35,10 +35,6 @@
 			
 			$('#button_container').append('<button id="backpack_accept" class="col-md-6">Accept</button>');
 			$('#button_container').append('<button id="backpack_cancel" class="col-md-6">Cancel</button>');
-
-			window.comms.get_all_item_info(function(data) {
-				console.log(data);
-			});
 
 			// Populate the potential carriables, and attach their event handlers.
 			window.comms.get_all_carriables(function(data) {

@@ -278,7 +278,6 @@
         });
     };
 
-    // TODO: Put loading for the menus logic here, then pass to a drawing script.
 
     // Set the bag
     hub.setBag = function(carriables, cb){
@@ -342,6 +341,14 @@
     };
 
 
+    // Lauches the backpacking menu.
+    // TODO: Maybe make into string-switch.
+    hub.launchBackpack = function(cb) {
+        hub.getCarriablesAndBag(function(data) {
+            console.log(data);
+        });
+        window.menu.backpack.load();
+    };
 
 
     // Launches a game
