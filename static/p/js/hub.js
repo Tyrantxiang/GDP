@@ -237,23 +237,27 @@
         comms.get_all_carriables(function(data){
             var needToLoad = data.filter(function(c){
                     return !hub.carriables[c.id];
-                }),
-                l = latch(needToLoad.length, function(){
+                });
+            if(needToLoad.length > 0){
+                var l = latch(needToLoad.length, function(){
                     cb(hub.carriables);
                 });
 
-            needToLoad.forEach(function(c){
-                var i = document.createElement("img");
-                i.addEventListener("load", function(){
-                    c.image = this;
-                    hub.carriables[c.id] = c;
-                    l();
+                needToLoad.forEach(function(c){
+                    var i = document.createElement("img");
+                    i.addEventListener("load", function(){
+                        c.image = this;
+                        hub.carriables[c.id] = c;
+                        l();
+                    });
+                    i.addEventListener("error", function(){
+                        utils.addError(this.src);
+                    });
+                    i.src = c.url;
                 });
-                i.addEventListener("error", function(){
-                    utils.addError(this.src);
-                });
-                i.src = c.url;
-            });
+            }else{
+                cb(hub.carriables);
+            }
         });
     };
 
