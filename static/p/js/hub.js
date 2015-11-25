@@ -236,7 +236,7 @@
     hub.getAllCarriables = function(cb){
         comms.get_all_carriables(function(data){
             var needToLoad = data.filter(function(c){
-                    return hub.carriables[c.id];
+                    return !hub.carriables[c.id];
                 }),
                 l = latch(needToLoad.length, function(){
                     cb(hub.carriables);
@@ -252,7 +252,7 @@
                 i.addEventListener("error", function(){
                     utils.addError(this.src);
                 });
-                i.src = item.url;
+                i.src = c.url;
             });
         });
     };
