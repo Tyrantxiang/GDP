@@ -1,11 +1,20 @@
 (function(){
-	window.launch_menu = {
+	window.menu = {};
+	window.menu.launch_menu = {
 		load : function(){
 			// TODO: load_max should really be set somewhere and passed in, not defined here.
 			var array_to_add	= [];
 			var load			= 0;
 			var load_max		= 10;
 
+			// TODO: Pls Corin halp.
+			/*
+			$.get('/views/pack_backpack.html', function(data) {
+				$('#main-content-area').append(data);
+				document.title	= "Pack your backpack";
+			});
+			*/
+			
 			$('#main-content-area').append('<div class="grey-box" id="backpacking_overlay"></div>');
 			$('#backpacking_overlay').html('');
 
@@ -21,11 +30,15 @@
 			$('#available_container').append('<div id="backpack_available_title" class="col-md-12">Available items:</div>');
 			$('#available_container').append('<div id="backpack_available" class="col-md-12"></div>');
 
-			$('#addition_container').append('<div id="backpack_addition_title" class="mol-md-12">Packed Backpack:</div>');
-			$('#addition_container').append('<div id="backpack_addition" class="mol-md-12"></div>');
+			$('#addition_container').append('<div id="backpack_addition_title" class="col-md-12">Packed Backpack:</div>');
+			$('#addition_container').append('<div id="backpack_addition" class="col-md-12"></div>');
 			
 			$('#button_container').append('<button id="backpack_accept" class="col-md-6">Accept</button>');
 			$('#button_container').append('<button id="backpack_cancel" class="col-md-6">Cancel</button>');
+
+			window.comms.get_all_item_info(function(data) {
+				console.log(data);
+			});
 
 			// Populate the potential carriables, and attach their event handlers.
 			window.comms.get_all_carriables(function(data) {
@@ -39,6 +52,9 @@
 					$('#backpack_available').append('<div id="' + id + '">' + data[d].name + '</div>');
 					$('#backpack_available').append('<img id="' + img_id + '" class="packing_images" src="' + data[d].url + '">');
 
+					// TODO
+					//hub.getCarriablesInBag()
+
 					$('#backpack_available').on('click', '#' + id + ', #' + img_id, function(obj) {
 						var carriable_id	= parseInt(obj.currentTarget.id.split('_').pop());
 
@@ -51,6 +67,7 @@
 							load						= load + 1;
 
 							window.comms.get_single_carriable(carriable_id, function(obj) {
+								console.log(carriable_id + ', ' + obj)
 								id		= 'carriable_' + carriable_id;
 								img_id	= 'carriable_img_' + carriable_id;
 

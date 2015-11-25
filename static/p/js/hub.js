@@ -278,6 +278,8 @@
         });
     };
 
+    // TODO: Put loading for the menus logic here, then pass to a drawing script.
+
     // Set the bag
     hub.setBag = function(carriables, cb){
         comms.set_bag(carriables, function(){
