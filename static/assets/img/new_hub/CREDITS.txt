@@ -1,0 +1,6 @@
+CREDITS:
+
+tree = http://opengameart.org/content/tree-9
+(edited by Joe Ringham)
+
+bush = http://opengameart.org/content/bush-png

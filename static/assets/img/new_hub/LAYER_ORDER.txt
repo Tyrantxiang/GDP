@@ -1,0 +1,11 @@
+LAYER ORDER:
+
+sky
+grass
+tree
+swing
+house
+pathgarden
+stairs
+
+the rest
