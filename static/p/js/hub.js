@@ -349,9 +349,8 @@
     // TODO: Maybe make into string-switch.
     hub.launchBackpack = function(cb) {
         hub.getCarriablesAndBag(function(data) {
-            console.log(data);
+            window.menu.backpack.load(data.carriables, data.bag);
         });
-        window.menu.backpack.load();
     };
 
 
