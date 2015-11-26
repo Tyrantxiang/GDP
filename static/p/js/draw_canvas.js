@@ -145,7 +145,6 @@
 						comms.loadScriptFile("/p/js/pack_backpack.js", function(){
 							// TODO: Maybe make into string-switch.
 							hub.launchBackpack();
-			          		//window.menu.launch_menu.load();
 			        	});
 						break;
 						
