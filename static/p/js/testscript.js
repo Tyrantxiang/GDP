@@ -55,15 +55,6 @@
 			cb({"bag": bag, "newhp": hub.health, "newStatuses": statuses, "avatarImage": hub.avatarImage});
 		},
 		
-		set_bag : function(bagg, cb){
-			bag = bagg;
-			cb({});
-		},
-		
-		get_bag : function(bagg, cb){
-			cb(bag);
-		},
-		
 		get_all_carriables : function(cb){
 			cb([]);
 		},
@@ -74,7 +65,7 @@
 		
 		launch_minigame : function(id, cb){
 			var obj = {
-					gameId : 0,
+					gameId : id,
 					name : "test_game",
 					assetBaseURL : ".",
 					scriptURLs : [],
@@ -83,7 +74,6 @@
 					sessionId : 0
 			};
 			cb(obj);
-			
 		}
 	};		
 		
@@ -95,7 +85,6 @@
             }
         };
     }
-    //utils.latch = latch;
 
     // Clear the window functions so games cannot use them
     function clearWindowFunctions(){
@@ -110,70 +99,12 @@
         window.hub = hub;
     }
 
-
-    // Gets a clone of an assets object (eg images, audio), given by type
-    function getAssetsByType(type){
-        var t = assets[type];
-        if(!t){
-            return undefined;
-        }
-
-        var o = {};
-        for(var i in t){
-            if(t.hasOwnProperty(i)){
-                o[i] = t[i];
-            }
-        }
-
-        return o;
-    }
-
-    function getCloneOfAssets(){
-        var o = {};
-        for(var i in assets){
-            if(assets.hasOwnProperty(i)){
-                o[i] = getAssetsByType(i);
-            }
-        }
-
-        return o;
-    }
-
     // Convert base64 to Img object
     function base64ToImg(base64){
         var i = document.createElement("img");
         i.src = "data:image/png;base64," + base64;
         return i;
     }
-
-
-    // Creates the DOM bootstrap loading bar
-    function generateLoadingBar(){
-        var value = 0;
-
-        var loadingBar = document.createElement("div");
-            loadingBar.className = "progress";
-
-        var innerBar = document.createElement("div");
-            innerBar.className = "progress-bar progress-bar-striped active";
-
-        var innerText = document.createElement("span");
-            innerText.innerHTML = "0%";
-
-        innerBar.appendChild(innerText);
-        loadingBar.appendChild(innerBar);
-        loadingBar.setProgress = function(v){
-            value = v;
-            innerBar.style.width = v + "%";
-            innerText.innerHTML = v + "%";
-        };
-        loadingBar.getProgress = function(){
-            return value;
-        };
-
-        return loadingBar;
-    }
-
 
     // The hub object
     var hub = {
@@ -186,179 +117,8 @@
         carriables : {},
 		
 		avatarImage : undefined
-
-
     };
 
-    hub.load = function(){
-        // Show loading sign
-        var loadingContainer = document.createElement("div"),
-            loadingBar = generateLoadingBar(),
-            loadingText = document.createElement("div");
-
-        loadingContainer.className = "loading-container";
-
-        loadingText.innerHTML = "Loading...";
-
-        loadingContainer.appendChild(loadingText);
-        loadingContainer.appendChild(loadingBar);
-        container.appendChild(loadingContainer);
-
-        // Open the socket connection
-        comms.createSocket(function(){
-            if(!initalFilesLoaded){
-                // Get the list of images
-                comms.get_hub_backgroud_image(function(background){
-                    comms.get_user_equipped_items(function(items){
-                        comms.get_all_status_values(function(statuses){
-
-                            // First add the statuses to hub.statuses
-                            hub.statuses = statuses;
-
-							comms.get_avatar(function(imgData){
-									hub.avatarImage = base64ToImg(imgData);
-							});
-							
-                            // How much do we load?
-                            var toLoad = Object.keys(items).length + 1,
-                                // How much have we loaded
-                                loaded = 0,
-                                // Is there an error?
-                                error = false;
-
-                            function fileLoaded(){
-                                loaded++;
-                                loadingBar.setProgress(loaded/toLoad * 100);
-
-                                if(loaded === toLoad){
-                                    //loadComplete();
-                                }
-                            }
-                            function fail(){
-                                error = true;
-                                utils.addError("An image couldn't load");
-                                utils.addError(this.src);
-                            }
-
-                            function imageLoader(item){
-                                var i = document.createElement("img");
-                                i.addEventListener("load", function(){
-                                    item.image = this;
-                                    fileLoaded();
-                                });
-                                i.addEventListener("error", fail);
-                                i.src = item.url;
-                            };
-                            // Load the item images
-                            for(var item in items){
-                                imageLoader(items[item]);
-                            }
-
-                            // Load the background image
-                            var i = document.createElement("img");
-                            i.addEventListener("load", function(){
-                                background.image = this;
-                                fileLoaded();
-                            });
-                            i.addEventListener("error", fail);
-                            i.src = background.url;
-
-							
-                            function loadComplete(){
-                                // Add to the images object
-                                assets.images.background = background;
-                                assets.images.items = items;
-
-                                comms.loadScriptFile("//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js", function(){
-                                    comms.loadScriptFile("/p/js/draw_canvas.js", function(){
-                                        // Remove loading bar and load the canvas
-                                        hubCanvasContainer = document.createElement("div");
-                                        hubCanvas = document.createElement("canvas");
-
-                                        try{
-                                            container.removeChild(loadingContainer);
-                                        }catch(e){}
-
-                                        hubCanvasContainer.appendChild(hubCanvas);
-
-                                        container.appendChild(hubCanvasContainer);
-
-                                        initalFilesLoaded = true;
-
-                                        // Pull the window instances of draw and comms
-                                        comms = window.comms;
-                                        draw = window.draw;
-
-                                        draw.init(hubCanvas, getAssetsByType("images"));
-                                    });
-                                }, false);
-                            }
-
-                        });
-                    });
-                });
-
-            }
-
-        });
-    };
-
-    // Getting carriables and those in the bag
-    hub.getAllCarriables = function(cb){
-        comms.get_all_carriables(function(data){
-            var needToLoad = data.filter(function(c){
-                    return !hub.carriables[c.id];
-                });
-            if(needToLoad.length > 0){
-                var l = latch(needToLoad.length, function(){
-                    cb(hub.carriables);
-                });
-
-                needToLoad.forEach(function(c){
-                    var i = document.createElement("img");
-                    i.addEventListener("load", function(){
-                        c.image = this;
-                        hub.carriables[c.id] = c;
-                        l();
-                    });
-                    i.addEventListener("error", function(){
-                        utils.addError(this.src);
-                    });
-                    i.src = c.url;
-                });
-            }else{
-                cb(hub.carriables);
-            }
-        });
-    };
-
-    hub.getCarriablesInBag = function(cb){
-        comms.get_bag(function(data){
-            cb(data);
-        });
-    };
-
-    hub.getCarriablesAndBag = function(cb){
-        var o = {},
-            l = latch(2, function(){
-                cb(o);
-            });
-        hub.getAllCarriables(function(carriables){
-            o.carriables = carriables;
-            l();
-        });
-        hub.getCarriablesInBag(function(bag){
-            o.bag = bag;
-            l();
-        });
-    };
-
-    // Set the bag
-    hub.setBag = function(carriables, cb){
-        comms.set_bag(carriables, function(){
-            cb && cb();
-        });
-    };
 
     // Status modification functions
     hub.updateHealth = function(cb){
@@ -368,6 +128,7 @@
         });
     };
 
+	//
     hub.modifyHealth = function(changeVal, cb){
         comms.modify_hp_value(changeVal, function(data) {
             hub.health = data.newhp;
@@ -376,6 +137,7 @@
         });
     };
 
+	//
     hub.useCarriable = function(carriableId, cb){
         comms.use_carriable(carriableId, function(data){
             if(!data.err){
@@ -391,6 +153,7 @@
         });
     };
 
+	//
     hub.modifyStatus = function(statusId, changeVal, cb){
         comms.modify_status_value(statusId, changeVal, function(data){
             if(!data.err){
@@ -410,66 +173,36 @@
         return o;
     };
 
-
-    // Lauches the backpacking menu.
-    // TODO: Maybe make into string-switch.
-    hub.launchBackpack = function(cb) {
-        hub.getCarriablesAndBag(function(data) {
-            window.menu.backpack.load(data.carriables, data.bag);
-        });
-    };
-
     // Launches a game
     hub.launchGame = function(gameId){
         // Get the minigame info
         comms.launch_minigame(gameId, function(data){
-            hub.getCarriablesInBag(function(bag){
-                if(data.err){
-                    window.utils.addError(data.err);
-                    return;
-                }
+			// Create a new canvas for the game
+			var canvas = document.createElement("canvas"),
+				canvasContainer = document.createElement("div"),
 
-                // Create a new canvas for the game
-                var canvas = document.createElement("canvas"),
-                    canvasContainer = document.createElement("div"),
+			// Create the API object
+			api = new GameAPI(
+				data.gameId,
+				data.name,
+				data.sessionId,
+				canvas,
+				canvasContainer,
+				data.assetBaseURL,
+				data.version
+			);
 
-                    // Create the API object
-                    api = new GameAPI(
-                        data.gameId,
-                        data.name,
-                        data.sessionId,
-                        canvas,
-                        canvasContainer,
-                        data.assetBaseURL,
-                        data.version
-                    );
+			// Remove window functions
+			clearWindowFunctions();
 
-
-                // Remove window functions
-                clearWindowFunctions();
-
-				//assume the scripts are loaded
-                // Load the scripts into memory
-                var l = latch(data.scriptURLs.length, function(){
-                    container.removeChild(hubCanvasContainer);
-                    canvasContainer.appendChild(canvas);
-                    container.appendChild(canvasContainer);
-
-                    var e = window[data.entryObject];
-                    e.run.call(e, api, canvas, data.assetBaseURL, hub.health, hub.cloneStatuses(), bag);
-                });
-
-				/*
-                data.scriptURLs.forEach(function(script){
-					comms.loadScriptFile(script, l, false);
-                });
-				*/
-            });
+			//assume the scripts are loaded
+			var e = window[data.entryObject];
+			e.run.call(e, api, canvas, data.assetBaseURL, hub.health, hub.cloneStatuses(), []);
         });
     };
 
-    hub.getAssetsByType = getAssetsByType;
-
+	
+	
     // Object for a Game API system
     function GameAPI(gameId, gameName, sessionId, canvas, canvasContainer, assetBaseURL, version){
         this.gameName = gameName;
@@ -516,7 +249,7 @@
         };
 
         proto.getAvatarImage = function(){
-            return this.avatarImage;
+            return hub.avatarImage;
         };
 
         proto.getAssetURL = function(asset){
