@@ -1,5 +1,6 @@
 (function(){
 
+	var api;
 	var canvas;
 	//var changeableStatus;
 	var health;
@@ -8,17 +9,23 @@
 	var currentBag;
 
 
-	function run(api, can, assetBaseURL, startHp, statuses, bag){
+	function run(a, can, assetBaseURL, startHp, statuses, bag){
+
+		api = a;
+		canvas = can;
+		can.width="800";
+		can.height="500";
 
 		//changeableStatus = statuses[Object.keys(statuses)[0]]
 		health = startHp;
 		score = 0;
 		currency = 0;
 		currentBag = bag;
-		canvas = can;
+
+		console.log(currentBag);
 
 		// Handle keyboard controls
-		window.addEventListener("keypress", keyPressed, true);
+		api.addKeyListener("keydown", keyPressed);
 
 		render();
 	}
@@ -27,40 +34,40 @@
 	var keyPressed = function (e) {
 		switch(e.keyCode){
 			case(40) : // Player pressed down
-				console.log("down");
+				//console.log("down");
 				api.modifyHealth(-1, updateHealthAndAvatar);
 				break;			
 			case(38) : // Player pressed up
-				console.log("up");
+				//console.log("up");
 				api.modifyHealth(1, updateHealthAndAvatar);
 				break;
 
 				/*
 			case(37) : // Player pressed left
-				console.log("left");
+				//console.log("left");
 				api.modifyStatus(changeableStatus.id, -1, updateStatus);
 				break;
 			case(39) : // Player pressed right
-				console.log("right");
+				//console.log("right");
 				api.modifyStatus(changeableStatus.id, 1, updateStatus);
 				break;
 			*/
 
 			case(74) : // Player pressed j
-				console.log("J");
+				//console.log("J");
 				updateScore(-10);
 				break;
 			case(75) : // Player pressed k
-				console.log("K");
+				//console.log("K");
 				updateScore(10);
 				break;
 
 			case(78) : // Player pressed n
-				console.log("N");
+				//console.log("N");
 				updateCurrency(-10);
 				break;
 			case(77) : // Player pressed m
-				console.log("M");
+				//console.log("M");
 				updateCurrency(10);
 				break;
 
@@ -96,20 +103,25 @@
 				break;
 
 			case(70) : // Player pressed F
-				console.log("F");
-				api.finishGame(score, currency);
-				window.removeEventListener("keypress", keyPressed);
+				//console.log("F");
+				finishGame();
 				break;
 		}
 	};
 
-	var numberPressed = function(num){
-		console.log(num);
+	var finishGame = function(){
+		//window.removeEventListener("keydown", keyPressed);
+		api.finishGame(score, currency);
+	}
 
-		if(bag[num] == undefined){
+	var numberPressed = function(num){
+		//console.log(num);
+		var key = Object.keys(currentBag)[num];
+
+		if(currentBag[key] == undefined){
 			alert("NO ITEM IN THAT SLOT");
 		} else {
-			api.useCarriable(currentBag[num].id, updateCarriables);
+			api.useCarriable(currentBag[key].id, updateCarriables);
 			render();
 		}
 	}
@@ -122,7 +134,7 @@
 		//Do something with avatar
 		render();
 	}
-	
+
 	function updateStatus(statusId, newValue){
 		statuses[statusId].value = newValue;
 		render();
@@ -138,8 +150,9 @@
 		render();
 	}
 
-	function updateCarriables(newBag, health, newStatuses, avatarImage){
-		updateHealthAndAvatar(health, avatarImage);
+	function updateCarriables(newBag, newHp, newStatuses, avatarImage){
+		console.log(newHp);
+		updateHealthAndAvatar(newHp, avatarImage);
 		//!!!!!!!!!!!!!
 		//statuses = newStatuses;
 		currentBag = newBag;
@@ -170,17 +183,17 @@
 		ctx.fillText("Score: "+score, 10, 410);
 		ctx.fillText("Currency: "+currency, 10, 440);
 		ctx.fillText("Carriables: "+makeBagString(), 10, 470);
+	};
 
-		var makeBagString = function(){
-			var arr = [];
-			currentBag.forEach(function(b){
-				arr.push(b.name);
-			});
 
-			return arr.join(', ');
+	var makeBagString = function(){
+		var arr = [];
+		for(var c in currentBag){
+			arr.push(currentBag[c].name);
 		}
 
-	};
+		return arr.join(', ');
+	}
 
 	window.dummyGame = {
 		run : run

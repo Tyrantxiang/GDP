@@ -20,6 +20,10 @@
 
 
     function latch(num, complete){
+        if(num < 1){
+            complete();
+        }
+
         return function(){
             if(!--num){
                 complete();
@@ -288,6 +292,19 @@
         });
     };
 
+    hub.getCarriable = function(id, cb){
+        if(hub.carriables[id]){
+            cb(hub.carriables[id]);
+        } else {
+            hub.getAllCarriables(function(){
+                if(hub.carriables[id]){
+                    cb(hub.carriables[id]);
+                } else {
+                    cb(null);
+                }
+            });
+        }
+    };
 
     // Set the bag
     hub.setBag = function(carriables, cb){
@@ -389,20 +406,30 @@
                 // Remove window functions
                 clearWindowFunctions();
 
-                // Load the scripts into memory
-                var l = latch(data.scriptURLs.length, function(){
-                    container.removeChild(hubCanvasContainer);
-                    canvasContainer.appendChild(canvas);
-                    container.appendChild(canvasContainer);
+                var newBag = {};
 
-                    var e = window[data.entryObject];
-                    e.run.call(e, api, canvas, data.assetBaseURL, hub.health, hub.cloneStatuses(), bag);
+                var lcarriables = latch(bag.length, function(){
+                    // Load the scripts into memory
+                    var lscripts = latch(data.scriptURLs.length, function(){
+                        container.removeChild(hubCanvasContainer);
+                        canvasContainer.appendChild(canvas);
+                        container.appendChild(canvasContainer);
+
+                        var e = window[data.entryObject];
+                        e.run.call(e, api, canvas, data.assetBaseURL, hub.health, hub.cloneStatuses(), newBag);
+                    });
+
+                    data.scriptURLs.forEach(function(script){
+                        comms.loadScriptFile(script, lscripts, false);
+                    });
                 });
 
-                data.scriptURLs.forEach(function(script){
-                    comms.loadScriptFile(script, l, false);
+                bag.forEach(function(c){
+                    hub.getCarriable(c, function(carriable){
+                        newBag[c] = carriable;
+                        lcarriables();
+                    });
                 });
-
             });
         });
     };
@@ -422,6 +449,39 @@
         this.version = version;
         this.canvas = canvas;
 
+        var listeners = [];
+
+        this.addKeyListener = function(eventType, func){
+            var allowedEvents = ["keypress", "keydown", "keyup"];
+
+            if(allowedEvents.indexOf(eventType) > -1){
+                listeners.push({"type": "key", "eventType": eventType, "func": func});
+                window.addEventListener(eventType, func, false);
+            } else {
+                console.err("Event "+eventType+" is not allowed for key listener!");
+            }
+        };
+
+        this.addMouseListener = function(eventType, func){
+            var allowedEvents = ["mousedown", "mouseup", "mouseover", "mouseout", "mousemove", "click", "contextmenu", "dblclick"];
+
+            if(allowedEvents.indexOf(eventType) > -1){
+                listeners.push({"type": "mouse", "eventType": eventType, "func": func});
+                this.canvas.addEventListener(eventType, func, false);
+            } else {
+                console.err("Event "+eventType+" is not allowed for mouse listener!");
+            }
+        };
+
+        this.removeAllListeners = function(){
+            listeners.forEach(function(l){
+                if(l.type == "key"){
+                    window.removeEventListener(l.eventType, l.func);
+                } else if(l.type == "mouse"){
+                    this.canvas.removeEventListener(l.eventType, l.func);
+                }
+            });
+        };
 
         this.getGameId = function(){
             return gameId;
@@ -440,6 +500,8 @@
                 if(data && data.err){
                     utils.addError(JSON.stringify(data.err));
                 }
+
+                this.removeAllListeners();
 
                 //return to hub here!
                 container.removeChild(this.getCanvasContainer());
