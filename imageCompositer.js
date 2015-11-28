@@ -17,7 +17,7 @@ function setImageSize(size){
 			img.onload = function(){
 				ctx.drawImage(img, 0, 0, imgSize, imgSize);
 			};
-			img.src = __dirname + '/' + part + '.png';
+			img.src = part;
 			part = parts.shift();
 		}
 		

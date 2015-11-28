@@ -112,31 +112,31 @@ Hub.prototype.exit = function(){
 };
 
 Hub.prototype.generateAvatarImage = function(fn){
-    //var base_image = getBaseImage();
     var urls = [],
         h = this;
 
+	var healthImg = undefined;
     if(this.health < 30){
-        urls.push(""); //getHealthyImage();
+        healthImg = __dirname + "\\avatar_items\\unhealthy.png";
     }else{
-        urls.push(""); //getUnhealthyImage();
-    }
+		healthImg = __dirname + "\\avatar_items\\healthy.png";
+	}
+	var order = ["SKIN", "EYES", "SHIRT", "HEAD"];
 
     // Equipt items could possibly be saved locally?
     this.get_user_equipped_items(
         {},
         function(data){
-            var main = 0;
-            for(var slotd in data){
-                if(slotd.slot==="SKIN") main = i;
-                urls.push(slotd.url);
-            }
-            var tmp = urls[0];
-            urls[0] = urls[i];
-            urls[i] = tmp;
+			var currIndex = 0;
+			while(currIndex<order.length){
+				var direc = config.items.getConfig(data[order[currIndex]].id, "directory");
+				direc += "\\sprite.png";
+				urls.push(direc);
+				currIndex++;
+			}
+			urls.splice(1, 0, healthImg);
 
-
-            var base64string = h.imgMaker(urls);
+            var base64string = h.imgMaker(urls);			
             fn(base64string);
         });
 };
