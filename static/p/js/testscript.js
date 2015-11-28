@@ -329,50 +329,52 @@
 
 
     // Launches a game
-    hub.launchGame = function(gameId){
-        // Get the minigame info
-        comms.launch_minigame(gameId, function(data){
-            hub.getCarriablesInBag(function(bag){
-                if(data.err){
-                    window.utils.addError(data.err);
-                    return;
-                }
+    hub.launchGame = function(gameId){		
+		// Create a new canvas for the game
+		var canvas = document.createElement("canvas"),
+			canvasContainer = document.createElement("div"),
 
-                // Create a new canvas for the game
-                var canvas = document.createElement("canvas"),
-                    canvasContainer = document.createElement("div"),
+		var data = {
+			"gameId": 0,
+			"name": "test_game",
+			"sessionId": 0,
+			"assetBaseURL": "./",
+			"version":	0.1,
+			"scriptURLs": ,
+			"entryObject": ,
+			"assetBaseURL":
+		};
+			
+		// Create the API object
+		api = new GameAPI(
+			data.gameId,
+			data.name,
+			data.sessionId,
+			canvas,
+			canvasContainer,
+			data.assetBaseURL,
+			data.version
+		);
 
-                    // Create the API object
-                    api = new GameAPI(
-                        data.gameId,
-                        data.name,
-                        data.sessionId,
-                        canvas,
-                        canvasContainer,
-                        data.assetBaseURL,
-                        data.version
-                    );
+		// Remove window functions
+		clearWindowFunctions();
 
+		// Load the scripts into memory
+		var l = latch(data.scriptURLs.length, function(){
+			container.removeChild(hubCanvasContainer);
+			canvasContainer.appendChild(canvas);
+			container.appendChild(canvasContainer);
 
-                // Remove window functions
-                clearWindowFunctions();
+			var e = window[data.entryObject];
+			
+			hub.getCarriablesInBag(function(bag){
+				e.run.call(e, api, canvas, data.assetBaseURL, hub.health, hub.cloneStatuses(), bag);
+			});
+		});
 
-                // Load the scripts into memory
-                var l = latch(data.scriptURLs.length, function(){
-                    container.removeChild(hubCanvasContainer);
-                    canvasContainer.appendChild(canvas);
-                    container.appendChild(canvasContainer);
-
-                    var e = window[data.entryObject];
-                    e.run.call(e, api, canvas, data.assetBaseURL, hub.health, hub.cloneStatuses(), bag);
-                });
-
-                data.scriptURLs.forEach(function(script){
-                    comms.loadScriptFile(script, l, false);
-                });
-
-            });
-        });
+		data.scriptURLs.forEach(function(script){
+			comms.loadScriptFile(script, l, false);
+		});
     };
 
     hub.getAssetsByType = getAssetsByType;
@@ -442,8 +444,6 @@
         };
 
     })(GameAPI.prototype);
-
-
 
     window.hub = hub;
 })();
