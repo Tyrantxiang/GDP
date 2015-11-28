@@ -74,7 +74,7 @@ var routes = {
 
 	remove_inventory : function(req, res){
 
-	}
+	},
 	
 	
 	
