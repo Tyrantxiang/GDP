@@ -483,7 +483,11 @@ var commsEventListeners = {
         }
 
         fn(statuses);
-    }
+    },
+	
+	get_avatar : function(data, fn){
+		this.generateAvatarImage(fn);
+	}
 
 };
 

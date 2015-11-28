@@ -312,6 +312,13 @@ window.comms = {
 							cb
 						);
 	},
+	
+	get_avatar : function(cb){
+		client_socket_call( 'get_avatar',
+							{},
+							cb
+						);
+	},
 
 	//BAG
 	get_bag : function(cb){
@@ -374,7 +381,7 @@ window.comms = {
 						);
 	},
 
-//MINIGAME
+	//MINIGAME
 	modify_hp_value : function(value, cb){
 		client_socket_call( 'modify_hp_value',
 							{value: value},
