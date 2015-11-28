@@ -313,7 +313,7 @@
                 hub.health = data.newhp;
                 hub.statuses = data.newStatuses;
                 hub.avatarImage = base64ToImg(data.avatarImage);
-                cb(hub.health, hub.statuses, hub.avatarImage);
+                cb(data.bag, hub.health, hub.statuses, hub.avatarImage);
             }else{
                 cb({
                     err : data.err
@@ -446,8 +446,8 @@
 
         proto.useCarriable = function(carriableId, cb){
             var t = this;
-            hub.useCarriable(carriableId, function(health, statuses, avatarImage){
-                cb.call(t, health, statuses, avatarImage);
+            hub.useCarriable(carriableId, function(bag, health, statuses, avatarImage){
+                cb.call(t, bag, health, statuses, avatarImage);
             });
         };
 

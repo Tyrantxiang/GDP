@@ -286,6 +286,7 @@ var commsEventListeners = {
             // Generate the avatar image
             this.generateAvatarImage(function(imageString){
                 fn({
+                    bag : this.bag.getCarriables(),
                     newhp : h.health,
                     newStatuses : o,
                     avatarImage : imageString
