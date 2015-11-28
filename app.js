@@ -23,7 +23,8 @@ function startApp(db){
 	// App requires
 	var auth = require("./auth.js")(db),
 	    hub = require("./hub.js")(config, db),
-	    userapi = require("./user-api.js")(config, db);
+	    userapi = require("./user-api.js")(config, db),
+		superuserapi = require("./superuser-api.js")(config, db);
 
 
 	app.use(morgan("dev"));
