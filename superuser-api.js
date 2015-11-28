@@ -25,55 +25,129 @@ function getDatabase(){
     return db;
 }
 
+function checkIsValid(arrNames, objToTest){
+	var valid = Object.keys(objToTest).length === arrNames.length;
+	for(var i=0; i<arrNames.length; i++){
+		valid = valid && (objToTest[arrNames[i]] !== undefined);
+	}
+	return valid;
+}
+
+function returnInvalidMessage(res){
+	res.status(400).json({
+		"error" : "Request body not valid - missing, extra or undefined components"
+	});
+}
+
 /****** Route functions ******/
 var routes = {
 	
 	add_bag_item : function(req, res){
-		
+		var valid = checkIsValid(["name", "sprite", "effects"], req.body);
+		if(valid){
+			
+		}else{
+			returnInvalidMessage(res);
+		}
 	},
 
 	remove_bag_item : function(req, res){
-
+		var valid = checkIsValid(["id"], req.body);
+		if(valid){
+			
+		}else{
+			returnInvalidMessage(res);
+		}
 	},
 
 	add_status : function(req, res){
-
+		var valid = checkIsValid(["id", "name", "min_val", "max_val", "healthy_min", "healthy_max", "isNumber", "words"], req.body);
+		if(valid){
+			
+		}else{
+			returnInvalidMessage(res);
+		}
 	},
 
 	remove_status : function(req, res){
-
+		var valid = checkIsValid(["id"], req.body);
+		if(valid){
+			
+		}else{
+			returnInvalidMessage(res);
+		}
 	},
 
 	add_condition : function(req, res){
-
+		var valid = checkIsValid(["name", "statuses"], req.body);
+		if(valid){
+			
+		}else{
+			returnInvalidMessage(res);
+		}
 	},
 
 	remove_condition : function(req, res){
-
+		var valid = checkIsValid(["id"], req.body);
+		if(valid){
+			
+		}else{
+			returnInvalidMessage(res);
+		}
 	},
 
 	add_store_item : function(req, res){
-
+		var valid = checkIsValid(["id", "name", "description", "slot", "price", "sprite"], req.body);
+		if(valid){
+			
+		}else{
+			returnInvalidMessage(res);
+		}
 	},
 
 	remove_store_item : function(req, res){
-
+		var valid = checkIsValid(["id"], req.body);
+		if(valid){
+			
+		}else{
+			returnInvalidMessage(res);
+		}
 	},
 
 	add_minigame : function(req, res){
-
+		var valid = checkIsValid(["id", "name", "description", "img", "scripts", "entry_point"], req.body);
+		if(valid){
+			
+		}else{
+			returnInvalidMessage(res);
+		}
 	},
 
 	remove_minigame : function(req, res){
-
+		var valid = checkIsValid(["id"], req.body);
+		if(valid){
+			
+		}else{
+			returnInvalidMessage(res);
+		}
 	},
 
 	add_inventory : function(req, res){
-
+		var valid = checkIsValid(["id"], req.body);
+		if(valid){
+			
+		}else{
+			returnInvalidMessage(res);
+		}
 	},
 
 	remove_inventory : function(req, res){
-
+		var valid = checkIsValid(["id"], req.body);
+		if(valid){
+			
+		}else{
+			returnInvalidMessage(res);
+		}
 	},
 	
 	

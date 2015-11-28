@@ -53,9 +53,9 @@
 
 	window.superuser = {
 		
-		add_bag_item : function(id, name, sprite, effects, cb){
+		add_bag_item : function(name, sprite, effects, cb){
 			postRequest(	'add_bag_item', 
-							{id: id, 'name': name, 'sprite': sprite, 'effects': effects}, 
+							{'name': name, 'sprite': sprite, 'effects': effects}, 
 							cb
 						);
 		},
@@ -69,7 +69,7 @@
 
 		add_status : function(id, name, min_val, max_val, healthy_min, healthy_max, isNumber, words, cb){
 			postRequest(	'add_status',
-							{'id': id, 'name': name, 'min': min_val, 'max': max_val, 'healthy_min': healthy_min,
+							{'name': name, 'min': min_val, 'max': max_val, 'healthy_min': healthy_min,
 								'healthy_max': healthy_max, 'isNumber': isNumber, 'words': words},
 							cb
 			);
@@ -98,7 +98,7 @@
 
 		add_store_item : function(id, name, description, slot, price, sprite, cb){
 			postRequest(	'add_store_item',
-							{id: id, name: name, description: description, slot: slot, price: price, sprite: sprite},
+							{name: name, description: description, slot: slot, price: price, sprite: sprite},
 							cb;
 			);
 		},
@@ -112,7 +112,7 @@
 
 		add_minigame : function(id, name, description, img, scripts, entry_point, cb){
 			postRequest(	'add_minigame',
-							{id: id, name: name, description: description, "image": img, scripts: scripts, entry_point: entry_point},
+							{name: name, description: description, "image": img, scripts: scripts, entry_point: entry_point},
 							cb
 						);
 		},
