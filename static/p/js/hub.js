@@ -114,7 +114,9 @@
         statuses : {},
 
         // All carriables
-        carriables : {}
+        carriables : {},
+		
+		avatarImage : undefined
 
 
     };
@@ -143,6 +145,10 @@
 
                             // First add the statuses to hub.statuses
                             hub.statuses = statuses;
+							
+							comms.get_avatar(function(imgData){
+									hub.avatarImage = base64ToImg(imgData);
+							});
 
                             // How much do we load?
                             var toLoad = Object.keys(items).length + 1,
@@ -466,7 +472,7 @@
         };
 
         proto.getAvatarImage = function(){
-            return this.avatarImage;
+            return hub.avatarImage;
         };
 
         proto.getAssetURL = function(asset){
