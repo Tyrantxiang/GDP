@@ -22,8 +22,8 @@
 		//SERVER EMULATION
 		
 		//all test statuses have max+initial value 100
-		statuses = {};
-		bag = [];
+		statuses : {},
+		bag : [],
 		
 		
 		//COMMS FUNCTIONS
@@ -41,8 +41,9 @@
 		//simplified, no multiplier like on server and no validation, ie health can go lower than 0 and higher than 100
 		modify_hp_value : function(changeVal, cb){
 			hub.health += changeVal;
-			
-			cb("newhp": hub.health, "avatarImage": );
+			var a = undefined;
+			thi
+			cb({"newhp": hub.health, "avatarImage": hub.avatarImage});
 		},
 		
 		get_avatar : function(cb){
@@ -69,6 +70,20 @@
 		
 		get_all_status_values : function(cb){
 			cb({1: {"id": 1, "name": "status_name", "value": 100}});
+		},
+		
+		launch_minigame : function(id, cb){
+			var obj = {
+					gameId : 0,
+					name : "test_game",
+					assetBaseURL : ".",
+					scriptURLs : [],
+					entryObject : entryObject,
+					version : 0,
+					sessionId : 0
+			};
+			cb(obj);
+			
 		}
 	};		
 		
@@ -433,6 +448,7 @@
                 // Remove window functions
                 clearWindowFunctions();
 
+				//assume the scripts are loaded
                 // Load the scripts into memory
                 var l = latch(data.scriptURLs.length, function(){
                     container.removeChild(hubCanvasContainer);
@@ -443,10 +459,11 @@
                     e.run.call(e, api, canvas, data.assetBaseURL, hub.health, hub.cloneStatuses(), bag);
                 });
 
+				/*
                 data.scriptURLs.forEach(function(script){
-                    comms.loadScriptFile(script, l, false);
+					comms.loadScriptFile(script, l, false);
                 });
-
+				*/
             });
         });
     };
