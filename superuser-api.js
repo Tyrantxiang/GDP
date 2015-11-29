@@ -3,6 +3,9 @@
 /* File implements routes for the superuser handling via a http RESTful API
  */
 
+var fs = require("fs");
+var path = require("path");
+ 
 var config;
 function setConfig(cfg){
     if(!cfg && typeof cfg !== Object){
@@ -39,13 +42,66 @@ function returnInvalidMessage(res){
 	});
 }
 
+function getRandomUnusedId(configObj){
+	var newIdFound = false,
+		newId = undefined;
+	while(!newIdFound){
+		var currentId = Math.floor(Math.random() * 32767);
+		
+		if(configObj.getConfig(currentId) === null){
+			newId = currentId;
+			newIdFound = true;
+		}
+	}
+	return newId;
+}
+
+function createFiles(spriteLoc, newLoc, configObj, otherFiles){
+	newLoc = __dirname + newLoc + "/";
+	
+	fs.mkdir(newLoc, function(err){
+		fs.readFile(spriteLoc, function (err, data) {
+			var newPath = newLoc + "sprite.png";
+			fs.writeFile(newPath, data, function (err) {
+			});
+			
+			fs.unlink(spriteLoc, function(err){});
+		});
+		
+		fs.writeFile(newLoc + "config.json", JSON.stringify(configObj), function(err){
+		});
+		
+		if(otherFiles){
+			
+		}
+	});
+}
+
+function removeFiles(path){
+	fs.unlink(path + "config.json", function(err){
+		fs.unlink(path + "sprite.png", function(err){
+			//fs.rmdir(path, function(err){});
+		});
+	});
+}
+
 /****** Route functions ******/
 var routes = {
 	
-	add_bag_item : function(req, res){
-		var valid = checkIsValid(["name", "sprite", "effects"], req.body);
+	add_bag_item : function(req, res){		
+		var properties = ["name", "effects"];
+		var valid = checkIsValid(properties, req.body);
 		if(valid){
+			var id = getRandomUnusedId(config.carriables);
+			var obj = {};
+			for(var i=0; i<properties.length; i++){
+				obj[properties[i]] = req.body[properties[i]];
+			}
+			obj.id = id;
 			
+			createFiles(req.file.path, "/carriables/" + id.toString(), obj, undefined);
+
+			res.json({"okay": "A OK!"});
 		}else{
 			returnInvalidMessage(res);
 		}
@@ -53,17 +109,30 @@ var routes = {
 
 	remove_bag_item : function(req, res){
 		var valid = checkIsValid(["id"], req.body);
+		
 		if(valid){
+			var path = config.cariables.getConfig(req.body.id, "directory");
 			
+			removeFiles(path);
+			
+			res.json({"okay": "A OK!"});
 		}else{
 			returnInvalidMessage(res);
 		}
 	},
 
 	add_status : function(req, res){
-		var valid = checkIsValid(["id", "name", "min_val", "max_val", "healthy_min", "healthy_max", "isNumber", "words"], req.body);
+		var properties = ["name", "min_val", "max_val", "healthy_min", "healthy_max", "isNumber", "words"];
+		var valid = checkIsValid(properties, req.body);
 		if(valid){
+			var id = getRandomUnusedId(config.statuses);
+			var obj = {};
+			for(var i=0; i<properties.length; i++){
+				obj[properties[i]] = req.body[properties[i]];
+			}
+			obj.id = id;
 			
+			createFiles(req.file.path, "/statuses/" + id.toString(), obj, undefined);
 		}else{
 			returnInvalidMessage(res);
 		}
@@ -72,7 +141,11 @@ var routes = {
 	remove_status : function(req, res){
 		var valid = checkIsValid(["id"], req.body);
 		if(valid){
+			var path = config.statuses.getConfig(req.body.id, "directory");
 			
+			removeFiles(path);
+			
+			res.json({"okay": "A OK!"});
 		}else{
 			returnInvalidMessage(res);
 		}
@@ -90,14 +163,18 @@ var routes = {
 	remove_condition : function(req, res){
 		var valid = checkIsValid(["id"], req.body);
 		if(valid){
+			var path = config.conditions.getConfig(req.body.id, "directory");
 			
+			removeFiles(path);
+			
+			res.json({"okay": "A OK!"});
 		}else{
 			returnInvalidMessage(res);
 		}
 	},
 
 	add_store_item : function(req, res){
-		var valid = checkIsValid(["id", "name", "description", "slot", "price", "sprite"], req.body);
+		var valid = checkIsValid(["name", "description", "slot", "price", "sprite"], req.body);
 		if(valid){
 			
 		}else{
@@ -107,8 +184,12 @@ var routes = {
 
 	remove_store_item : function(req, res){
 		var valid = checkIsValid(["id"], req.body);
-		if(valid){
+		if(valid){			
+			var path = config.items.getConfig(req.body.id, "directory");
 			
+			removeFiles(path);
+			
+			res.json({"okay": "A OK!"});
 		}else{
 			returnInvalidMessage(res);
 		}
@@ -144,97 +225,15 @@ var routes = {
 	remove_inventory : function(req, res){
 		var valid = checkIsValid(["id"], req.body);
 		if(valid){
+			var path = config.conditions.getConfig(req.body.id, "directory");
 			
+			removeFiles(path);
+			
+			res.json({"okay": "A OK!"});
 		}else{
 			returnInvalidMessage(res);
 		}
-	},
-	
-	
-	
-	
-	
-	
-    get_conditions_list : function (req, res){
-        res.json(config.conditions.listAll());
-    },
-
-
-    validate_username : function(req, res){
-        var username = req.body.username && req.body.username.trim();
-        isUsernameValid(username, function(o){
-            res.json(o);
-        });
-    },
-
-    validate_dob : function(req, res){
-        var dob = req.body.dob && new Date(req.body.dob);
-        isDobValid(dob, function(o){
-            res.json(o);
-        });
-    },
-
-    sign_up : function(req, res){
-        var b = req.body,
-            username = b.username && b.username.trim(),
-            password = b.password,
-            dob = b.dob && new Date(b.dob);
-
-
-        var validations = [];
-
-        isUsernameValid(username, function(o){
-            validations.push(o);
-            isPasswordValid(password, function(o){
-                validations.push(o);
-                isDobValid(dob, function(o){
-                    validations.push(o);
-
-                    var valid = validations.every(resultIsValid);
-                    if(valid){
-                        db.createUser(
-                            // Pass
-                            function(id){
-								db.readUserByName(function(results){
-									var dbres = setUpDefaultItems(results.id);
-									console.log(dbres);
-									if(dbres[0]){
-										res.json({
-											error : false    
-										});
-									}else{
-										console.log("HERE2");
-										res.status(400).json({
-											error : dbres[1]
-										});
-									}
-								}, function(error){
-									res.status(400).json({
-										error : error
-									});
-								}, username);
-                            },
-                            // Fail
-                            function(error){
-                                res.status(400).json({
-                                    error : error
-                                });
-                            },
-                            { username : username, password : password, dob : dob }
-                        );
-                    }else{
-                        res.status(400).json({
-                            error : "some stuff not valid",
-                            validations : validations
-                        });
-                    }
-
-
-                });
-            });
-        });
-
-    }
+	}
 
 };
 

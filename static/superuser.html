@@ -1,0 +1,43 @@
+<html>
+
+<head>
+</head>
+
+<body>
+
+	<form action="/superuser/add_bag_item" method="POST" enctype="multipart/form-data">
+		<label>Name:</label><input type="text" name="name" /><br>
+		<label>Sprite file:</label><input type="file" name="sprite" accept="image/png" /><br>
+		<label>Effects</label><input type="text" name="effects" /><br>
+		<label>Submit:</label><input type="submit" value="Submit" />
+	</form>
+	
+	<br>
+	<hr>
+	<br>
+	
+	<form action="/superuser/remove_bag_item" method="POST">
+		<label>ID:</label><input type="text" name="id" /><br>
+		<label>Submit:</label><input type="submit" value="Submit" />
+	</form>
+	
+	<br>
+	<hr>
+	<br>
+	
+	<form action="/superuser/add_status" method="POST" enctype="multipart/form-data">
+		<label>Name:</label><input type="text" name="name" /><br>
+		<label>Min value</label><input type="text" name="min_val"><br>
+		<label>Max value</label><input type="text" name="max_val"><br>
+		<label>Healthy min value</label><input type="text" name="healthy_min"><br>
+		<label>Healthy max value</label><input type="text" name="healthy_max"><br>
+		<label>Is number</label><input type="text" name="isNumber"><br>
+		<label>Words</label><input type="text" name="words"><br>
+		<label>Sprite file:</label><input type="file" name="sprite" accept="image/png" /><br>
+		<label>Submit:</label><input type="submit" value="Submit" />
+	</form>
+	
+</body>
+
+
+</html>
