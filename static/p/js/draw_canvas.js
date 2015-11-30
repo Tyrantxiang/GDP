@@ -141,15 +141,36 @@
 
 				switch(i.target.name)
 				{
+					// stairs trophy mirror laptop backpack paint path 
+					case 'STAIRS':
+						console.log('stairs clicked');
+						break;
+
+					case 'TROPHY':
+						console.log('trophy clicked');
+						break;
+
+					case 'MIRROR':
+						console.log('mirror clicked');
+						break;
+
+					case 'LAPTOP':
+						console.log('laptop clicked');
+						break;
+
 					case 'BACKPACK':
 						comms.loadScriptFile("/p/js/pack_backpack.js", function(){
 							// TODO: Maybe make into string-switch.
 							hub.launchBackpack();
 			        	});
 						break;
-						
-					case 'MIRROR':
-						console.log('mirror clicked');
+
+					case 'PAINT':
+						console.log('paint clicked');
+						break;
+
+					case 'PATH':
+						console.log('path clicked');
 						break;
 				;}
 			};
