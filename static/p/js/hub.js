@@ -329,6 +329,14 @@
             cb(hub.health, hub.avatarImage);
         });
     };
+	
+	hub.setAbsoluteHealth = function(value, cb){
+		comms.set_hp_value(value, function(data) {
+            hub.health = data.newhp;
+            hub.avatarImage = base64ToImg(data.avatarImage);
+            cb(hub.health, hub.avatarImage);
+        });
+	}
 
     hub.useCarriable = function(carriableId, cb){
         comms.use_carriable(carriableId, function(data){

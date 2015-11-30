@@ -402,6 +402,13 @@ window.comms = {
 							cb
 						);
 	},
+	
+	set_hp_value : function(newhp, cb){
+		client_socket_call( 'set_hp_value',
+							{"newhp" : newhp},
+							cb	
+						);
+	},
 
 
 

@@ -507,6 +507,22 @@ var commsEventListeners = {
 		this.generateAvatarImage(fn);
 	}
 
+	set_hp_value : function(data, fn){
+		this.health = data.newhp;
+		
+		// Keep health between 100 and 0;
+        this.health = Math.max(0, Math.min(100, this.health + value));
+		
+		var h = this;
+		
+		this.generateAvatarImage(function(imageString){
+            fn({
+                newhp: h.health,
+                avatarImage: imageString
+            });
+        });
+	}
+	
 };
 
 
