@@ -161,7 +161,14 @@ var commsEventListeners = {
     },
 
     get_single_item_info : function(data, fn){
-        fn(config.items.getConfig(data.id, undefined));
+		var obj = config.items.getConfig(data.id, undefined);
+		if(obj){
+			obj.url = config.items.getSpriteURL(data.id);
+		}else{
+			obj = undefined;
+		}
+		
+        fn(obj);
     },
 
     get_hub_backgroud_image : function(data, fn){
