@@ -1,7 +1,7 @@
 {
   "id": 2000,
-  "name": "Test Backback",
+  "name": "Default swing",
   "description": "",
-  "slot": "BACKPACK",
+  "slot": "SWING",
   "price": 0
 }
