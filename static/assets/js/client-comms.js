@@ -307,7 +307,7 @@ window.comms = {
 	},
 
 	update_equipped_items : function(items, cb){
-		client_socket_call(	'update_eqipped_items',
+		client_socket_call(	'update_equipped_items',
 							items,
 							cb
 						);

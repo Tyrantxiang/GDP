@@ -225,19 +225,23 @@ var commsEventListeners = {
         
     },
 
+	
+	//TODO: Change hair to head
     update_equipped_items : function(data, fn){
-        var invObj = {
+		var invObj = {
             user_id : this.userId,
-            head: data.head,
+            hair: data.head,
             eyes: data.eyes,
             skin: data.skin,
             shirt: data.shirt
         };
 
-        db.createEqippedItems(
+		var t = this;
+		
+        db.createUserEquipped(
             function(results){
-                this.modify_hp_value(0, fn);
-            }, function(){
+                t.modify_hp_value(0, fn);
+            }, function(err){
                 fn({err: "Error in db"});
             },
             invObj
