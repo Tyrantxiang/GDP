@@ -115,6 +115,8 @@ Hub.prototype.generateAvatarImage = function(fn){
     var urls = [],
         h = this;
 
+	console.log("PETER TEST: MADE IT INTO AVATAR CREATION");
+		
 	var healthImg = undefined;
     if(this.health < 30){
         healthImg = __dirname + "\\avatar_items\\unhealthy.png";
@@ -127,6 +129,9 @@ Hub.prototype.generateAvatarImage = function(fn){
     this.get_user_equipped_items(
         {},
         function(data){
+			console.log("PETER TEST: GOT USER ITEMS AND MADE IT INTO SUCCESS CALLBACK. ITEMS ARE:");
+			console.log(JSON.stringify(data));
+			
 			var currIndex = 0;
 			while(currIndex<order.length){
 				var direc = config.items.getConfig(data[order[currIndex]].id, "directory");
@@ -135,6 +140,8 @@ Hub.prototype.generateAvatarImage = function(fn){
 				currIndex++;
 			}
 			urls.splice(1, 0, healthImg);
+			
+			console.log(JSON.stringify(urls));
 
             var base64string = h.imgMaker(urls);			
             fn(base64string);
