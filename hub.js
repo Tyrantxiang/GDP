@@ -435,9 +435,16 @@ var commsEventListeners = {
 
     modify_hp_value : function(data, fn){
         var value = data.value;
+		
+		var multiplier = 1;
         for(var stat in this.statuses){
-            value *= this.statuses[stat].getMultiplier();
+            multiplier *= this.statuses[stat].getMultiplier();
         }
+		
+		//The multiplier makes bad health changes go up, and good health changes go down
+		if(value < 0) value = Math.floor(value * multiplier);
+		else value = Math.floor(value / multiplier);
+		
         // Keep health between 100 and 0;
         this.health = Math.max(0, Math.min(100, this.health + value));
 
