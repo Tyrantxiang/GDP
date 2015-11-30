@@ -143,7 +143,9 @@
 				{
 					// stairs trophy mirror laptop backpack paint path 
 					case 'STAIRS':
-						console.log('stairs clicked');
+						comms.loadScriptFile("/p/js/pack_backpack.js", function() {
+							hub.sleep();
+						});
 						break;
 
 					case 'TROPHY':

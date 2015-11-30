@@ -6,6 +6,19 @@
 
 	window.menu = {};
 
+	window.menu.stairs = {
+		load : function() {
+			console.log('hello');
+			$.get('/views/sleep.html', function(data) {
+				$('#menu-overlays').html(data);
+
+				$('#fade-overlay').hide();
+				$('#fade-overlay').fadeToggle(2000);
+				$('#fade-overlay').fadeToggle(2000);
+			})
+		}
+	};
+
 	window.menu.backpack = {
 		load : function(carriables, backpack){
 

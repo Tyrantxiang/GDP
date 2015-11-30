@@ -377,6 +377,14 @@
     };
 
 
+    // Sleep, resetting health.
+    // TODO: Change function call once end-point updated.
+    hub.sleep = function(cb) {
+        hub.modifyHealth(100, function() {
+            window.menu.stairs.load();
+        });
+    };
+
     // Launches a game
     hub.launchGame = function(gameId){
         // Get the minigame info
