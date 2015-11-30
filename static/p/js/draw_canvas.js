@@ -141,9 +141,8 @@
 
 				switch(i.target.name)
 				{
-					// stairs trophy mirror laptop backpack paint path 
 					case 'STAIRS':
-						comms.loadScriptFile("/p/js/pack_backpack.js", function() {
+						comms.loadScriptFile("/p/js/menus.js", function() {
 							hub.sleep();
 						});
 						break;
@@ -161,7 +160,7 @@
 						break;
 
 					case 'BACKPACK':
-						comms.loadScriptFile("/p/js/pack_backpack.js", function(){
+						comms.loadScriptFile("/p/js/menus.js", function(){
 							// TODO: Maybe make into string-switch.
 							hub.launchBackpack();
 			        	});

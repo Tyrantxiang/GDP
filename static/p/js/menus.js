@@ -8,7 +8,6 @@
 
 	window.menu.stairs = {
 		load : function() {
-			console.log('hello');
 			$.get('/views/sleep.html', function(data) {
 				$('#menu-overlays').html(data);
 
