@@ -76,6 +76,13 @@ $(function() {
     });
   }
 
+  function loadAvatarCreation() {
+    $.get("/views/createavatar.html", function(data){
+      $("#main-content-area").html(data);
+      document.title = "Customise your avatar";
+    });
+  }
+
   $(document).on('click', '.signup-btn', loadSignup);
   $(document).on('click', '.login-btn', loadLogin);
 
@@ -223,7 +230,14 @@ $(function() {
                 addFail("Sign up failed");
               }else{
                 addSuccess("Sign up successful");
-                loadLogin();
+                comms.authenticate(username, password, function (data) {
+                  if (data.authenticated) {
+                    comms.createSocket(function() {});
+                    comms.socketOpen();                
+                    loadAvatarCreation();
+                    comms.loadScriptFile("/assets/js/avatar-scripts.js", false, false);
+                  }
+                });
               }
             });
 

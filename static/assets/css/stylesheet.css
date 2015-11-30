@@ -13,6 +13,27 @@ body.login {
   font-family: "Aileron";
 }
 
+/* Avatar creation */
+html, body, .section-img {
+  width:100%;
+  height:100%;
+  padding: 5px;
+}
+
+.nav > li.active > a,
+.nav > li.active > a:hover,
+.nav > li.active > a:focus{
+  background-color: rgba(247, 202, 24, 0.5);
+}
+
+.nav > li > a {
+  border-radius: 5px;
+  border-width: 1px 1px 2px 2px;
+  border-color: #cccccc;
+  border-style: solid;
+  margin: 5px;
+}
+
 /* Message boxes */
 #messages {
   position: fixed;
@@ -27,7 +48,6 @@ body.login {
 #messages .alert {
   display: none;
 }
-
 
 /* Containers */
 .container {
@@ -46,12 +66,35 @@ body.login {
   margin-top: 10px;
 }
 
-.grey-box {
-  background-color: rgba(50, 50, 50, 0.49);
-  color: #ffffff;
+.green-box {
+  background-color: #cccccc;
   padding: 10px;
   padding-bottom: 13px;
-  border-radius: 5px;
+  border-radius: 10px;
+}
+
+.white-img-box {
+  background-color: #fff;
+  padding: 5px;
+  padding-bottom: 10px;
+  border-color: #ccc;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.white-img-box:hover {
+  border-color: green;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.white-img-box.active {
+  border-color: green;
+  border-width: 1px;
+  border-style: solid;
 }
 
 .white-box {
@@ -59,6 +102,14 @@ body.login {
   color: #333333;
   padding: 8px;
   padding-bottom: 10px;
+  border-radius: 10px;
+}
+
+.grey-box {
+  background-color: rgba(50, 50, 50, 0.49);
+  color: #ffffff;
+  padding: 10px;
+  padding-bottom: 13px;
   border-radius: 5px;
 }
 
@@ -83,6 +134,10 @@ body.login {
 }
 
 /* Colors/text styles */
+
+.no-padding {
+  padding : 0 !important;
+}
 
 .white {
   color: #ffffff;
@@ -247,4 +302,4 @@ body.login {
      border:1px solid #000;
      padding:15px;
      text-align:center;
-}*/
+}
