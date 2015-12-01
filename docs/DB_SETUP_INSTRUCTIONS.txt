@@ -1,0 +1,20 @@
+Do each instruction separately!
+
+get database connection info from config.json.database.main !!
+
+> sudo -su postgres
+> psql
+
+[connects to a db]
+
+> CREATE DATABASE <database>;
+> CREATE USER <username> WITH PASSWORD '<password>';
+> GRANT ALL PRIVILEGES ON DATABASE <database> TO <username>;
+> ALTER USER <username> SET search_path='<schema>';
+
+> \q
+
+> node database/buildFiles/buildDB.js main
+
+
+And that should work!!
