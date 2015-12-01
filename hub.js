@@ -114,8 +114,6 @@ Hub.prototype.exit = function(){
 Hub.prototype.generateAvatarImage = function(fn){
     var urls = [],
         h = this;
-
-	console.log("PETER TEST: MADE IT INTO AVATAR CREATION");
 		
 	var healthImg = undefined;
     if(this.health < 30){
@@ -123,25 +121,20 @@ Hub.prototype.generateAvatarImage = function(fn){
     }else{
 		healthImg = __dirname + "\\avatar_items\\healthy.png";
 	}
-	var order = ["SKIN", "EYES", "SHIRT", "HEAD"];
+	var order = ["skin", "eyes", "shirt", "head"];
 
     // Equipt items could possibly be saved locally?
     this.get_user_equipped_items(
         {},
-        function(data){
-			console.log("PETER TEST: GOT USER ITEMS AND MADE IT INTO SUCCESS CALLBACK. ITEMS ARE:");
-			console.log(JSON.stringify(data));
-			
-			var currIndex = 0;
-			while(currIndex<order.length){
-				var direc = config.items.getConfig(data[order[currIndex]].id, "directory");
+        function(data){			
+			for(var i in order){
+				console.log(i);
+				var direc = config.items.getConfig(data[order[i]].id, "directory");
 				direc += "\\sprite.png";
 				urls.push(direc);
-				currIndex++;
 			}
-			urls.splice(1, 0, healthImg);
 			
-			console.log(JSON.stringify(urls));
+			urls.splice(1, 0, healthImg);
 
             var base64string = h.imgMaker(urls);			
             fn(base64string);
@@ -200,11 +193,17 @@ var commsEventListeners = {
                 var itemMetaData = config.hub.getItemMetaData(),
                     sendBack = {},
                     slot;
+					
+				
+				console.log(results);
                 for(slot in itemMetaData){
-                    let md = itemMetaData[slot],
+					
+					console.log(slot + " = " + results[slot]);
+					let md = itemMetaData[slot],
                         itemConfig = config.items.getConfig(results[slot] || md.default),
                         url = config.items.getSpriteURL(itemConfig.id);
 
+						
                     sendBack[slot] = {
                         id : itemConfig.id,
                         name : itemConfig.name,
@@ -223,21 +222,21 @@ var commsEventListeners = {
 
                 fn(sendBack);
             },
-            function(){
-                fn({err: "Error in db"});
+            function(err){
+				console.log(err);
+                fn(err);
             },
-            this.user_id
+            this.userId
         );
         
         
     },
 
 	
-	//TODO: Change hair to head
     update_equipped_items : function(data, fn){
 		var invObj = {
             user_id : this.userId,
-            hair: data.head,
+			head: data.head,
             eyes: data.eyes,
             skin: data.skin,
             shirt: data.shirt
@@ -249,7 +248,7 @@ var commsEventListeners = {
             function(results){
                 t.modify_hp_value(0, fn);
             }, function(err){
-                fn({err: "Error in db"});
+                fn({err: err});
             },
             invObj
         );

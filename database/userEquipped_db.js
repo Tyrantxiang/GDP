@@ -33,7 +33,15 @@ userEquippedDB.readUserEquippedById = function(pass, fail, id){
 //Returns all the columns for the matching Equipped entry
 //Doing '*' here because it is one less place something needs to be changed when a new slot is added
 userEquippedDB.getEquippedForUser = function(pass, fail, user_id){
-	dbutils.read(pass, fail, TABLE_NAME, ["*"], {"user_id": user_id}, "ORDER BY id DESC");
+	dbutils.read(resultsHandling, fail, TABLE_NAME, ["*"], {"user_id": user_id}, "ORDER BY id DESC", 1);
+
+	function resultsHandling(results){
+		if(results.length > 0){
+			pass(results[0]);
+		}else{
+			pass({});
+		}
+	}
 }
 
 //Deletes the entry that matches the id

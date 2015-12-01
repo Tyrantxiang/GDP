@@ -80,7 +80,7 @@ CREATE TABLE "{schema}".user_equipped
 ( id 				serial 		NOT NULL
 , user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
 , created			timestamp   NOT NULL DEFAULT current_timestamp
-, hair 				text		NULL
+, head 				text		NULL
 , eyes				text		NULL
 , skin				text		NULL
 , shirt				text		NULL

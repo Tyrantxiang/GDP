@@ -141,36 +141,36 @@
 
 				switch(i.target.name)
 				{
-					case 'STAIRS':
+					case 'stairs':
 						comms.loadScriptFile("/p/js/menus.js", function() {
 							hub.sleep();
 						});
 						break;
 
-					case 'TROPHY':
+					case 'trophy':
 						console.log('trophy clicked');
 						break;
 
-					case 'MIRROR':
+					case 'mirror':
 						console.log('mirror clicked');
 						break;
 
-					case 'LAPTOP':
+					case 'laptop':
 						console.log('laptop clicked');
 						break;
 
-					case 'BACKPACK':
+					case 'backpack':
 						comms.loadScriptFile("/p/js/menus.js", function(){
 							// TODO: Maybe make into string-switch.
 							hub.launchBackpack();
 			        	});
 						break;
 
-					case 'PAINT':
+					case 'paint':
 						console.log('paint clicked');
 						break;
 
-					case 'PATH':
+					case 'path':
 						console.log('path clicked');
 						break;
 				;}

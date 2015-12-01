@@ -44,18 +44,18 @@ $(document).ready(function() {
     for (var i in items) {       
       window.comms.get_single_item_info(items[i], function (item) {
         switch(item.slot){
-          case "HEAD":
+          case "head":
             $('#head-menu').append('<img src="'+item.url+'" class="col-md-3 white-img-box">');
             break;
-          case "EYES":
+          case "eyes":
             // console.log(items[i]);
             $('#eyes-menu').append('<img src="'+item.url+'" class="col-md-3 white-img-box">');
             break;
-          case "SHIRT":
+          case "shirt":
             // console.log(items[i]);
             $('#upper-menu').append('<img src="'+item.url+'" class="col-md-3 white-img-box">');
             break;
-          case "SKIN":
+          case "skin":
             // console.log(items[i]);
             $('#skin-menu').append('<img src="'+item.url+'" class="col-md-3 white-img-box">');
             break;
