@@ -13,7 +13,9 @@
 
 				$('#fade-overlay').hide();
 				$('#fade-overlay').fadeToggle(2000);
-				$('#fade-overlay').fadeToggle(2000);
+				setTimeout(function(e) {
+					$('#fade-overlay').fadeToggle(2000);
+				}, 3000);
 			})
 		}
 	};
