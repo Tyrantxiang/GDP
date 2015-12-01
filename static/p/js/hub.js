@@ -315,7 +315,7 @@
 
 
     // Status modification functions
-    hub.updateHealth = function(cb){
+    hub.getHealth = function(cb){
         comms.get_hp_value(function(data){
             hub.health = data.health;
             cb && cb(hub.health);
@@ -386,9 +386,8 @@
 
 
     // Sleep, resetting health.
-    // TODO: Change function call once end-point updated.
     hub.sleep = function(cb) {
-        hub.modifyHealth(100, function() {
+        hub.setAbsoluteHealth(100, function() {
             window.menu.stairs.load();
         });
     };

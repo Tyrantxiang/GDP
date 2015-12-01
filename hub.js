@@ -518,7 +518,7 @@ var commsEventListeners = {
 		this.health = data.newhp;
 		
 		// Keep health between 100 and 0;
-        this.health = Math.max(0, Math.min(100, this.health + value));
+        this.health = Math.max(0, Math.min(100, this.health));
 		
 		var h = this;
 		
