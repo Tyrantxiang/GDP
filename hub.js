@@ -512,7 +512,7 @@ var commsEventListeners = {
 	
 	get_avatar : function(data, fn){
 		this.generateAvatarImage(fn);
-	}
+	},
 
 	set_hp_value : function(data, fn){
 		this.health = data.newhp;
