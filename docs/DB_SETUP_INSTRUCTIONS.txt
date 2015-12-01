@@ -5,7 +5,11 @@ get database connection info from config.json.database.main !!
 > sudo -su postgres
 > psql
 
-[connects to a db]
+[connects to postgres]
+
+(if the database that you are trying to create already exists, do this:
+	> DROP DATABASE <database>;
+)
 
 > CREATE DATABASE <database>;
 > CREATE USER <username> WITH PASSWORD '<password>';
