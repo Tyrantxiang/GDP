@@ -47,12 +47,14 @@
 							img				= carriable.image.cloneNode();
 
 						text_div.innerHTML	= carriable.name;
+						text_div.className	= 'row';
 
+						img.className		= 'packing_images row';
 
-						img.className	= 'packing_images';
-
-						container_div.appendChild(text_div);
 						container_div.appendChild(img);
+						container_div.appendChild(text_div);
+
+						container_div.className	= 'col-md-2 col-centered';
 
 						container_div.addEventListener('click', function(obj) {
 							add_to_backpack(carriable);
@@ -105,6 +107,9 @@
 			img.className		= 'packing_images';
 
 			container_div.appendChild(img);
+
+			container_div.className	= 'col-md-3 col-centered';
+			//container_div.style.margin	= 'auto';
 
 			container_div.addEventListener('click', function(obj) {
 				remove_from_backpack(carriable, container_div);
