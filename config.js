@@ -432,7 +432,8 @@ module.exports.items = (function(){
     funcs.listAll = function(){
         var a = [];
         for(var slot in slotFunctions){
-            a.concat(slotFunctions[slot].listAll());
+			var tmpArr = slotFunctions[slot].listAll();
+            a = a.concat(tmpArr);
         }
         return a;
     };

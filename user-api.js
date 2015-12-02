@@ -149,7 +149,6 @@ var routes = {
 											error : false    
 										});
 									}else{
-										console.log("HERE2");
 										res.status(400).json({
 											error : dbres[1]
 										});

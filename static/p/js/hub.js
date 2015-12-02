@@ -364,7 +364,27 @@
         });
     };
 
-
+	hub.getAllMinigames = function(cb){
+		comms.list_minigames(cb);
+	};
+	
+	hub.getHighScoresForAllGames(cb){
+		comms.get_scores(2, null, null);
+	};
+	
+	hub.getHighScoresForGame(gameid, cb){
+		comms.get_scores(3, null, gameid)
+	}
+	
+	//an array of ints, referring to item ids
+	hub.getUserUnlockedItems = function(cb){
+		comms.get_user_unlocked_items(cb);
+	}
+	
+	hub.getAllItems = function(cb){
+		comms.get_all_item_info(cb);
+	}
+	
 
 
     hub.cloneStatuses = function(){
@@ -374,8 +394,7 @@
         }
         return o;
     };
-
-
+	
     // Lauches the backpacking menu.
     // TODO: Maybe make into string-switch.
     hub.launchBackpack = function(cb) {

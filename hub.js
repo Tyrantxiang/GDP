@@ -128,7 +128,6 @@ Hub.prototype.generateAvatarImage = function(fn){
         {},
         function(data){			
 			for(var i in order){
-				console.log(i);
 				var direc = config.items.getConfig(data[order[i]].id, "directory");
 				direc += "\\sprite.png";
 				urls.push(direc);
@@ -194,8 +193,6 @@ var commsEventListeners = {
                     sendBack = {},
                     slot;
 					
-				
-				console.log(results);
                 for(slot in itemMetaData){
 					
 					console.log(slot + " = " + results[slot]);
@@ -232,7 +229,6 @@ var commsEventListeners = {
         
     },
 
-	
     update_equipped_items : function(data, fn){
 		var invObj = {
             user_id : this.userId,
@@ -415,9 +411,9 @@ var commsEventListeners = {
             //filtering on user for all games
             filterConds = {game_id: data.game_id};
         }else if(data.option_num === 2){
-            filterConds = {user_id: data.user_id};
+            filterConds = {user_id: this.userId};
         }else if(data.option_num === 3){
-            filterConds = {user_id: data.user_id, game_id: data.game_id};
+            filterConds = {user_id: this.userId, game_id: data.game_id};
         }else{
             fn({err: "Invalid score option selected"});
         }
