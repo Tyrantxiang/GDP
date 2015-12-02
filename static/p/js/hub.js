@@ -368,22 +368,22 @@
 		comms.list_minigames(cb);
 	};
 	
-	hub.getHighScoresForAllGames(cb){
+	hub.getHighScoresForAllGames = function(cb){
 		comms.get_scores(2, null, null);
 	};
 	
-	hub.getHighScoresForGame(gameid, cb){
+	hub.getHighScoresForGame = function(gameid, cb){
 		comms.get_scores(3, null, gameid)
-	}
+	};
 	
 	//an array of ints, referring to item ids
 	hub.getUserUnlockedItems = function(cb){
 		comms.get_user_unlocked_items(cb);
-	}
+	};
 	
 	hub.getAllItems = function(cb){
 		comms.get_all_item_info(cb);
-	}
+	};
 	
 
 
