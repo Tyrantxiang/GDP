@@ -297,9 +297,9 @@ var commsEventListeners = {
             }
 
             // Generate the avatar image
-            this.generateAvatarImage(function(imageString){
+            h.generateAvatarImage(function(imageString){
                 fn({
-                    bag : this.bag.getCarriables(),
+                    bag : h.bag.getCarriables(),
                     newhp : h.health,
                     newStatuses : o,
                     avatarImage : imageString
@@ -552,7 +552,7 @@ Bag.prototype.setCarriables = function(carriablesArray){
     if(Array.isArray(carriablesArray)) this.carriables = carriablesArray;
 };
 Bag.prototype.useItem = function(itemId){
-    var i = this.carriables.indexOf(itemId);
+    var i = this.carriables.indexOf(itemId.toString());
     if(i > -1){
         this.carriables.splice(i, 1);
     }else{
