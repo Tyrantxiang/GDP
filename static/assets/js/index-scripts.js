@@ -80,6 +80,7 @@ $(function() {
     $.get("/views/createavatar.html", function(data){
       $("#main-content-area").html(data);
       document.title = "Customise your avatar";
+      comms.loadScriptFile("/assets/js/avatar-scripts.js", false, false);
     });
   }
 
@@ -235,7 +236,6 @@ $(function() {
                     comms.createSocket(function() {});
                     comms.socketOpen();                
                     loadAvatarCreation();
-                    comms.loadScriptFile("/assets/js/avatar-scripts.js", false, false);
                   }
                 });
               }
@@ -246,7 +246,13 @@ $(function() {
       });
     });
   });
-
+  
+  function displayEquippedItems(items) {
+    // some validation
+    window.comms.update_equipped_items(items, function(data) {
+      console.log(data);
+    });
+  }
 
 });
 

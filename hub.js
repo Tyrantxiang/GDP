@@ -117,9 +117,9 @@ Hub.prototype.generateAvatarImage = function(fn){
 		
 	var healthImg = undefined;
     if(this.health < 30){
-        healthImg = __dirname + "\\avatar_items\\unhealthy.png";
+        healthImg = __dirname + "/avatar_items/unhealthy.png";
     }else{
-		healthImg = __dirname + "\\avatar_items\\healthy.png";
+		healthImg = __dirname + "/avatar_items/healthy.png";
 	}
 	var order = ["skin", "eyes", "shirt", "head"];
 
@@ -129,12 +129,12 @@ Hub.prototype.generateAvatarImage = function(fn){
         function(data){			
 			for(var i in order){
 				var direc = config.items.getConfig(data[order[i]].id, "directory");
-				direc += "\\sprite.png";
+				direc += "/sprite.png";
 				urls.push(direc);
 			}
 			
 			urls.splice(1, 0, healthImg);
-
+            
             var base64string = h.imgMaker(urls);			
             fn(base64string);
         });

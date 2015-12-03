@@ -12,11 +12,12 @@
   <div class="row top-buffer">
     <div class="col-md-11" style="float: none; margin: 0 auto;">
       <div class="col-md-5">
-        <canvas id="avatar-create" width="350" height="500"></canvas>
-      </div> 
+        <div id="canvas-div">
+        </div>
+      </div>
       <div class="col-md-7">
         <div class="row">
-          <div class="col-md-12 green-box">
+          <div class="col-md-12 orange-bbox">
             <ul id="avatar-pills" class="nav nav-pills nav-justified">
               <li>
                 <a data-toggle="pill" href="#head-menu">
@@ -42,33 +43,25 @@
                   <img src="assets/img/avatar-creation/lower-icon.png" class="section-img">
                 </a>
               </li>
-             <!--  <li>
-                <a data-toggle="pill" href="#shoes-menu">
-                  <img src="assets/img/avatar-creation/shoe-icon.png" class="section-img">
-                </a>
-              </li> -->
             </ul>
           </div>
         </div>
         <div class="row top-buffer">
-          <div class="col-md-12 grey-box">
-            <div class="tab-content col-md-12 green-box">
-              <div id="head-menu" class="tab-pane fade in active">
-                
-              </div>
-              <div id="eyes-menu" class="tab-pane fade">
-                
-              </div>
-              <div id="skin-menu" class="tab-pane fade">
-                
-              </div>
-              <div id="upper-menu" class="tab-pane fade">
-                
-              </div>
-              <div id="lower-menu" class="tab-pane fade">
-                
-              </div>
+          <div class="col-md-12 white-box-opaque">
+            <div id="selection-menu" class="tab-content col-md-12 white-box">
+              <div id="head-menu" class="tab-pane fade in active"></div>
+              <div id="eyes-menu" class="tab-pane fade"></div>
+              <div id="skin-menu" class="tab-pane fade"></div>
+              <div id="upper-menu" class="tab-pane fade"></div>
+              <div id="lower-menu" class="tab-pane fade"></div>
             </div>
+          </div>
+        </div>
+        <div class="row top-buffer">
+          <div class="col-md-12" style="text-align:center;">
+            <span style="font-size: 25px;">choose your favourite color: </span>
+            <br>
+            <input type="color" id="favcolor" style="width: 60px; height: 60px; border-radius: 10px;" value="#E8DC00">
           </div>
         </div>
       </div>  
@@ -76,13 +69,12 @@
     <div class="row top-buffer">
       <div class="col-md-12">
         <div style="float:right;">
-          <button class="btn btn-xl btn-primary top-buffer">continue</button>
+          <button class="btn btn-xl btn-secondary top-buffer">continue</button>
         </div>  
       </div>
     </div>
   </div>
 </div>
-
 <script>
   // Change background to color
   $('body').css('background-image', 'none');

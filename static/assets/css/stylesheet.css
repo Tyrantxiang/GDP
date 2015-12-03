@@ -20,17 +20,24 @@ html, body, .section-img {
   padding: 5px;
 }
 
+img {
+  width:auto;
+  height:auto;
+  max-width:100%;
+  max-height:90%;
+}
+
 .nav > li.active > a,
 .nav > li.active > a:hover,
 .nav > li.active > a:focus{
-  background-color: rgba(247, 202, 24, 0.5);
+  background-color: rgba(255,255,255,0.7);
 }
 
 .nav > li > a {
-  border-radius: 5px;
-  border-width: 1px 1px 2px 2px;
-  border-color: #cccccc;
-  border-style: solid;
+  border-radius: 10px;
+  border-width: 3px;
+  border-color: #F8F8F8;
+  border-style: dashed;
   margin: 5px;
 }
 
@@ -66,7 +73,7 @@ html, body, .section-img {
   margin-top: 10px;
 }
 
-.green-box {
+.grey-box {
   background-color: #cccccc;
   padding: 10px;
   padding-bottom: 13px;
@@ -78,31 +85,43 @@ html, body, .section-img {
   padding: 5px;
   padding-bottom: 10px;
   border-color: #ccc;
-  border-style: solid;
-  border-width: 1px;
+  border-style: dashed;
+  border-width: 3px;
   border-radius: 10px;
   margin-right: 5px;
   margin-left: 5px;
 }
 
-.white-img-box:hover {
-  border-color: green;
-  border-width: 1px;
-  border-style: solid;
+.white-img-box.active, .white-img-box:hover {
+  border-color: #E8B60C;
+  border-width: 4px;
+  border-style: dashed;
+  border-radius: 10px;
 }
 
-.white-img-box.active {
-  border-color: green;
-  border-width: 1px;
-  border-style: solid;
-}
-
-.white-box {
+.white-box-opaque {
   background-color: rgba(255, 255, 255, 0.49);
   color: #333333;
   padding: 8px;
   padding-bottom: 10px;
   border-radius: 10px;
+}
+
+.white-box { 
+  background-color: #FFFFFF;
+  color: #333333;
+  padding: 8px;
+  padding-bottom: 10px;
+  border-radius: 10px;
+}
+
+.orange-bbox { 
+  background-color: #E8B60C;
+  color: #333333;
+  padding: 8px;
+  padding-bottom: 10px;
+  border-radius: 10px;
+  border: 1px dotted rgba(255, 255, 255, 0.4);
 }
 
 .grey-box {
@@ -136,12 +155,6 @@ html, body, .section-img {
   border-radius: 5px;
   font-size: xx-large;
   margin: 20px;
-}
-
-.grey-bbox {
-  border-width: 2px;
-  border-style: dotted;
-  border-color: black;
 }
 
 /* Positioning */
