@@ -20,6 +20,27 @@
 		}
 	};
 
+	window.menu.paint = {
+		load : function() {
+			/*
+			var canvas	= new fabric.Canvas(document.getElementById('canvas'));
+
+			var rect = new fabric.Rect({
+				left: 0,
+			  	top: 0,
+			  	fill: 'red',
+			  	width: 20,
+			  	height: 20
+			});
+
+			// "add" rectangle onto canvas
+			canvas.add(rect);
+			*/
+
+			console.log('hello');
+		}
+	};
+
 	window.menu.backpack = {
 		load : function(carriables, backpack){
 
