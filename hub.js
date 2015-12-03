@@ -242,7 +242,9 @@ var commsEventListeners = {
 		
         db.createUserEquipped(
             function(results){
-                t.modify_hp_value(0, fn);
+                t.generateAvatarImage(function(imageString){
+                    fn({ avatarImage : imageString });
+                });
             }, function(err){
                 fn({err: err});
             },
