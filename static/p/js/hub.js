@@ -402,10 +402,21 @@
 	hub.getUserUnlockedItems = function(cb){
 		comms.get_user_unlocked_items(cb);
 	};
+
+    // Get information on an item
+    hub.getItemInfo = function(id, cb){
+        comms.get_single_item_info(id, cb);
+    };
 	
 	hub.getAllItems = function(cb){
 		comms.get_all_item_info(cb);
 	};
+
+    hub.updateEquiptItems = function(obj, cb){
+        comms.update_equipped_items(obj, function(data){
+            cb(base64ToImg(data.avatarImage));
+        });
+    }
 	
 
 
@@ -417,6 +428,22 @@
         return o;
     };
 	
+
+
+    hub.launchAvatarCreation = function(){
+        container.removeChild(hubCanvasContainer);
+        document.getElementById("avatar-creation-overlay").style.display = "block";
+        document.body.style.backgroundColor = "#90C695";
+        hub.avatarCreationLoader();
+    };
+
+    hub.closeAvatarCreation = function(){
+        document.getElementById("avatar-creation-overlay").style.display = "none";
+        document.body.style.backgroundColor = "transparent";
+        container.appendChild(hubCanvasContainer);
+    };
+
+
     // Lauches the backpacking menu.
     hub.launchBackpack = function(cb) {
         hub.getCarriablesAndBag(function(data) {
