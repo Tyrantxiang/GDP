@@ -1,16 +1,6 @@
-$(document).ready(function() {
-  
-  $(".img-select").hover(
-      function() { $(this).addClass("Hover"); },
-      function() { $(this).removeClass("Hover"); }
-  );
+(function(){
+  "user strict";
 
-  var canvasWidth = 350;
-  var canvasHeight = 450;
-  var canvasRadius = 20;
-
-  $('#canvas-div').html('<canvas id="avatar-create" width="'+canvasWidth+'" height="'+canvasHeight+'"></canvas>');
-  
   // Round rectangle shape 
   CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
     if (w < 2 * r) r = w / 2;
@@ -24,88 +14,112 @@ $(document).ready(function() {
     this.closePath();
     return this;
   }
-  
-  // Draw white background on canvas
-  var c = $("#avatar-create")[0];
-  var ctx = c.getContext("2d");
-  ctx.roundRect(0, 0, canvasWidth, canvasHeight, canvasRadius);
-  ctx.fillStyle = "#ffffff";
-  ctx.fill();
 
-  window.comms.get_user_unlocked_items(function (items) {
-    var latch = (function(num, complete){
-      return function(){
-        num--;
-        if(num === 0){
-            complete();
-        }
-      }
-    })(Object.keys(items).length, function(){
-      $('#head-menu').find('img:first').addClass('active');
-      $('#eyes-menu').find('img:first').addClass('active');
-      $('#upper-menu').find('img:first').addClass('active');
-      $('#skin-menu').find('img:first').addClass('active');
+  var canvasRadius = 20;
 
-    });
-
-    for (var i in items) {       
-      window.comms.get_single_item_info(items[i], function (item) {        
-        switch(item.slot){
-          case "head":
-            $('#head-menu').append('<img src="'+item.url+'" id="'+ item.id +'" class="col-md-3 white-img-box">');
-            break;
-          case "eyes":
-            $('#eyes-menu').append('<img src="'+item.url+'" id="'+ item.id +'" class="col-md-3 white-img-box">');
-            break;
-          case "shirt":
-            $('#upper-menu').append('<img src="'+item.url+'" id="'+ item.id +'" class="col-md-3 white-img-box">');
-            break;
-          case "skin":
-            $('#skin-menu').append('<img src="'+item.url+'" id="'+ item.id +'" class="col-md-3 white-img-box">');
-            break;
-          }
-          latch();
-      });
-    }
-  });
-  
-  $(document).on("click", '.white-img-box', function(e) {
-    $('.white-img-box', e.target.parentNode).removeClass('active');
-    $(this).addClass('active');
-    equipItemsOnSelect();
-  });
-
-  $('#favcolor').on("input", function(e) {
-    equipItemsOnSelect();
-  });
-
-
-  function equipItemsOnSelect() {
-    var bgColor = $('#favcolor').val() ? $('#favcolor').val() : "#ffffff";
-    var userObj = {
-      head : $('#head-menu .active').attr("id"),
-      eyes : $('#eyes-menu .active').attr("id"),
-      skin : $('#skin-menu .active').attr("id"),
-      shirt : $('#upper-menu .active').attr("id")
-    };
-    window.comms.update_equipped_items(userObj, function(data) {
-      console.log(data);
-      var image = new Image();
-      image.onload = function() {
-        var c = $("#avatar-create")[0];
-        var ctx = c.getContext("2d");
-        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-        ctx.roundRect(0, 0, canvasWidth, canvasHeight, canvasRadius);
-        ctx.fillStyle = bgColor;
-        ctx.fill();
-        ctx.drawImage(image, 
-          canvasWidth / 2 - image.width / 2,
-          canvasHeight / 2 - image.width / 2);
-      };
-      image.src = "data:image/png;base64," + data.avatarImage;
-    });
-    
+  // Function to draw on the canvas
+  function drawAvatar(canvas, img, col){
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.roundRect(0, 0, canvas.width, canvas.height, canvasRadius);
+    ctx.fillStyle = col;
+    ctx.fill();
+    ctx.drawImage(img, 
+      canvas.width / 2 - img.width / 2,
+      canvas.height / 2 - img.width / 2);
   }
 
-});
+window.hub.avatarCreationLoader = function(){
+  $.get("/views/createavatar.html", function(data){
+    $("#avatar-creation-overlay").html(data);
 
+
+    
+    // Draw white background on canvas
+    var canvas = document.getElementById("avatar-create");
+      ctx = canvas.getContext("2d");
+    ctx.roundRect(0, 0, canvas.width, canvas.height, canvasRadius);
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+
+    // Cached image object
+    var img;
+
+
+    // Cache the menus divs
+    var menus = {
+      head : $('#head-menu'),
+      eyes : $('#eyes-menu'),
+      shirt : $('#upper-menu'),
+      skin : $('#skin-menu'),
+      trousers : $('#lower-menu')
+    };
+
+
+    hub.getUserUnlockedItems(function (items) {
+      var latch = (function(num, complete){
+        return function(){
+          num--;
+          if(num === 0){
+              complete();
+          }
+        }
+      })(Object.keys(items).length, function(){
+        menus.head.find('img:first').addClass('active');
+        menus.eyes.find('img:first').addClass('active');
+        menus.shirt.find('img:first').addClass('active');
+        menus.skin.find('img:first').addClass('active');
+
+        equipItemsOnSelect();
+      });
+
+      for (var i in items) {       
+        hub.getItemInfo(items[i], function (item) {    
+          var imgEl = $(document.createElement("img")).attr("src", item.url).data("itemId", item.id).addClass("col-md-3 white-img-box"),
+            menu = menus[item.slot];
+
+            if(menu){
+              menu.append(imgEl);
+            }
+
+            latch();
+        });
+      }
+    });
+    
+    $(document).on("click", '.white-img-box', function(e) {
+      $('.white-img-box', e.target.parentNode).removeClass('active');
+      $(this).addClass('active');
+      equipItemsOnSelect();
+    });
+
+
+    $("#avatar-creation-close").click(function(){
+      hub.closeAvatarCreation();
+    });
+
+    /* No server side implementation 
+    $('#favcolor').on("input", function(e) {
+      equipItemsOnSelect();
+    });*/
+
+
+    function equipItemsOnSelect() {
+      //var bgColor = $('#favcolor').val() ? $('#favcolor').val() : "#ffffff";
+      var userObj = {
+        head : menus.head.find('.active').data("itemId"),
+        eyes : menus.eyes.find('.active').data("itemId"),
+        skin : menus.skin.find('.active').data("itemId"),
+        shirt : menus.shirt.find('.active').data("itemId")
+      };
+      hub.updateEquiptItems(userObj, function(image) {
+        img = image;
+        drawAvatar(canvas, image, "#ffffff");
+      });
+      
+    }
+
+  });
+}
+
+})();
