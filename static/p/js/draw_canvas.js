@@ -142,9 +142,7 @@
 				switch(i.target.name)
 				{
 					case 'stairs':
-						comms.loadScriptFile("/p/js/menus.js", function() {
-							hub.sleep();
-						});
+						hub.sleep();
 						break;
 
 					case 'trophy':
@@ -152,7 +150,7 @@
 						break;
 
 					case 'mirror':
-						console.log('mirror clicked');
+						hub.launchAvatarCreation();
 						break;
 
 					case 'laptop':
@@ -160,15 +158,11 @@
 						break;
 
 					case 'backpack':
-						comms.loadScriptFile('/p/js/menus.js', function() {
-							hub.launchBackpack();
-			        	});
+						hub.launchBackpack();
 						break;
 
 					case 'paint':
-						comms.loadScriptFile('/p/js/menus.js', function() {
-							hub.launchHomeCustomisation();
-						});
+						hub.launchHomeCustomisation();
 						break;
 
 					case 'path':
