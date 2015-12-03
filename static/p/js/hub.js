@@ -16,7 +16,9 @@
         // The local comms object
         comms = window.comms,
         // Local draw object
-        draw;
+        draw,
+        // Local menu object
+        menu;
 
 
     function latch(num, complete){
@@ -37,12 +39,14 @@
         delete window.comms;
         delete window.draw;
         delete window.hub;
+        delete window.menu;
     }
 
     function recoverWindowFunctions(){
         window.comms = comms;
         window.draw = draw;
         window.hub = hub;
+        window.menu = menu;
     }
 
 
@@ -236,6 +240,7 @@
                                     // Pull the window instances of draw and comms
                                     comms = window.comms;
                                     draw = window.draw;
+                                    menu = window.menu;
 
                                     draw.init(hubCanvas, getAssetsByType("images"));
 
@@ -447,7 +452,7 @@
     // Lauches the backpacking menu.
     hub.launchBackpack = function(cb) {
         hub.getCarriablesAndBag(function(data) {
-            window.menu.backpack.load(data.carriables, data.bag);
+            menu.backpack.load(data.carriables, data.bag);
         });
     };
 
@@ -455,7 +460,7 @@
     // Sleep, resetting health.
     hub.sleep = function(cb) {
         hub.setAbsoluteHealth(100, function() {
-            window.menu.stairs.load();
+            menu.stairs.load();
         });
     };
 
@@ -466,7 +471,7 @@
             comms.get_user_equipped_items(function(d) {
                 console.log("EQUIPPED: ");
                 console.log(d);
-                window.menu.paint.load();
+                menu.paint.load();
             })
         });
     };
