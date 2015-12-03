@@ -125,7 +125,7 @@
 
     };
 
-    hub.load = function(){
+    hub.load = function(cb){
         // Show loading sign
         var loadingContainer = document.createElement("div"),
             loadingBar = generateLoadingBar(),
@@ -138,6 +138,14 @@
         loadingContainer.appendChild(loadingText);
         loadingContainer.appendChild(loadingBar);
         container.appendChild(loadingContainer);
+
+        // Scripts to load
+        var scripts = [
+            ["//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js", false],
+            ["/p/js/draw_canvas.js", true],
+            ["/assets/js/avatar-scripts.js", false],
+            ["/p/js/menus.js", true]
+        ];
 
         // Open the socket connection
         comms.createSocket(function(){
@@ -155,7 +163,9 @@
 							});
 
                             // How much do we load?
-                            var toLoad = Object.keys(items).length + 1,
+                            var imagesToLoad = Object.keys(items).length + 1,
+                                // All including scripts
+                                toLoad = imagesToLoad + scripts.length,
                                 // How much have we loaded
                                 loaded = 0,
                                 // Is there an error?
@@ -165,7 +175,7 @@
                                 loaded++;
                                 loadingBar.setProgress(loaded/toLoad * 100);
 
-                                if(loaded === toLoad){
+                                if(loaded === imagesToLoad){
                                     loadComplete();
                                 }
                             }
@@ -206,29 +216,41 @@
                                 assets.images.background = background;
                                 assets.images.items = items;
 
-                                comms.loadScriptFile("//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js", function(){
-                                    comms.loadScriptFile("/p/js/draw_canvas.js", function(){
-                                        // Remove loading bar and load the canvas
-                                        hubCanvasContainer = document.createElement("div");
-                                        hubCanvas = document.createElement("canvas");
 
-                                        try{
-                                            container.removeChild(loadingContainer);
-                                        }catch(e){}
+                                // Load all the script files
+                                 var lscripts = latch(scripts.length, function(){
+                                    // Remove loading bar and load the canvas
+                                    hubCanvasContainer = document.createElement("div");
+                                    hubCanvas = document.createElement("canvas");
 
-                                        hubCanvasContainer.appendChild(hubCanvas);
+                                    try{
+                                        container.removeChild(loadingContainer);
+                                    }catch(e){}
 
-                                        container.appendChild(hubCanvasContainer);
+                                    hubCanvasContainer.appendChild(hubCanvas);
 
-                                        initalFilesLoaded = true;
+                                    container.appendChild(hubCanvasContainer);
 
-                                        // Pull the window instances of draw and comms
-                                        comms = window.comms;
-                                        draw = window.draw;
+                                    initalFilesLoaded = true;
 
-                                        draw.init(hubCanvas, getAssetsByType("images"));
-                                    });
-                                }, false);
+                                    // Pull the window instances of draw and comms
+                                    comms = window.comms;
+                                    draw = window.draw;
+
+                                    draw.init(hubCanvas, getAssetsByType("images"));
+
+                                    if(cb){
+                                        cb.call(hub);
+                                    }
+                                });
+
+                                scripts.forEach(function(script){
+                                    comms.loadScriptFile(script[0], function(){
+                                        loaded++;
+                                        loadingBar.setProgress(loaded/toLoad * 100);
+                                        lscripts();
+                                    }, script[1]);
+                                });
                             }
 
                         });
