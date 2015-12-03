@@ -104,7 +104,7 @@
         loadingBar.setProgress = function(v){
             value = v;
             innerBar.style.width = v + "%";
-            innerText.innerHTML = v + "%";
+            innerText.innerHTML = Math.floor(v) + "%";
         };
         loadingBar.getProgress = function(){
             return value;
@@ -147,7 +147,7 @@
         var scripts = [
             ["//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js", false],
             ["/p/js/draw_canvas.js", true],
-            ["/assets/js/avatar-scripts.js", false],
+            ["/p/js/avatar.js", true],
             ["/p/js/menus.js", true]
         ];
 

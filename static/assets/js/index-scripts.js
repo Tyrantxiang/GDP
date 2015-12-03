@@ -79,7 +79,9 @@ $(function() {
         });
       }else{
         addError("Invalid username or password");
-        cb({ err : "Invalid username or password" });
+        if(cb){
+          cb({ err : "Invalid username or password" });
+        }
       }
     });
   }
@@ -229,7 +231,6 @@ $(function() {
             }
 
             comms.sign_up(username, password, dob, function(data){
-              console.log(data);
               if(data.error){
                 addFail("Sign up failed");
               }else{
