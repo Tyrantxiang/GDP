@@ -195,7 +195,7 @@ var commsEventListeners = {
 					
                 for(slot in itemMetaData){
 					
-					console.log(slot + " = " + results[slot]);
+					//console.log(slot + " = " + results[slot]);
 					let md = itemMetaData[slot],
                         itemConfig = config.items.getConfig(results[slot] || md.default),
                         url = config.items.getSpriteURL(itemConfig.id);
