@@ -62,6 +62,29 @@ $(function() {
   window.utils.addError = addError;
 
 
+
+  function login(username, password, cb){
+    comms.authenticate(username, password, function(data){
+      if(data.authenticated){
+        addSuccess("Login Successful");
+        
+        comms.loadScriptFile("/p/js/hub.js", function(){
+          // Remove the login stuff
+          $("#main-content-area").empty();
+          $("body").removeClass("login");
+
+          document.title = "The hub";
+          
+          hub.load(cb);
+        });
+      }else{
+        addError("Invalid username or password");
+        cb({ err : "Invalid username or password" });
+      }
+    });
+  }
+
+
   // Functions for changing the view
   function loadSignup(){
     $.get("/views/signup.html", function(data){
@@ -94,27 +117,7 @@ $(function() {
     var username = $("#login_username").val(),
       password = $("#login_password").val();
 
-      if(!$("#login_username")[0].checkValidity()){
-        $("#login_username")[0].setCustomValidity("WRONG!");
-      }
-
-    comms.authenticate(username, password, function(data){
-      if(data.authenticated){
-        addSuccess("Login Successful");
-        
-        comms.loadScriptFile("/p/js/hub.js", function(){
-          // Remove the login stuff
-          $("#main-content-area").empty();
-          $("body").removeClass("login");
-
-          document.title = "The hub";
-          
-          hub.load();
-        });
-      }else{
-        addError("Invalid username or password");
-      }
-    });
+    login(username, password);
   });
 
 
@@ -231,12 +234,9 @@ $(function() {
                 addFail("Sign up failed");
               }else{
                 addSuccess("Sign up successful");
-                comms.authenticate(username, password, function (data) {
-                  if (data.authenticated) {
-                    comms.createSocket(function() {});
-                    comms.socketOpen();                
-                    loadAvatarCreation();
-                  }
+                // Login and immediately load avatar creation
+                login(username, password, function(){
+                  hub.launchAvatarCreation();
                 });
               }
             });
@@ -246,13 +246,7 @@ $(function() {
       });
     });
   });
-  
-  function displayEquippedItems(items) {
-    // some validation
-    window.comms.update_equipped_items(items, function(data) {
-      console.log(data);
-    });
-  }
+
 
 });
 
