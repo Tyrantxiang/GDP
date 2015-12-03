@@ -396,7 +396,6 @@
     };
 	
     // Lauches the backpacking menu.
-    // TODO: Maybe make into string-switch.
     hub.launchBackpack = function(cb) {
         hub.getCarriablesAndBag(function(data) {
             window.menu.backpack.load(data.carriables, data.bag);
@@ -408,6 +407,18 @@
     hub.sleep = function(cb) {
         hub.setAbsoluteHealth(100, function() {
             window.menu.stairs.load();
+        });
+    };
+
+    hub.launchHomeCustomisation = function(cb) {
+        comms.get_user_unlocked_items(function(data) {
+            console.log("UNLOCKED: ");
+            console.log(data);
+            comms.get_user_equipped_items(function(d) {
+                console.log("EQUIPPED: ");
+                console.log(d);
+                window.menu.paint.load();
+            })
         });
     };
 

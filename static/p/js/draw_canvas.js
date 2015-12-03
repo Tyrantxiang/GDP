@@ -160,14 +160,15 @@
 						break;
 
 					case 'backpack':
-						comms.loadScriptFile("/p/js/menus.js", function(){
-							// TODO: Maybe make into string-switch.
+						comms.loadScriptFile('/p/js/menus.js', function() {
 							hub.launchBackpack();
 			        	});
 						break;
 
 					case 'paint':
-						console.log('paint clicked');
+						comms.loadScriptFile('/p/js/menus.js', function() {
+							hub.launchHomeCustomisation();
+						});
 						break;
 
 					case 'path':
