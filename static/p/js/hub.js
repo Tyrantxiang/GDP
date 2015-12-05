@@ -396,11 +396,11 @@
 	};
 	
 	hub.getHighScoresForAllGames = function(cb){
-		comms.get_scores(2, null, null);
+		comms.get_scores(2, null, null, cb);
 	};
 	
 	hub.getHighScoresForGame = function(gameid, cb){
-		comms.get_scores(3, null, gameid)
+		comms.get_scores(3, null, gameid, cb)
 	};
 	
 	//an array of ints, referring to item ids
