@@ -476,6 +476,13 @@
         });
     };
 
+    // Launches game selector.
+    hub.launchGameSelect = function(cb) {
+        hub.getAllMinigames(function(data) {
+            menu.game_select.load(data);
+        });
+    };
+
     // Launches a game
     hub.launchGame = function(gameId){
         // Get the minigame info

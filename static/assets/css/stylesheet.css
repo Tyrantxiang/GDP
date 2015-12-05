@@ -330,6 +330,13 @@ img {
   width: 75px;
 }
 
+/** Border for minigame selection **/
+.minigame-selection {
+  border-style: solid;
+  border-color: white;
+  border-radius: 10px;
+}
+
 /** Fade for sleep **/
 #fade-overlay {
   height: 100%;
@@ -360,7 +367,7 @@ img {
 }
 
 .row-centered {
-  text-align:center;
+  text-align: center;
 }
 .col-centered {
   display:inline-block;

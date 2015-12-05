@@ -1,8 +1,14 @@
 (function(){
 	// TODO: load_max should really be set somewhere and passed in, not defined here.
+	// TODO: Should we have all the variables defined here?
+
+	// Backpacking.
 	var array_to_add	= [];
 	var load			= 0;
 	var load_max		= 10;
+
+	// Minigame select.
+	var selected_minigame;
 
 	window.menu = {};
 
@@ -17,6 +23,70 @@
 					$('#fade-overlay').fadeToggle(2000);
 				}, 3000);
 			})
+		}
+	};
+
+	window.menu.game_select = {
+		load : function(minigames) {
+			$.get('/views/minigame_select.html', function(data) {
+				$('#menu-overlays').html(data);
+				document.title	= 'Select a minigame!';
+
+				for(var m in minigames)
+				{
+					(function(minigame) {
+
+						// TODO: Add imagine handling.
+
+						var container_div	= document.createElement('div'),
+							title_div		= document.createElement('div'),
+							desc_div		= document.createElement('div');
+							//img				= minigame.image.cloneNode();
+
+						title_div.innerHTML	= minigame.name;
+						desc_div.innerHTML	= minigame.description;
+
+						// TODO: Either make a new CSS class, or genericise with carriables.
+						//img.className		= 'packing_images';
+
+						container_div.appendChild(title_div);
+						//container_div.appendChild(img);
+						container_div.appendChild(desc_div);
+
+						container_div.className	= 'col-md-5 col-centered';
+
+						container_div.addEventListener('click', function(obj) {
+							selected_minigame	= minigame.id;
+
+							prev_selection		= container_div.parentNode.querySelectorAll(".minigame-selection");
+							if(prev_selection.length != 0)
+							{
+								prev_selection				= prev_selection[0];
+								prev_selection.className	= 'col-md-5 col-centered';
+							}
+
+							container_div.className	= 'col-md-5 col-centered minigame-selection';
+						});
+
+						document.getElementById('minigames_available').appendChild(container_div);
+					})(minigames[m]);
+				};
+
+				$('#minigame_accept').on('click', function(obj) {
+					hub.launchGame(selected_minigame, function() {});
+
+					$('#overlay').css('visibility', 'hidden');
+					$('#canvas').css('visibility', 'visible');
+				});
+
+				$('#minigame_cancel').on('click', function(obj) {
+					$('#overlay').css('visibility', 'hidden');
+					$('#canvas').css('visibility', 'visible');
+				});
+
+				$('#canvas').css('visibility', 'hidden');
+				$('#overlay').css('visibility', 'visible');
+			});
 		}
 	};
 
@@ -55,7 +125,7 @@
 
 			$.get('/views/pack_backpack.html', function(data) {
 				$('#menu-overlays').html(data);
-				document.title	= "Pack your backpack";
+				document.title	= 'Pack your backpack';
 
 				// Populate the potential carriables, and attach their event handlers.
 				for(var c in carriables)

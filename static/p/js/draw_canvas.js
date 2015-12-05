@@ -166,7 +166,7 @@
 						break;
 
 					case 'path':
-						console.log('path clicked');
+						hub.launchGameSelect();
 						break;
 				;}
 			};
