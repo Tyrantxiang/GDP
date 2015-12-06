@@ -423,6 +423,9 @@
         });
     }
 	
+	hub.getGameInfo = function(gameid, cb){
+		comms.get_minigame_info(gameid, cb);
+	}
 
 
     hub.cloneStatuses = function(){

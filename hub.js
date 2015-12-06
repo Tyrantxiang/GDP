@@ -425,7 +425,9 @@ var commsEventListeners = {
 								results.sort(function(a, b){
 									return b.score - a.score;
 								});
-								console.log("HERE3");
+								var total = {};
+								total[results[0].game_id] = results;
+								results = total;
 							}else if(data.option_num === 2){
 								var total = {};
 								for(var i=0; i<results.length; i++){
@@ -441,7 +443,6 @@ var commsEventListeners = {
 									});
 								}
 								results = total;
-								console.log("HERE2");
 							}
 			
                             fn(results);

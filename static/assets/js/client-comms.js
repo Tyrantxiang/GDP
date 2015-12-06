@@ -357,6 +357,16 @@ window.comms = {
 						);
 		
 	},
+	
+	get_minigame_info : function(gameid, cb){
+		this.list_minigames(function(data){
+			data.filter(function(a){
+				a.id === gameid;
+			});
+			
+			cb(data[0]);
+		});
+	},
 
 	launch_minigame : function(id, cb){
 		client_socket_call(	'launch_minigame',
