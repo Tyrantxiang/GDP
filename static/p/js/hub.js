@@ -465,7 +465,7 @@
     };
 
     hub.launchHomeCustomisation = function(cb) {
-        comms.get_user_unlocked_items(function(data) {
+        hub.getUserUnlockedItems(function(data) {
             console.log("UNLOCKED: ");
             console.log(data);
             comms.get_user_equipped_items(function(d) {
@@ -473,6 +473,13 @@
                 console.log(d);
                 menu.paint.load();
             })
+        });
+    };
+
+    // Launches high score screen.
+    hub.launchScores = function(cb) {
+        hub.getHighScoresForAllGames(function(data) {
+            menu.scores.load(data);
         });
     };
 

@@ -146,7 +146,7 @@
 						break;
 
 					case 'trophy':
-						console.log('trophy clicked');
+						hub.launchScores();
 						break;
 
 					case 'mirror':

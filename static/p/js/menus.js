@@ -26,6 +26,66 @@
 		}
 	};
 
+	window.menu.scores = {
+		load : function(scores) {
+			$.get('/views/scoreboard.html', function(data) {
+				$('#menu-overlays').html(data);
+				document.title	= 'Scoreboard';
+
+				var keys		= Object.keys(scores);
+
+				for(var k in keys)
+				{
+					(function(key) {
+						var container_div	= document.createElement('div'),
+							title_div		= document.createElement('div');
+
+						// TODO: Change to game name.
+						title_div.innerHTML	= key + ':';
+
+						container_div.appendChild(title_div);
+
+						var iterate_no;
+						var padding;
+						// TODO: 3 should be pulled out to a config file somewhere.
+						if(scores[key].length >= 3)
+						{
+							iterate_no	= 3;
+							padding		= 0;
+						}
+						else
+						{
+							iterate_no	= scores[key].length;
+							padding		= 3 - iterate_no;
+						}
+
+						for(var i = 0; i < iterate_no; i++)
+						{
+							container_div.appendChild(document.createElement('div')).innerHTML = scores[key][i].score;
+						}
+
+						for(var i = 0; i < padding; i++)
+						{
+							container_div.appendChild(document.createElement('div')).innerHTML = '-';
+						}
+
+						container_div.className	= 'col-md-4 col-centered dark-dark-grey-box-no-text';
+
+						document.getElementById('scores').appendChild(container_div);
+					})(keys[k]);
+				};
+
+				$('#score_close').on('click', function(obj) {
+					$('#overlay').css('visibility', 'hidden');
+					$('#canvas').css('visibility', 'visible');
+				});
+
+				$('#canvas').css('visibility', 'hidden');
+				$('#overlay').css('visibility', 'visible');
+			});
+		}
+	};
+
 	window.menu.game_select = {
 		load : function(minigames) {
 			$.get('/views/minigame_select.html', function(data) {
@@ -36,7 +96,7 @@
 				{
 					(function(minigame) {
 
-						// TODO: Add imagine handling.
+						// TODO: Add image handling.
 
 						var container_div	= document.createElement('div'),
 							title_div		= document.createElement('div'),
@@ -53,7 +113,7 @@
 						//container_div.appendChild(img);
 						container_div.appendChild(desc_div);
 
-						container_div.className	= 'col-md-5 col-centered';
+						container_div.className	= 'col-md-5 col-centered dark-dark-grey-box-no-text';
 
 						container_div.addEventListener('click', function(obj) {
 							selected_minigame	= minigame.id;
@@ -62,10 +122,10 @@
 							if(prev_selection.length != 0)
 							{
 								prev_selection				= prev_selection[0];
-								prev_selection.className	= 'col-md-5 col-centered';
+								prev_selection.className	= 'col-md-5 col-centered dark-dark-grey-box-no-text';
 							}
 
-							container_div.className	= 'col-md-5 col-centered minigame-selection';
+							container_div.className	= 'col-md-5 col-centered dark-dark-grey-box-no-text minigame-selection';
 						});
 
 						document.getElementById('minigames_available').appendChild(container_div);
