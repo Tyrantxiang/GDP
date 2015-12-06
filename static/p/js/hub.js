@@ -423,6 +423,14 @@
         });
     }
 	
+	hub.getEquippedHouseItems = function(cb){
+		comms.get_user_equipped_items(function(data){
+			var avatar = ["skin", "head", "shirt", "eyes"];
+			for(var i=0; i<avatar.length; i++) delete data[avatar[i]];
+			cb(data);
+		});
+	}
+	
 	hub.getGameInfo = function(gameid, cb){
 		comms.get_minigame_info(gameid, cb);
 	}
