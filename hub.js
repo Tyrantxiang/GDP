@@ -402,7 +402,7 @@ var commsEventListeners = {
     },
 
     get_scores : function(data, fn){
-        var numOfScores = 100;
+        var numOfScores = 3;
 
         var filterConds = {};
 
@@ -421,7 +421,30 @@ var commsEventListeners = {
         }
 
         db.getScores(   function(results){
-                            fn({data: results});
+							if(data.option_num === 3){
+								results.sort(function(a, b){
+									return b.score - a.score;
+								});
+								console.log("HERE3");
+							}else if(data.option_num === 2){
+								var total = {};
+								for(var i=0; i<results.length; i++){
+									var current = results[i];
+									if(!total.hasOwnProperty(current.game_id)){
+										total[current.game_id] = [];
+									}
+									total[current.game_id].push(current);
+								}
+								for(var j in total){
+									total[j].sort(function(a, b){
+										return b.score - a.score;
+									});
+								}
+								results = total;
+								console.log("HERE2");
+							}
+			
+                            fn(results);
                         },
                         function(err){ fn({err: "Error accessing database entries" }); },
                         filterConds,
