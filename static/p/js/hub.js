@@ -1,5 +1,5 @@
 (function(){
-    "use strict";
+    'use strict';
 
     var assets = {
             images : {},
@@ -12,7 +12,7 @@
         // The hub canvas
         hubCanvas,
         // The content area to put the canvas
-        container = document.getElementById("main-content-area"),
+        container = document.getElementById('main-content-area'),
         // The local comms object
         comms = window.comms,
         // Local draw object
@@ -489,8 +489,52 @@
 
     // Launches high score screen.
     hub.launchScores = function(cb) {
-        hub.getHighScoresForAllGames(function(data) {
-            menu.scores.load(data);
+        hub.getHighScoresForAllGames(function(raw_scores) {
+            var processed_scores    = [];
+            var keys                = Object.keys(raw_scores);
+            var l                   = latch(keys.length, function() {
+                menu.scores.load(processed_scores);
+            });
+
+            keys.forEach(function(key) {
+                var score_array = [];
+                var iterate_no;
+                var padding;
+
+                // TODO: 3 should be pulled out to a config file somewhere.
+                if(raw_scores[key].length >= 3)
+                {
+                    iterate_no  = 3;
+                    padding     = 0;
+                }
+                else
+                {
+                    iterate_no  = raw_scores[key].length;
+                    padding     = 3 - iterate_no;
+                }
+
+                for(var i = 0; i < iterate_no; i++)
+                {
+                    score_array.push(raw_scores[key][i].score);
+                }
+
+                for(var i = 0; i < padding; i++)
+                {
+                    score_array.push('-');
+                }
+
+                hub.getGameInfo(key, function(game_info) {
+                    var formatted_score    = {
+                        id:     game_info.id,
+                        name:   game_info.name,
+                        img:    game_info.image,
+                        scores: score_array
+                    };
+
+                    processed_scores.push(formatted_score);
+                    l();
+                });
+            });
         });
     };
 

@@ -1,5 +1,7 @@
 (function(){
-	"use strict";
+	'use strict';
+	// TODO: Center in page, seems setting canvas-container margin: 0 auto will fix.
+	// Body and main-content-area have margins and paddings to remove, also.
 
 	/*
 	Parameters:

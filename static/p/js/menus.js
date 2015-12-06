@@ -27,53 +27,27 @@
 	};
 
 	window.menu.scores = {
-		load : function(scores) {
+		load : function(formatted_scores) {
 			$.get('/views/scoreboard.html', function(data) {
 				$('#menu-overlays').html(data);
 				document.title	= 'Scoreboard';
 
-				var keys		= Object.keys(scores);
+				formatted_scores.forEach(function(formatted_score) {
+					var container_div	= document.createElement('div'),
+						title_div		= document.createElement('div');
 
-				for(var k in keys)
-				{
-					(function(key) {
-						var container_div	= document.createElement('div'),
-							title_div		= document.createElement('div');
+					title_div.innerHTML	= formatted_score.name + ':';
 
-						// TODO: Change to game name.
-						title_div.innerHTML	= key + ':';
+					container_div.appendChild(title_div);
 
-						container_div.appendChild(title_div);
+					formatted_score.scores.forEach(function(score) {
+						container_div.appendChild(document.createElement('div')).innerHTML = score;
+					});
 
-						var iterate_no;
-						var padding;
-						// TODO: 3 should be pulled out to a config file somewhere.
-						if(scores[key].length >= 3)
-						{
-							iterate_no	= 3;
-							padding		= 0;
-						}
-						else
-						{
-							iterate_no	= scores[key].length;
-							padding		= 3 - iterate_no;
-						}
+					container_div.className	= 'col-md-4 col-centered dark-dark-grey-box-no-text';
 
-						for(var i = 0; i < iterate_no; i++)
-						{
-							container_div.appendChild(document.createElement('div')).innerHTML = scores[key][i].score;
-						}
-
-						for(var i = 0; i < padding; i++)
-						{
-							container_div.appendChild(document.createElement('div')).innerHTML = '-';
-						}
-
-						container_div.className	= 'col-md-4 col-centered dark-dark-grey-box-no-text';
-
-						document.getElementById('scores').appendChild(container_div);
-					})(keys[k]);
-				};
+					document.getElementById('scores').appendChild(container_div);
+				});
 
 				$('#score_close').on('click', function(obj) {
 					$('#overlay').css('visibility', 'hidden');
