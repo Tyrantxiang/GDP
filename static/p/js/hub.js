@@ -476,6 +476,10 @@
     };
 
     hub.launchHomeCustomisation = function(cb) {
+        hub.getEquippedHouseItems(function(data) {
+            menu.paint.load(data);
+        });
+        /*
         hub.getUserUnlockedItems(function(data) {
             console.log("UNLOCKED: ");
             console.log(data);
@@ -485,6 +489,7 @@
                 menu.paint.load();
             })
         });
+        */
     };
 
     // Launches high score screen.

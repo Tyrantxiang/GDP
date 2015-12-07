@@ -51,10 +51,8 @@
 
 				$('#score_close').on('click', function(obj) {
 					$('#overlay').css('visibility', 'hidden');
-					$('#canvas').css('visibility', 'visible');
 				});
 
-				$('#canvas').css('visibility', 'hidden');
 				$('#overlay').css('visibility', 'visible');
 			});
 		}
@@ -110,25 +108,42 @@
 					hub.launchGame(selected_minigame, function() {});
 
 					$('#overlay').css('visibility', 'hidden');
-					$('#canvas').css('visibility', 'visible');
 				});
 
 				$('#minigame_cancel').on('click', function(obj) {
 					$('#overlay').css('visibility', 'hidden');
-					$('#canvas').css('visibility', 'visible');
 				});
 
-				$('#canvas').css('visibility', 'hidden');
 				$('#overlay').css('visibility', 'visible');
 			});
 		}
 	};
 
 	window.menu.paint = {
-		load : function() {
-			/*
-			var canvas	= new fabric.Canvas(document.getElementById('canvas'));
+		load : function(data) {
+			console.log(data);
 
+			/*
+			// TODO: Pull ID out to config file/find some way of making it across-the-board.
+			var canvas = document.getElementById('canvas').fabric;
+			var canvas_height	= canvas.height;
+			var canvas_width	= canvas.width;
+
+			console.log(canvas);
+
+			var mirror_top	= data.mirror.top;
+			var mirror_left	= data.mirror.left;
+
+			var tr = new fabric.Triangle({
+				left: mirror_left * canvas_width,
+				top: mirror_top * canvas_height,
+				fill: 'red',
+				width: 20,
+				height: 20
+			});
+
+			canvas.add(tr);
+			/*
 			var rect = new fabric.Rect({
 				left: 0,
 			  	top: 0,
@@ -137,11 +152,8 @@
 			  	height: 20
 			});
 
-			// "add" rectangle onto canvas
 			canvas.add(rect);
 			*/
-
-			console.log('hello');
 		}
 	};
 
@@ -198,7 +210,6 @@
 
 				$('#backpack_accept').on('click', function(obj) {
 					$('#overlay').css('visibility', 'hidden');
-					$('#canvas').css('visibility', 'visible');
 
 					var set_array	= [];
 					for(var a in array_to_add)
@@ -214,10 +225,8 @@
 
 				$('#backpack_cancel').on('click', function(obj) {
 					$('#overlay').css('visibility', 'hidden');
-					$('#canvas').css('visibility', 'visible');
 				});
 
-				$('#canvas').css('visibility', 'hidden');
 				$('#overlay').css('visibility', 'visible');
 			});
 		}

@@ -17,7 +17,13 @@
 	*/
 	function initialise_canvas(cnvs, background)
 	{
-		var canvas							= new fabric.Canvas(cnvs);
+		var canvas	= new fabric.Canvas(cnvs);
+
+		// Set ID and Canvas object to canvas element for later retrieval.
+		// TODO: Pull ID out to config file/find some way of making it across-the-board.
+		cnvs.id 	= 'canvas';
+		cnvs.fabric = canvas;
+
 		canvas.hoverCursor					= 'pointer';
 		fabric.Object.prototype.selectable	= false;
 
@@ -73,7 +79,7 @@
 			var item_element	= items[i].image;
 			var item_instance	= new fabric.Image(item_element, {
 				name:			items[i].slot,
-				blah:			items[i].test,
+				id: 			items[i].id,
 
 				left:			items[i].left * canvas.width,
 				top:			items[i].top * canvas.height,
@@ -105,6 +111,7 @@
 	*/
 	function attach_event_listeners(canvas)
 	{
+		// TODO: Add filter so it's only the objects we actually care about (i.e. menu items).
 		canvas.on('mouse:over', function(i) {
 			var x 			= i.target.getLeft();
 			var y 			= i.target.getTop();
