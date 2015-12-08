@@ -18,6 +18,18 @@
 	*/
 	function initialise_canvas(cnvs, background)
 	{
+		// TODO: Put in proper place.
+		var sky								= document.createElement('div');
+		sky.id								= 'sky-overlay';
+		sky.style.height					= (window.innerHeight / 3) + 'px';
+		sky.style.width						= '100%';
+		sky.style.position					= 'fixed';
+		sky.style.top						= '0';
+		sky.style.zIndex					= '-1';
+		sky.style.backgroundColor			= 'rgb(126,192,238)';
+		document.body.style.backgroundColor	= 'rgb(1,166,17)';
+		document.body.appendChild(test);
+
 		var canvas	= new fabric.Canvas(cnvs);
 
 		// Set ID and Canvas object to canvas element for later retrieval.
@@ -49,13 +61,13 @@
 
 			var left_offset		= (window.innerWidth - scaled_width) / 2;
 		};
-
+		/*
 		canvas.setBackgroundImage(background_img.src, canvas.renderAll.bind(canvas), {
 			width:		canvas.width,
 			height: 	canvas.height,
 			originX:	'left',
 			originY: 	'top'
-		});
+		});*/
 
 		return canvas;
 	};
