@@ -194,7 +194,7 @@ var routes = {
 			returnInvalidMessage(res);
 		}
 	},
-
+	/*
 	add_minigame : function(req, res){
 		var valid = checkIsValid(["id", "name", "description", "img", "scripts", "entry_point"], req.body);
 		if(valid){
@@ -211,30 +211,8 @@ var routes = {
 		}else{
 			returnInvalidMessage(res);
 		}
-	},
-
-	add_inventory : function(req, res){
-		var valid = checkIsValid(["id"], req.body);
-		if(valid){
-			
-		}else{
-			returnInvalidMessage(res);
-		}
-	},
-
-	remove_inventory : function(req, res){
-		var valid = checkIsValid(["id"], req.body);
-		if(valid){
-			var path = config.conditions.getConfig(req.body.id, "directory");
-			
-			removeFiles(path);
-			
-			res.json({"okay": "A OK!"});
-		}else{
-			returnInvalidMessage(res);
-		}
 	}
-
+	*/
 };
 
 module.exports = function (cfg, db){
