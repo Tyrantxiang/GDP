@@ -116,10 +116,18 @@ Hub.prototype.generateAvatarImage = function(fn){
         h = this;
 		
 	var healthImg = undefined;
-    if(this.health < 30){
-        healthImg = __dirname + "/avatar_items/unhealthy.png";
+    if(this.health < 10){
+        healthImg = __dirname + "/avatar_items/unhealthy_0.png";
     }else{
-		healthImg = __dirname + "/avatar_items/healthy.png";
+        if(this.health < 30){
+            healthImg = __dirname + "/avatar_items/unhealthy_1.png";
+        }else{
+            if(this.health < 50){
+                healthImg = __dirname + "/avatar_items/unhealthy_2.png";
+            }else{
+                healthImg = __dirname + "/avatar_items/healthy.png";
+            }
+        }
 	}
 	var order = ["skin", "eyes", "shirt", "head"];
 
