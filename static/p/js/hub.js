@@ -706,7 +706,7 @@
             hub.useCarriable(carriableId, function(bag, health, statuses, avatarImage){
 				comms.get_symptoms(function(symps){
 					cb.call(t, bag, health, statuses, avatarImage, symps.symptoms);
-				}
+				});
             });
         };
 
@@ -716,7 +716,7 @@
             hub.modifyHealth(changeVal, function(health, avatarImage, symptoms){
 				comms.get_symptoms(function(symps){
 					cb.call(t, health, avatarImage, symps.symptoms);
-				}
+				});
             });
         };
 

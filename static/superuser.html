@@ -6,10 +6,18 @@
     <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="//code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
 	
+	<!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+	
 	<script type="text/javascript">
 		$(document).ready(function(){
 			
 		});
+		
+		function doit(str){
+		var i = document.createElement("img");
+		i.src = "data:image/png;base64," + str;
+		document.getElementById("body").appendChild(i);}
 	</script>
 	
 </head>
@@ -27,6 +35,8 @@
 		<label>Effects</label><input type="text" name="effects" /><br>
 		<label>Submit:</label><input type="submit" value="Submit" />
 	</form>
+	
+	<button id="add_carriable_effect">Add new effect</button>
 	
 	<br>
 	<hr>
