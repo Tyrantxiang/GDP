@@ -576,7 +576,6 @@ var commsEventListeners = {
 	},
 	
 	get_symptoms : function(data, fn){
-		var h = this;
 		var words = {
 			60 : "tired",
 			40 : "cold",
@@ -585,7 +584,7 @@ var commsEventListeners = {
 		var retValue = [];
 		
 		for(var i in words){
-			if(words.i < hpVal.health) 
+			if(words.i < this.health) 
 				retValue.push(words.i);
 		}
 		
