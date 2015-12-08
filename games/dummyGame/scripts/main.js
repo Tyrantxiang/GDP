@@ -125,6 +125,12 @@
 			render();
 		}
 	}
+	
+	function base64ToImg(base64){
+        var i = document.createElement("img");
+        i.src = "data:image/png;base64," + base64;
+        return i;
+    }
 
 	/*
 	 *  Local value updating callbacks
@@ -183,6 +189,11 @@
 		ctx.fillText("Score: "+score, 10, 410);
 		ctx.fillText("Currency: "+currency, 10, 440);
 		ctx.fillText("Carriables: "+makeBagString(), 10, 470);
+		
+		drawing = new Image();
+		drawing.onload = function(){ ctx.drawImage(drawing,canvas.width-300,0); };
+		console.log(canvas.width);
+		drawing.src = "data:image/png;base64,"+api.getAvatarImage();
 	};
 
 

@@ -115,22 +115,6 @@ Hub.prototype.generateAvatarImage = function(fn){
     var urls = [],
         h = this;
 		
-	/*
-	var healthImg = undefined;
-    if(this.health < 10){
-        healthImg = __dirname + "/avatar_items/unhealthy.png";
-    }else{
-        if(this.health < 30){
-            healthImg = __dirname + "/avatar_items/unhealthy_1.png";
-        }else{
-            if(this.health < 50){
-                healthImg = __dirname + "/avatar_items/unhealthy_2.png";
-            }else{
-                healthImg = __dirname + "/avatar_items/healthy.png";
-            }
-        }
-	}*/
-
 	var order = ["skin", "eyes", "shirt", "head"];
 
     // Equipped items could possibly be saved locally?

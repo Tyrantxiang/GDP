@@ -165,7 +165,7 @@
                             hub.statuses = statuses;
 							
 							comms.get_avatar(function(imgData){
-									hub.avatarImage = base64ToImg(imgData);
+									hub.avatarImage = imgData;
 							});
 
                             // How much do we load?
@@ -360,7 +360,7 @@
         comms.modify_hp_value(changeVal, function(data) {
 			comms.get_symptoms(function(symps){
 				hub.health = data.newhp;
-				hub.avatarImage = base64ToImg(data.avatarImage);
+				hub.avatarImage = data.avatarImage;
 				cb(hub.health, hub.avatarImage, symps.symptoms);
 			});
         });
@@ -371,7 +371,7 @@
 		comms.set_hp_value(value, function(data) {
             comms.get_symptoms(function(symps){
 				hub.health = data.newhp;
-				hub.avatarImage = base64ToImg(data.avatarImage);
+				hub.avatarImage = data.avatarImage;
 				cb(hub.health, hub.avatarImage, symps.symptoms);
 			});
         });
@@ -384,7 +384,7 @@
 				comms.get_symptoms(function(symps){
 					hub.health = data.newhp;
 					hub.statuses = data.newStatuses;
-					hub.avatarImage = base64ToImg(data.avatarImage);
+					hub.avatarImage = data.avatarImage;
 					cb(data.bag, hub.health, hub.statuses, hub.avatarImage, symps.symptoms);
 				});
             }else{
