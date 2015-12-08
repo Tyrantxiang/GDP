@@ -64,6 +64,7 @@ function startApp(db){
 	//Superuser http API routes
 	var multer = require("multer");
 	var upload = multer({ dest: 'uploads/' });
+	var superuserapi = require('./superuser-api.js')(config, db);
 	app.post("/superuser/add_bag_item", upload.single('sprite'), superuserapi.add_bag_item);
 	app.post("/superuser/remove_bag_item", superuserapi.remove_bag_item);
 	app.post("/superuser/add_status", upload.single('sprite'), superuserapi.add_status);

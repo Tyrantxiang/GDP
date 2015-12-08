@@ -78,8 +78,8 @@ function createFiles(spriteLoc, newLoc, configObj, otherFiles){
 }
 
 function removeFiles(path){
-	fs.unlink(path + "config.json", function(err){
-		fs.unlink(path + "sprite.png", function(err){
+	fs.unlink(path + "/config.json", function(err){
+		fs.unlink(path + "/sprite.png", function(err){
 			//fs.rmdir(path, function(err){});
 		});
 	});
@@ -111,7 +111,7 @@ var routes = {
 		var valid = checkIsValid(["id"], req.body);
 		
 		if(valid){
-			var path = config.cariables.getConfig(req.body.id, "directory");
+			var path = config.carriables.getConfig(req.body.id, "directory");
 			
 			removeFiles(path);
 			

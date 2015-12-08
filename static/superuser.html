@@ -4,7 +4,12 @@
 </head>
 
 <body>
-
+	
+<div>
+	<!--  Effects to be changed. Will be a list of status-id and amount. Will need a way to get and display the statuses without needing to know the status id.
+			On form submit, will then need to concat all the effects into a json array. e.g. [{"id": 1, "effects": 20}, {etc...}, {etc...}]
+	-->
+	<h3>Add carriable</h3>
 	<form action="/superuser/add_bag_item" method="POST" enctype="multipart/form-data">
 		<label>Name:</label><input type="text" name="name" /><br>
 		<label>Sprite file:</label><input type="file" name="sprite" accept="image/png" /><br>
@@ -15,7 +20,10 @@
 	<br>
 	<hr>
 	<br>
-	
+</div>
+<div>
+	<!-- Display each carriable with its picture and name, so they don't need to know the ID -->
+	<h3>Remove carriable</h3>
 	<form action="/superuser/remove_bag_item" method="POST">
 		<label>ID:</label><input type="text" name="id" /><br>
 		<label>Submit:</label><input type="submit" value="Submit" />
@@ -24,7 +32,10 @@
 	<br>
 	<hr>
 	<br>
-	
+</div>
+<div>
+	<!-- Words only if isNumber is false. Words is a JSON object with number keys to the word associated with that status value -->
+	<h3>Add status</h3>
 	<form action="/superuser/add_status" method="POST" enctype="multipart/form-data">
 		<label>Name:</label><input type="text" name="name" /><br>
 		<label>Min value</label><input type="text" name="min_val"><br>
@@ -36,7 +47,96 @@
 		<label>Sprite file:</label><input type="file" name="sprite" accept="image/png" /><br>
 		<label>Submit:</label><input type="submit" value="Submit" />
 	</form>
+</div>
+<div>
+	<!-- Display each status with its name, so they don't need to know the ID -->
+	<h3>Remove status</h3>
+	<form action="/superuser/remove_status" method="POST">
+		<label>ID:</label><input type="text" name="id" /><br>
+		<label>Submit:</label><input type="submit" value="Submit" />
+	</form>
 	
+	<br>
+	<hr>
+	<br>
+</div>
+<div>
+	<!-- Need to display statuses as a list, and concat all statuses into an array at submit -->
+	<h3>Add condition</h3>
+	<form action="/superuser/add_condition" method="POST">
+		<label>Name:</label><input type="text" name="name" /><br>
+		<label>Statuses:</label><input type="text" name="id" /><br>
+		<label>Submit:</label><input type="submit" value="Submit" />
+	</form>
+	
+	<br>
+	<hr>
+	<br>
+</div>
+<div>
+	<!-- Display a list of names, not IDs -->
+	<h3>Remove condition</h3>
+	<form action="/superuser/remove_condition" method="POST">
+		<label>Names:</label><input type="text" name="id" /><br>
+		<label>Submit:</label><input type="submit" value="Submit" />
+	</form>
+	
+	<br>
+	<hr>
+	<br>
+</div>
+<div>
+	<!-- This is both house items AND avatar items, will provide a list of available slots for them to choose from -->
+	<h3>Add store item</h3>
+	<form action="/superuser/add_store_item" method="POST">
+		<label>Name:</label><input type="text" name="name" /><br>
+		<label>Description:</label><input type="text" name="id" /><br>
+		<label>Slot:</label><input type="text" name="id" /><br>
+		<label>Price:</label><input type="text" name="id" /><br>
+		<label>Sprite file:</label><input type="file" name="sprite" accept="image/png" /><br>
+		<label>Submit:</label><input type="submit" value="Submit" />
+	</form>
+	
+	<br>
+	<hr>
+	<br>
+</div>
+<div>
+	<!-- display as sprites and names? -->
+	<h3>Remove store item</h3>
+	<form action="/superuser/remove_store_item" method="POST">
+		<label>ID:</label><input type="text" name="id" /><br>
+		<label>Submit:</label><input type="submit" value="Submit" />
+	</form>
+	
+	<br>
+	<hr>
+	<br>
+</div>
+<div style="display: none">
+	<!-- leave for now -->
+	<h3>Add minigame</h3>
+	<form action="/superuser/add_minigame" method="POST">
+		<label>ID:</label><input type="text" name="id" /><br>
+		<label>Submit:</label><input type="submit" value="Submit" />
+	</form>
+	
+	<br>
+	<hr>
+	<br>
+</div>
+<div style="display: none">
+	<!-- leave for now -->
+	<h3>Remove minigame</h3>
+	<form action="/superuser/remove_minigame" method="POST">
+		<label>ID:</label><input type="text" name="id" /><br>
+		<label>Submit:</label><input type="submit" value="Submit" />
+	</form>
+	
+	<br>
+	<hr>
+	<br>
+</div>
 </body>
 
 

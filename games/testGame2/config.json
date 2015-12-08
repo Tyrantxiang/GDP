@@ -6,5 +6,5 @@
   "scripts": [
     "main.js"
   ],
-  "entryObject": "testGame2"
+  "entryObject": "dummyGame"
 }

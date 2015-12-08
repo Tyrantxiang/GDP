@@ -360,11 +360,11 @@ window.comms = {
 	
 	get_minigame_info : function(gameid, cb){
 		this.list_minigames(function(data){
-			data.filter(function(a){
-				a.id === gameid;
+			var dtwo = data.filter(function(a){
+				return a.id === gameid;
 			});
 			
-			cb(data[0]);
+			cb(dtwo[0]);
 		});
 	},
 
