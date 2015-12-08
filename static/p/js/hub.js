@@ -145,12 +145,14 @@
 
         // Scripts to load
         var scripts = [
-            ["//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js", false],
-            ["/p/js/draw_canvas.js", true],
-            ["/p/js/avatar.js", true],
-            ["/p/js/menus.js", true]
+            ['//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js', false],
+            ['/p/js/draw_canvas.js', true],
+            ['/p/js/draw_healthbar.js', true],
+            ['/p/js/avatar.js', true],
+            ['/p/js/menus.js', true]
         ];
 
+        // TODO: Handle if login is clicked multiple times, prevent loading multiple hubs, i.e. .html() first.
         // Open the socket connection
         comms.createSocket(function(){
             if(!initalFilesLoaded){

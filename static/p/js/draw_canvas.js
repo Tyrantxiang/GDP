@@ -1,6 +1,7 @@
 (function(){
 	'use strict';
 	// TODO: Center in page, seems setting canvas-container margin: 0 auto will fix.
+	// TODO: Look into no-scroll.
 	// Body and main-content-area have margins and paddings to remove, also.
 
 	/*
@@ -190,6 +191,8 @@
 
 		var canvas	= initialise_canvas(cnvs, background);
 		attach_items(canvas, background, items);
+		// TODO: Pass in variables when they're defined/function complete.
+		window.healthbar.draw();
 		attach_event_listeners(canvas);
 	};
 })();

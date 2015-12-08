@@ -123,7 +123,6 @@
 		load : function(data) {
 			console.log(data);
 
-			/*
 			// TODO: Pull ID out to config file/find some way of making it across-the-board.
 			var canvas = document.getElementById('canvas').fabric;
 			var canvas_height	= canvas.height;
@@ -144,7 +143,7 @@
 
 			canvas.add(tr);
 			/*
-			var rect = new fabric.Rect({
+			var rekt = new fabric.Rect({
 				left: 0,
 			  	top: 0,
 			  	fill: 'red',
@@ -152,7 +151,7 @@
 			  	height: 20
 			});
 
-			canvas.add(rect);
+			canvas.add(rekt);
 			*/
 		}
 	};
