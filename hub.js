@@ -137,30 +137,35 @@ Hub.prototype.generateAvatarImage = function(fn){
     this.get_user_equipped_items(
         {},
         function(data){
-			var healthImg = [__dirname + "/avatar_items/health_healthy.png"];
+			var healthImg = __dirname + "/avatar_items/health_healthy.png";
 			var mouth = __dirname + "/avatar_items/mouth_smile.png";
+			var eyes = undefined;
 			
 			if(h.health < 60){
-				data.eyes = __dirname + "/avatar_items/eyes_tired.png";
+				delete data.eyes;
+				eyes = __dirname + "/avatar_items/eyes_tired.png";
 				mouth = __dirname + "/avatar_items/mouth_sad.png";
 			}
 			if(h.health < 40){
-				healthImg[0] = __dirname + "/avatar_items/health_cold.png";
+				healthImg = __dirname + "/avatar_items/health_cold.png";
 				mouth = __dirname + "/avatar_items/mouth_cold.png";
 			}
 			if(h.health < 20){
-				healthImg.push(__dirname + "/avatar_items/health_nauseated.png");
+				healthImg = __dirname + "/avatar_items/health_nauseated.png";
 				mouth = __dirname + "/avatar_items/mouth_nauseated.png";
 			}
 
 			for(var i in order){
-				var direc = config.items.getConfig(data[order[i]].id, "directory");
-				direc += "/sprite.png";
-				urls.push(direc);
+				if(data[order[i]]){
+					var direc = config.items.getConfig(data[order[i]].id, "directory");
+					direc += "/sprite.png";
+					urls.push(direc);
+				}
 			}
 			
 			urls.splice(1, 0, mouth);
-			for(var i in healthImg) urls.splice(1, 0, healthImg[i]);
+			if(eyes) urls.splice(1, 0, eyes);
+			urls.splice(1, 0, healthImg);
 			
             var base64string = h.imgMaker(urls);
             fn(base64string);
