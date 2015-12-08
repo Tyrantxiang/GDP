@@ -115,9 +115,10 @@ Hub.prototype.generateAvatarImage = function(fn){
     var urls = [],
         h = this;
 		
+	/*
 	var healthImg = undefined;
     if(this.health < 10){
-        healthImg = __dirname + "/avatar_items/unhealthy_0.png";
+        healthImg = __dirname + "/avatar_items/unhealthy.png";
     }else{
         if(this.health < 30){
             healthImg = __dirname + "/avatar_items/unhealthy_1.png";
@@ -128,22 +129,40 @@ Hub.prototype.generateAvatarImage = function(fn){
                 healthImg = __dirname + "/avatar_items/healthy.png";
             }
         }
-	}
+	}*/
+
 	var order = ["skin", "eyes", "shirt", "head"];
 
-    // Equipt items could possibly be saved locally?
+    // Equipped items could possibly be saved locally?
     this.get_user_equipped_items(
         {},
-        function(data){			
+        function(data){
+			var healthImg = [__dirname + "/avatar_items/health_healthy.png"];
+			var mouth = __dirname + "/avatar_items/mouth_smile.png";
+			
+			if(h.health < 60){
+				data.eyes = __dirname + "/avatar_items/eyes_tired.png";
+				mouth = __dirname + "/avatar_items/mouth_sad.png";
+			}
+			if(h.health < 40){
+				healthImg[0] = __dirname + "/avatar_items/health_cold.png";
+				mouth = __dirname + "/avatar_items/mouth_cold.png";
+			}
+			if(h.health < 20){
+				healthImg.push(__dirname + "/avatar_items/health_nauseated.png");
+				mouth = __dirname + "/avatar_items/mouth_nauseated.png";
+			}
+
 			for(var i in order){
 				var direc = config.items.getConfig(data[order[i]].id, "directory");
 				direc += "/sprite.png";
 				urls.push(direc);
 			}
 			
-			urls.splice(1, 0, healthImg);
-            
-            var base64string = h.imgMaker(urls);			
+			urls.splice(1, 0, mouth);
+			for(var i in healthImg) urls.splice(1, 0, healthImg[i]);
+			
+            var base64string = h.imgMaker(urls);
             fn(base64string);
         });
 };
@@ -529,11 +548,8 @@ var commsEventListeners = {
         var statuses = {};
         for(var id in this.statuses){
             var status = this.statuses[id];
-            statuses[id] = {
-                id : id,
-                name : status.name,
-                value : status.value
-            };
+            statuses[id] = config.statuses.getConfig(id);
+			 statuses[id].value = status.value;
         }
 
         fn(statuses);
@@ -557,8 +573,24 @@ var commsEventListeners = {
                 avatarImage: imageString
             });
         });
-	}
+	},
 	
+	get_symptoms : function(data, fn){
+		var h = this;
+		var words = {
+			60 : "tired",
+			40 : "cold",
+			20 : "nauseated"			
+		};
+		var retValue = [];
+		
+		for(var i in words){
+			if(words.i < hpVal.health) 
+				retValue.push(words.i);
+		}
+		
+		fn({"symptoms": words});
+	}
 };
 
 

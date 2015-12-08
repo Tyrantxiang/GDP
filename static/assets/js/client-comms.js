@@ -420,6 +420,12 @@ window.comms = {
 						);
 	},
 
+	get_symptoms : function(cb){
+		client_socket_call(	'get_symptoms',
+							{},
+							cb
+						);
+	},
 
 
 	// Additional functions
