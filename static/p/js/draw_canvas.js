@@ -1,7 +1,7 @@
 (function(){
 	'use strict';
-	// TODO: Center in page, seems setting canvas-container margin: 0 auto will fix.
-	// TODO: Look into no-scroll.
+	// TODO: Look into no-scroll -> $("body").css('overflow', 'hidden');
+	// Remove the 'if'-hack for event listeners.
 	// Body and main-content-area have margins and paddings to remove, also.
 
 	/*
@@ -114,71 +114,98 @@
 	{
 		// TODO: Add filter so it's only the objects we actually care about (i.e. menu items).
 		canvas.on('mouse:over', function(i) {
-			var x 			= i.target.getLeft();
-			var y 			= i.target.getTop();
+			if(i.target.name === 'stairs' ||
+				i.target.name === 'trophy' ||
+				i.target.name === 'mirror' ||
+				i.target.name === 'laptop' ||
+				i.target.name === 'backpack' ||
+				i.target.name === 'paint' ||
+				i.target.name === 'path')
+			{
+				var x 			= i.target.getLeft();
+				var y 			= i.target.getTop();
 
-			var width		= i.target.getWidth() * i.target.getScaleX();
-			var height		= i.target.getHeight() * i.target.getScaleY();
+				var width		= i.target.getWidth() * i.target.getScaleX();
+				var height		= i.target.getHeight() * i.target.getScaleY();
 
-			var new_width	= i.target.getWidth() * i.target.select_scale;
-			var new_height	= i.target.getHeight() * i.target.select_scale;
+				var new_width	= i.target.getWidth() * i.target.select_scale;
+				var new_height	= i.target.getHeight() * i.target.select_scale;
 
-			var new_x		= x - (new_width - width) / 2;
-			var new_y		= y - (new_height - height) / 2;
+				var new_x		= x - (new_width - width) / 2;
+				var new_y		= y - (new_height - height) / 2;
 
-			i.target.setLeft(new_x);
-			i.target.setTop(new_y);
+				i.target.setLeft(new_x);
+				i.target.setTop(new_y);
 
-			i.target.scale(i.target.select_scale);
-			canvas.renderAll();
+				i.target.scale(i.target.select_scale);
+				canvas.renderAll();
+			}
 		});
 
 		canvas.on('mouse:out', function(i) {
-			i.target.setLeft(i.target.orig_left);
-			i.target.setTop(i.target.orig_top);
+			if(i.target.name === 'stairs' ||
+				i.target.name === 'trophy' ||
+				i.target.name === 'mirror' ||
+				i.target.name === 'laptop' ||
+				i.target.name === 'backpack' ||
+				i.target.name === 'paint' ||
+				i.target.name === 'path')
+			{
+				i.target.setLeft(i.target.orig_left);
+				i.target.setTop(i.target.orig_top);
 
-			i.target.scale(i.target.default_scale);
-			canvas.renderAll();
+				i.target.scale(i.target.default_scale);
+				canvas.renderAll();
+			}
 		});
 
 		canvas.on('mouse:down', function(i) {
 			if(typeof i.target !== 'undefined')
 			{
-				i.target.setLeft(i.target.orig_left);
-				i.target.setTop(i.target.orig_top);
-				i.target.scale(i.target.default_scale);
-				canvas.renderAll();
-
-				switch(i.target.name)
+				if(i.target.name === 'stairs' ||
+					i.target.name === 'trophy' ||
+					i.target.name === 'mirror' ||
+					i.target.name === 'laptop' ||
+					i.target.name === 'backpack' ||
+					i.target.name === 'paint' ||
+					i.target.name === 'path')
 				{
-					case 'stairs':
-						hub.sleep();
-						break;
+					i.target.setLeft(i.target.orig_left);
+					i.target.setTop(i.target.orig_top);
+					i.target.scale(i.target.default_scale);
+					canvas.renderAll();
 
-					case 'trophy':
-						hub.launchScores();
-						break;
+					switch(i.target.name)
+					{
+						case 'stairs':
+							hub.sleep();
+							break;
 
-					case 'mirror':
-						hub.launchAvatarCreation();
-						break;
+						case 'trophy':
+							hub.launchScores();
+							break;
 
-					case 'laptop':
-						console.log('laptop clicked');
-						break;
+						case 'mirror':
+							hub.launchAvatarCreation();
+							break;
 
-					case 'backpack':
-						hub.launchBackpack();
-						break;
+						case 'laptop':
+							console.log('laptop clicked');
+							break;
 
-					case 'paint':
-						hub.launchHomeCustomisation();
-						break;
+						case 'backpack':
+							hub.launchBackpack();
+							break;
 
-					case 'path':
-						hub.launchGameSelect();
-						break;
-				;}
+						case 'paint':
+							hub.launchHomeCustomisation();
+							break;
+
+						case 'path':
+							hub.launchGameSelect();
+							break;
+					}
+				}
 			};
 		});
 	};

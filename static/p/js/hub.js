@@ -234,6 +234,9 @@
                                     }catch(e){}
 
                                     hubCanvasContainer.appendChild(hubCanvas);
+                                    // TESTING
+                                    //hubCanvasContainer.style.margin = '0 auto';
+                                    //hubCanvas.parentNode.style.margin = '0 auto';
 
                                     container.appendChild(hubCanvasContainer);
 
