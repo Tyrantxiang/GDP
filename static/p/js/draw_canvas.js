@@ -229,6 +229,7 @@
 		// TODO: Uncomment once we can safely lock scrolling.
 		//$("body").css('overflow', 'hidden');
 
+		// TODO: Put in proper place.
 		document.getElementById('main-content-area').style.backgroundImage	= 'url(http://localhost:3000/assets/img/hub/test_background.png)';
 		document.getElementById('main-content-area').style.backgroundSize	= '100% 100%';
 		document.getElementById('main-content-area').style.backgroundRepeat	= 'no-repeat';
