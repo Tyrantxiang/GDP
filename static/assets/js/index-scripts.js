@@ -1,6 +1,5 @@
 $(function() {
 
-
   var errorMessageNumber = 0,
     errorMessageParent = $("#messages .alert-danger");
   function addError(text){
@@ -90,12 +89,15 @@ $(function() {
   // Functions for changing the view
   function loadSignup(){
     $.get("/views/signup.html", function(data){
+      $('body').removeClass("index login").addClass("signup");
       $("#main-content-area").html(data);
       document.title = "Sign up for the hub";
     });
   }
+  
   function loadLogin() {
     $.get("/views/login.html", function(data){
+      $('body').removeClass("index signup").addClass("login");
       $("#main-content-area").html(data);
       document.title = "Log in";
     });

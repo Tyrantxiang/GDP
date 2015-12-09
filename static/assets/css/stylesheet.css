@@ -1,16 +1,27 @@
-/* Global */
+ Global */
+
 html {
   position:relative;
   min-height:100%;
 }
 
-body.login {
+body.index {
+  /*background-image: url("../img/bg4.png");*/
+  background-color: #4da6ff;
+  margin-bottom: 50px;
+}
+
+body.signup, body.login {
   background-image: url("../img/bg4.png");
   margin-bottom: 50px;
 }
 
 * {
   font-family: "Aileron";
+}
+
+.width-22 {
+  width: 22%;
 }
 
 /* Avatar creation */
@@ -21,7 +32,7 @@ html, body, .section-img {
   /*padding: 5px;*/
 }
 
-img {
+img > .section-img {
   width:auto;
   height:auto;
   max-width:100%;
@@ -67,7 +78,7 @@ img {
   bottom: 0;
   width: 100%;
   /* Set the fixed height of the footer here */
-  height: 155px;
+  height: 250px;
 }
 
 /* TODO: Properly delete or set up toggling for hub depending on feedback. */
@@ -85,13 +96,11 @@ img {
 .white-img-box {
   background-color: #fff;
   padding: 5px;
-  padding-bottom: 10px;
   border-color: #ccc;
   border-style: dashed;
   border-width: 3px;
   border-radius: 10px;
-  margin-right: 5px;
-  margin-left: 5px;
+  margin: 5px;
 }
 
 .white-img-box.active, .white-img-box:hover {
@@ -178,6 +187,25 @@ img {
 
 .center {
   text-align: center;
+}
+
+/* Cloud button */
+svg.cloud-svg {
+  height: 40%;
+  width: 50%;
+  font-family: "Aileron";
+}
+
+path {
+  fill: white;
+  stroke: black;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+path:hover {
+  fill: white;
+  stroke: gray;
 }
 
 /* Colors/text styles */

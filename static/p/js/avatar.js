@@ -96,7 +96,7 @@
 
         for (var i in items) {       
           hub.getItemInfo(items[i], function (item) {    
-            var imgEl = $(document.createElement("img")).attr("src", item.url).data("itemId", item.id).addClass("col-md-3 white-img-box"),
+            var imgEl = $(document.createElement("img")).attr("src", item.url).data("itemId", item.id).addClass("width-22 white-img-box"),
               menu = menus[item.slot];
 
               if(menu){
