@@ -16,6 +16,7 @@
 	Functionality:
 		Scales the canvas to suit the window size, scales and adds the background image.
 	*/
+	// TODO: Rewrite this reliance on backpack, make better scaling for pages.
 	function initialise_canvas(cnvs, background)
 	{
 		var canvas	= new fabric.Canvas(cnvs);
@@ -228,6 +229,11 @@
 
 		// TODO: Put in proper place.
 		//$("body").css('overflow', 'hidden');
+
+		//document.body.style.backgroundImage = 'url(' + background.image.src + ')';
+		document.body.style.backgroundImage = 'url(http://localhost:3000/assets/img/hub/test_background.png)';
+
+		/*
 		var sky								= document.createElement('div');
 		sky.id								= 'sky-overlay';
 		sky.style.height					= (window.innerHeight / 3) + 'px';
@@ -238,5 +244,6 @@
 		sky.style.backgroundColor			= 'rgb(126,192,238)';
 		document.body.style.backgroundColor	= 'rgb(1,166,17)';
 		document.body.appendChild(sky);
+		*/
 	};
 })();
