@@ -459,7 +459,7 @@
 	}
 
 	function changeSymptom(symptoms){
-		var symp = symptoms[symptoms.length-1] || "healthy";
+		var symp = symptoms[0] || "healthy";
 
 		var str = (hb.symptomVals.startText + symp).toUpperCase();
 		hb.symptom.setText(str);

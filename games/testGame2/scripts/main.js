@@ -18,6 +18,7 @@
 
 		//changeableStatus = statuses[Object.keys(statuses)[0]]
 		health = startHp;
+		symptom = "HEALTHY";
 		score = 0;
 		currency = 0;
 		currentBag = bag;
@@ -133,9 +134,10 @@
 	/*
 	 *  Local value updating callbacks
 	 */
-	function updateHealthAndAvatar(newHealth, newAvatar){
+	function updateHealthAndAvatar(newHealth, newAvatar, newSymps){
 		health = newHealth;
 		//Do something with avatar
+		symptom = (newSymps[0] || "healthy").toUpperCase();
 		render();
 	}
 
@@ -183,7 +185,7 @@
 
 
 		ctx.fillText("Health: "+health, 10, 350);
-		//ctx.fillText(changeableStatus.name+": "+changeableStatus.value, 10, 380);
+		ctx.fillText("Symptom: "+symptom, 10, 380);
 		ctx.fillText("Score: "+score, 10, 410);
 		ctx.fillText("Currency: "+currency, 10, 440);
 		ctx.fillText("Carriables: "+makeBagString(), 10, 470);
