@@ -85,7 +85,7 @@ img > .section-img {
 #main-content-area {
   /*margin-top: 10px;*/
 }
-.hub #main-content-area {
+.hub #main-content-area > .hub-canvas-container {
   background-image : url(http://localhost:3000/assets/img/hub/test_background.png);
   background-size : 100% 100%;
   background-repeat : no-repeat;
@@ -347,7 +347,6 @@ path:hover {
 
 /** Hub overlay **/
 #overlay {
-  visibility: hidden;
   position: absolute;
   left: 0;
   top: 0;

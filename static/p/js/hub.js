@@ -232,6 +232,7 @@
                                  var lscripts = latch(scripts.length, function(){
                                     // Remove loading bar and load the canvas
                                     hubCanvasContainer = document.createElement("div");
+                                    hubCanvasContainer.className = "hub-canvas-container";
                                     hubCanvas = document.createElement("canvas");
 
                                     try{
