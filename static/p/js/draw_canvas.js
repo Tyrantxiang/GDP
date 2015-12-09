@@ -3,6 +3,7 @@
 	// TODO: Look into no-scroll -> $("body").css('overflow', 'hidden');
 	// Remove the 'if'-hack for event listeners.
 	// Body and main-content-area have margins and paddings to remove, also.
+	// Remove initialise_canvas' reliance on background.
 
 	/*
 	Parameters:
@@ -231,7 +232,9 @@
 		//$("body").css('overflow', 'hidden');
 
 		//document.body.style.backgroundImage = 'url(' + background.image.src + ')';
-		document.body.style.backgroundImage = 'url(http://localhost:3000/assets/img/hub/test_background.png)';
+		document.body.style.backgroundImage 	= 'url(http://localhost:3000/assets/img/hub/test_background.png)';
+		document.body.style.backgroundSize 		= '100% 100%';
+		document.body.style.backgroundRepeat	= 'no-repeat'; 
 
 		/*
 		var sky								= document.createElement('div');

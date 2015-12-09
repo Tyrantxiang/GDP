@@ -509,6 +509,7 @@
     // Launches high score screen.
     hub.launchScores = function(cb) {
         hub.getHighScoresForAllGames(function(raw_scores) {
+
             var processed_scores    = [];
             var keys                = Object.keys(raw_scores);
             var l                   = latch(keys.length, function() {
@@ -542,7 +543,7 @@
                     score_array.push('-');
                 }
 
-                hub.getGameInfo(key, function(game_info) {
+                hub.getGameInfo(parseInt(key), function(game_info) {
                     var formatted_score    = {
                         id:     game_info.id,
                         name:   game_info.name,
