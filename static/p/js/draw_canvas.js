@@ -483,20 +483,24 @@
 
 	/*********** End healthbar functions ******************/
 
-	// TODO: Pull out reliance on canvas once pulled.
 	function add_avatar()
 	{
 		var avatar_image	= hub.avatarImage;
 
-		// TODO: Scaling should be based upon canvas size.
+		var width_to_height	= avatar_image.width / avatar_image.height;
+
+		var current_height	= avatar_image.height;
+
 		var avatar_instance	= new fabric.Image(avatar_image, {
 			name:	'avatar',
 
 			left:	0.5 * canvas.width,
 			top:	0.45 * canvas.height,
 
-			scaleX:	0.5,
-			scaleY:	0.5
+			// Determine scale based upon canvas and image sizing.
+			// Results in always being the same size relative to the canvas.
+			scaleX: 0.2 * canvas.height / avatar_image.height,
+			scaleY: 0.2 * canvas.height * width_to_height / avatar_image.height
 		});
 
 		canvas.add(avatar_instance);
