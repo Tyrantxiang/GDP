@@ -4,6 +4,7 @@
 	// Remove the 'if'-hack for event listeners.
 	// Body and main-content-area have margins and paddings to remove, also.
 	// Remove initialise_canvas' reliance on background.
+	// Fix select-box/hover cursor.
 
 	// Closure variables that can be accessed in draw functions
 	var canvas, // The fabric canvas that we are drawing on
@@ -485,8 +486,6 @@
 	// TODO: Pull out reliance on canvas once pulled.
 	function add_avatar()
 	{
-		var canvas	= document.getElementById('canvas').fabric;
-
 		var avatar_image	= hub.avatarImage;
 
 		// TODO: Scaling should be based upon canvas size.
@@ -527,7 +526,6 @@
 	// TODO: Pull out reliance on canvas once pulled.
 	window.draw.update_avatar	= function()
 	{
-		var canvas			= document.getElementById('canvas').fabric;
 		var canvas_items	= canvas.getObjects();
 
 		var avatar			= canvas_items.filter(function(i) {
