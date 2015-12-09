@@ -94,7 +94,7 @@ $(function() {
       document.title = "Sign up for the hub";
     });
   }
-  
+
   function loadLogin() {
     $.get("/views/login.html", function(data){
       $('body').removeClass("index signup").addClass("login");
