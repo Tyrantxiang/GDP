@@ -252,6 +252,8 @@
                                     draw.init(hubCanvas, getAssetsByType("images"))
                                         .healthbar.init(hub.health, hub.statuses, hub.symptoms);
 
+                                    document.body.className = "hub";
+
                                     if(cb){
                                         cb.call(hub);
                                     }
