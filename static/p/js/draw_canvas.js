@@ -211,6 +211,12 @@
 						break;
 				}
 			}
+			else if(i.target.name === window.healthbar.mouseoverGroupName)
+			{
+				console.log("hb click");
+				window.healthbar.toggleVisiblity();
+				canvas.renderAll();
+			}
 		});
 	};
 
@@ -223,7 +229,7 @@
 		var canvas	= initialise_canvas(cnvs, background);
 		attach_items(canvas, background, items);
 		// TODO: Pass in variables when they're defined/function complete.
-		window.healthbar.draw();
+		window.healthbar.draw(hub.health, hub.statuses, hub.symptoms);
 		attach_event_listeners(canvas);
 
 		// TODO: Uncomment once we can safely lock scrolling.
