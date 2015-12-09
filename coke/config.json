@@ -1,0 +1,14 @@
+{
+  "id": 104,
+  "name": "Coke",
+  "effects": [
+    {
+      "id": 1,
+      "amount": 5
+    },
+    {
+      "id": "hp",
+      "amount": 0
+    }
+  ]
+}
