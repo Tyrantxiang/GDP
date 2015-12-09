@@ -124,6 +124,7 @@
 			console.log(data);
 
 			// TODO: Pull ID out to config file/find some way of making it across-the-board.
+			/*
 			var canvas = document.getElementById('canvas').fabric;
 			var canvas_height	= canvas.height;
 			var canvas_width	= canvas.width;
@@ -141,7 +142,7 @@
 				height: 20
 			});
 
-			canvas.add(tr);
+			canvas.add(tr);*/
 			/*
 			var rekt = new fabric.Rect({
 				left: 0,
@@ -191,7 +192,6 @@
 						container_div.appendChild(text_div);
 
 						container_div.className = 'col-md-2 col-centered';
-						//container_div.className = 'col-md-5ths col-centered';
 
 						container_div.addEventListener('click', function(obj) {
 							add_to_backpack(carriable);
@@ -244,7 +244,6 @@
 
 			container_div.appendChild(img);
 
-			//container_div.className = 'col-md-5ths col-centered';
 			container_div.className	= 'col-md-3 col-centered';
 
 			container_div.addEventListener('click', function(obj) {

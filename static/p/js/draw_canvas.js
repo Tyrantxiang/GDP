@@ -231,10 +231,10 @@
 		// TODO: Put in proper place.
 		//$("body").css('overflow', 'hidden');
 
-		//document.body.style.backgroundImage = 'url(' + background.image.src + ')';
-		document.body.style.backgroundImage 	= 'url(http://localhost:3000/assets/img/hub/test_background.png)';
-		document.body.style.backgroundSize 		= '100% 100%';
-		document.body.style.backgroundRepeat	= 'no-repeat'; 
+		document.getElementById('main-content-area').style.backgroundImage	= 'url(http://localhost:3000/assets/img/hub/test_background.png)';
+		document.getElementById('main-content-area').style.backgroundSize	= '100% 100%';
+		document.getElementById('main-content-area').style.backgroundRepeat	= 'no-repeat';
+
 
 		/*
 		var sky								= document.createElement('div');
