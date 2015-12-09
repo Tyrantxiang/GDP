@@ -65,9 +65,16 @@ function startApp(db){
 	var multer = require("multer");
 	var upload = multer({ dest: 'uploads/' });
 	var superuserapi = require('./superuser-api.js')(config, db);
-	app.post("/superuser/add_bag_item", upload.single('sprite'), superuserapi.add_bag_item);
-	app.post("/superuser/remove_bag_item", superuserapi.remove_bag_item);
-	app.post("/superuser/add_status", upload.single('sprite'), superuserapi.add_status);
+	app.post("/superuser/add_bag_item", upload.single('sprite'), superuserapi.routes.add_bag_item);
+	app.post("/superuser/remove_bag_item", superuserapi.routes.remove_bag_item);
+	app.post("/superuser/add_status", upload.single('sprite'), superuserapi.routes.add_status);
+	
+	for(var i in superuserapi.dataRoutes){
+		if(superuserapi.dataRoutes.hasOwnProperty(i)){
+			var str = "/superuser/"+i.toString();
+			app.post(str, superuserapi.dataRoutes[i])
+		}
+	}
 	
 	// Set up Socket.io connection
 	var comms = require("./server-comms.js")(server, auth, config, hub);

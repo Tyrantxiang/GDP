@@ -89,9 +89,10 @@ function removeFiles(path){
 var routes = {
 	
 	add_bag_item : function(req, res){		
-		var properties = ["name", "effects"];
+		var properties = ["name"];
 		var valid = checkIsValid(properties, req.body);
 		if(valid){
+			req.body.effects = {};
 			var id = getRandomUnusedId(config.carriables);
 			var obj = {};
 			for(var i=0; i<properties.length; i++){
@@ -215,9 +216,19 @@ var routes = {
 	*/
 };
 
+var dataRoutes = {
+	get_all_statuses : function(req, res){
+		res.status(200).json(config.statuses.listAll());
+	}
+	
+};
+
 module.exports = function (cfg, db){
     setConfig(cfg);
     setDatabase(db);
     
-    return routes;    
+    return {
+		routes : routes,
+		dataRoutes : dataRoutes
+	}
 };

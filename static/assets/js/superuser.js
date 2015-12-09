@@ -1,13 +1,24 @@
 (function(){
-	
-	$("#add_carriable_effect").click(function(e){
-		var newSlot = document.createElement("INPUT");
-		newSlot.type = "text";
-		newSlot.name = "slot";
+	/*
+	//Set up add cariable
+	$.post("/superuser/get_all_statuses", {}, function(data){
 		
-		console.log("here");
+		var sel = $('<select>').addClass("form-control").appendTo('#add_carriable_effects');
+		$(data).each(function(){
+			sel.append($("<option>").attr('value',this.id).text(this.name));
+		});
 		
-		$('#add_carriable').append(newSlot);
+		$("#add_carriable_effect").click(function(e){
+			
+			var div = $('<div>').appendTo('#add_carriable_effects');
+			
+			var sel = $('<select>').addClass("form-control").appendTo(div);
+			$(data).each(function(){
+				sel.append($("<option>").attr('value',this.id).text(this.name));
+			});
+			
+			$('<input/>').attr({type: 'text'}).addClass("form-control").appendTo(div);
+		});
 	});
-
+	*/
 })();
