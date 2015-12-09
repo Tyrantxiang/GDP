@@ -50,10 +50,10 @@
 				});
 
 				$('#score_close').on('click', function(obj) {
-					$('#overlay').css('visibility', 'hidden');
+					$('#overlay').hide();
 				});
 
-				$('#overlay').css('visibility', 'visible');
+				$('#overlay').show();
 			});
 		}
 	};
@@ -107,14 +107,14 @@
 				$('#minigame_accept').on('click', function(obj) {
 					hub.launchGame(selected_minigame, function() {});
 
-					$('#overlay').css('visibility', 'hidden');
+					$('#overlay').hide();
 				});
 
 				$('#minigame_cancel').on('click', function(obj) {
-					$('#overlay').css('visibility', 'hidden');
+					$('#overlay').hide();
 				});
 
-				$('#overlay').css('visibility', 'visible');
+				$('#overlay').show();
 			});
 		}
 	};
@@ -209,7 +209,7 @@
 				};
 
 				$('#backpack_accept').on('click', function(obj) {
-					$('#overlay').css('visibility', 'hidden');
+					$('#overlay').hide();
 					load	= 0;
 
 					var set_array	= [];
@@ -225,11 +225,11 @@
 				});
 
 				$('#backpack_cancel').on('click', function(obj) {
-					$('#overlay').css('visibility', 'hidden');
+					$('#overlay').hide();
 					load	= 0;
 				});
 
-				$('#overlay').css('visibility', 'visible');
+				$('#overlay').show();
 			});
 		}
 	};
