@@ -5,6 +5,7 @@
 	// Body and main-content-area have margins and paddings to remove, also.
 	// Remove initialise_canvas' reliance on background.
 	// Fix select-box/hover cursor.
+	// Fix path staying expanded if move out of canvas (attach out event listener to entire canvas).
 
 	// Closure variables that can be accessed in draw functions
 	var canvas, // The fabric canvas that we are drawing on
