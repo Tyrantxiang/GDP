@@ -124,6 +124,8 @@
         // All carriables
         carriables : {},
 		
+		symptoms : [],
+		
 		avatarImage : undefined
 
 
@@ -165,9 +167,10 @@
                             hub.statuses = statuses;
 							
 							comms.get_avatar(function(imgData){
-									hub.avatarImage = imgData;
+								hub.avatarImage = new Image();
+								hub.avatarImage.src = "data:image/png;base64," + imgData;
 							});
-
+							
                             // How much do we load?
                             var imagesToLoad = Object.keys(items).length + 1,
                                 // All including scripts
@@ -357,8 +360,12 @@
         comms.modify_hp_value(changeVal, function(data) {
 			comms.get_symptoms(function(symps){
 				hub.health = data.newhp;
-				hub.avatarImage = data.avatarImage;
-				cb(hub.health, hub.avatarImage, symps.symptoms);
+				hub.symptoms = symps;
+				if(data.avatarImage){
+					hub.avatarImage = new Image();
+					hub.avatarImage.src = "data:image/png;base64," + data.avatarImage;
+				}
+				cb(hub.health, data.avatarImage, symps.symptoms);
 			});
         });
     };
@@ -368,7 +375,11 @@
 		comms.set_hp_value(value, function(data) {
             comms.get_symptoms(function(symps){
 				hub.health = data.newhp;
-				hub.avatarImage = data.avatarImage;
+				hub.symptoms = symps;
+				if(data.avatarImage){
+					hub.avatarImage = new Image();
+					hub.avatarImage.src = "data:image/png;base64," + data.avatarImage;
+				}
 				cb(hub.health, hub.avatarImage, symps.symptoms);
 			});
         });
@@ -379,9 +390,13 @@
         comms.use_carriable(carriableId, function(data){
             if(!data.err){
 				comms.get_symptoms(function(symps){
+					hub.symptoms = symps;
 					hub.health = data.newhp;
 					hub.statuses = data.newStatuses;
-					hub.avatarImage = data.avatarImage;
+					if(data.avatarImage){
+						hub.avatarImage = new Image();
+						hub.avatarImage.src = "data:image/png;base64," + data.avatarImage;
+					}
 					cb(data.bag, hub.health, hub.statuses, hub.avatarImage, symps.symptoms);
 				});
             }else{
@@ -708,19 +723,15 @@
 
         proto.useCarriable = function(carriableId, cb){
             var t = this;
-            hub.useCarriable(carriableId, function(bag, health, statuses, avatarImage){
-                comms.get_symptoms(function(symps){
-					cb.call(t, bag, health, statuses, avatarImage, symps.symptoms);
-				});
+            hub.useCarriable(carriableId, function(bag, health, statuses, avatarImage, symptoms){
+				cb.call(t, bag, health, statuses, avatarImage, symptoms);
             });
         };
 
         proto.modifyHealth = function(changeVal, cb){
             var t = this;
-            hub.modifyHealth(changeVal, function(health, avatarImage){
-                comms.get_symptoms(function(symps){
-					cb.call(t, health, avatarImage, symps.symptoms);
-				});
+            hub.modifyHealth(changeVal, function(health, avatarImage, symptoms){
+				cb.call(t, health, avatarImage, symptoms);
             });
         };
 
