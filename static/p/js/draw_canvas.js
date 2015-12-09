@@ -177,7 +177,7 @@
 					canvas.renderAll();
 
 					// TODO: Remove once background properly dealt with.
-					document.getElementById('sky-overlay').style.visibility	= 'hidden';
+					//document.getElementById('sky-overlay').style.visibility	= 'hidden';
 
 					switch(i.target.name)
 					{
