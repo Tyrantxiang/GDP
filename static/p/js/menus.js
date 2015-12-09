@@ -185,12 +185,13 @@
 						text_div.innerHTML	= carriable.name;
 						text_div.className	= 'row';
 
-						img.className		= 'packing_images row';
+						img.className		= 'packing_images';
 
 						container_div.appendChild(img);
 						container_div.appendChild(text_div);
 
-						container_div.className	= 'col-md-2 col-centered';
+						container_div.className = 'col-md-2 col-centered';
+						//container_div.className = 'col-md-5ths col-centered';
 
 						container_div.addEventListener('click', function(obj) {
 							add_to_backpack(carriable);
@@ -209,6 +210,7 @@
 
 				$('#backpack_accept').on('click', function(obj) {
 					$('#overlay').css('visibility', 'hidden');
+					load	= 0;
 
 					var set_array	= [];
 					for(var a in array_to_add)
@@ -224,6 +226,7 @@
 
 				$('#backpack_cancel').on('click', function(obj) {
 					$('#overlay').css('visibility', 'hidden');
+					load	= 0;
 				});
 
 				$('#overlay').css('visibility', 'visible');
@@ -241,8 +244,8 @@
 
 			container_div.appendChild(img);
 
+			//container_div.className = 'col-md-5ths col-centered';
 			container_div.className	= 'col-md-3 col-centered';
-			//container_div.style.margin	= 'auto';
 
 			container_div.addEventListener('click', function(obj) {
 				remove_from_backpack(carriable, container_div);
@@ -254,7 +257,7 @@
 			i							= i + 1;
 			array_to_add[carriable.id]	= i;
 
-			load						= load + 1;
+			load++;
 		}
 		else
 		{
@@ -270,6 +273,6 @@
 		i							= i - 1;
 		array_to_add[carriable.id]	= i;
 
-		load						= load - 1;
+		load--;
 	}
 })();

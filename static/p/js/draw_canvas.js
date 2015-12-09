@@ -18,18 +18,6 @@
 	*/
 	function initialise_canvas(cnvs, background)
 	{
-		// TODO: Put in proper place.
-		var sky								= document.createElement('div');
-		sky.id								= 'sky-overlay';
-		sky.style.height					= (window.innerHeight / 3) + 'px';
-		sky.style.width						= '100%';
-		sky.style.position					= 'fixed';
-		sky.style.top						= '0';
-		sky.style.zIndex					= '-1';
-		sky.style.backgroundColor			= 'rgb(126,192,238)';
-		document.body.style.backgroundColor	= 'rgb(1,166,17)';
-		document.body.appendChild(sky);
-
 		var canvas	= new fabric.Canvas(cnvs);
 
 		// Set ID and Canvas object to canvas element for later retrieval.
@@ -187,6 +175,9 @@
 					i.target.scale(i.target.default_scale);
 					canvas.renderAll();
 
+					// TODO: Remove once background properly dealt with.
+					document.getElementById('sky-overlay').style.visibility	= 'hidden';
+
 					switch(i.target.name)
 					{
 						case 'stairs':
@@ -233,5 +224,19 @@
 		// TODO: Pass in variables when they're defined/function complete.
 		window.healthbar.draw();
 		attach_event_listeners(canvas);
+
+
+		// TODO: Put in proper place.
+		//$("body").css('overflow', 'hidden');
+		var sky								= document.createElement('div');
+		sky.id								= 'sky-overlay';
+		sky.style.height					= (window.innerHeight / 3) + 'px';
+		sky.style.width						= '100%';
+		sky.style.position					= 'fixed';
+		sky.style.top						= '0';
+		sky.style.zIndex					= '-1';
+		sky.style.backgroundColor			= 'rgb(126,192,238)';
+		document.body.style.backgroundColor	= 'rgb(1,166,17)';
+		document.body.appendChild(sky);
 	};
 })();

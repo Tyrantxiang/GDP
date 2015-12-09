@@ -165,7 +165,7 @@
                             hub.statuses = statuses;
 							
 							comms.get_avatar(function(imgData){
-									hub.avatarImage = imgData;
+									hub.avatarImage = base64ToImg(imgData);
 							});
 
                             // How much do we load?
@@ -234,9 +234,6 @@
                                     }catch(e){}
 
                                     hubCanvasContainer.appendChild(hubCanvas);
-                                    // TESTING
-                                    //hubCanvasContainer.style.margin = '0 auto';
-                                    //hubCanvas.parentNode.style.margin = '0 auto';
 
                                     container.appendChild(hubCanvasContainer);
 
@@ -346,8 +343,7 @@
     };
 
 
-    //Status modification functions
-	//TODO: Joe
+    // Status modification functions
     hub.getHealth = function(cb){
         comms.get_hp_value(function(data){
             hub.health = data.health;
@@ -355,38 +351,29 @@
         });
     };
 
-	//TODO: Joe
     hub.modifyHealth = function(changeVal, cb){
         comms.modify_hp_value(changeVal, function(data) {
-			comms.get_symptoms(function(symps){
-				hub.health = data.newhp;
-				hub.avatarImage = data.avatarImage;
-				cb(hub.health, hub.avatarImage, symps.symptoms);
-			});
+            hub.health = data.newhp;
+            hub.avatarImage = base64ToImg(data.avatarImage);
+            cb(hub.health, hub.avatarImage);
         });
     };
 	
-	//TODO: Joe
 	hub.setAbsoluteHealth = function(value, cb){
 		comms.set_hp_value(value, function(data) {
-            comms.get_symptoms(function(symps){
-				hub.health = data.newhp;
-				hub.avatarImage = data.avatarImage;
-				cb(hub.health, hub.avatarImage, symps.symptoms);
-			});
+            hub.health = data.newhp;
+            hub.avatarImage = base64ToImg(data.avatarImage);
+            cb(hub.health, hub.avatarImage);
         });
 	}
 
-	//TODO: Joe
     hub.useCarriable = function(carriableId, cb){
         comms.use_carriable(carriableId, function(data){
             if(!data.err){
-				comms.get_symptoms(function(symps){
-					hub.health = data.newhp;
-					hub.statuses = data.newStatuses;
-					hub.avatarImage = data.avatarImage;
-					cb(data.bag, hub.health, hub.statuses, hub.avatarImage, symps.symptoms);
-				});
+                hub.health = data.newhp;
+                hub.statuses = data.newStatuses;
+                hub.avatarImage = base64ToImg(data.avatarImage);
+                cb(data.bag, hub.health, hub.statuses, hub.avatarImage);
             }else{
                 cb({
                     err : data.err
@@ -395,7 +382,6 @@
         });
     };
 
-	//TODO: Joe
     hub.modifyStatus = function(statusId, changeVal, cb){
         comms.modify_status_value(statusId, changeVal, function(data){
             if(!data.err){
@@ -485,10 +471,9 @@
 
 
     // Sleep, resetting health.
-	//TODO: Joe
     hub.sleep = function(cb) {
         hub.setAbsoluteHealth(100, function() {
-			menu.stairs.load();
+            menu.stairs.load();
         });
     };
 
@@ -702,24 +687,17 @@
             }.bind(this));
         };
 
-		//changed
-		//array of symptom words
         proto.useCarriable = function(carriableId, cb){
             var t = this;
             hub.useCarriable(carriableId, function(bag, health, statuses, avatarImage){
-				comms.get_symptoms(function(symps){
-					cb.call(t, bag, health, statuses, avatarImage, symps.symptoms);
-				});
+                cb.call(t, bag, health, statuses, avatarImage);
             });
         };
 
-		//changed
         proto.modifyHealth = function(changeVal, cb){
             var t = this;
-            hub.modifyHealth(changeVal, function(health, avatarImage, symptoms){
-				comms.get_symptoms(function(symps){
-					cb.call(t, health, avatarImage, symps.symptoms);
-				});
+            hub.modifyHealth(changeVal, function(health, avatarImage){
+                cb.call(t, health, avatarImage);
             });
         };
 
