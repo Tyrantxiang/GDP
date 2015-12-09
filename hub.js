@@ -129,6 +129,7 @@ Hub.prototype.generateAvatarImage = function(fn){
     this.get_user_equipped_items(
         {},
         function(data){
+			var trousers = __dirname + "/avatar_items/trousers_blue.png";
 			var healthImg = __dirname + "/avatar_items/health_healthy.png";
 			var mouth = __dirname + "/avatar_items/mouth_smile.png";
 			var eyes = undefined;
@@ -156,6 +157,7 @@ Hub.prototype.generateAvatarImage = function(fn){
 			}
 			
 			urls.splice(1, 0, mouth);
+			urls.splice(1, 0, trousers);
 			if(eyes) urls.splice(1, 0, eyes);
 			urls.splice(1, 0, healthImg);
 			
