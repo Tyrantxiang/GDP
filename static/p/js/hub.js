@@ -171,7 +171,7 @@
 								hub.avatarImage.src = "data:image/png;base64," + imgData;
 							});
 							comms.get_symptoms(function(symps){
-								hub.symptoms = symps.symptoms;
+								hub.symptoms = symps;
 							});
 								
                             // How much do we load?
@@ -368,7 +368,7 @@
 					hub.avatarImage = new Image();
 					hub.avatarImage.src = "data:image/png;base64," + data.avatarImage;
 				}
-				cb(hub.health, data.avatarImage, symps.symptoms);
+				cb(hub.health, data.avatarImage, symps);
 			});
         });
     };
@@ -383,7 +383,7 @@
 					hub.avatarImage = new Image();
 					hub.avatarImage.src = "data:image/png;base64," + data.avatarImage;
 				}
-				cb(hub.health, hub.avatarImage, symps.symptoms);
+				cb(hub.health, hub.avatarImage, symps);
 			});
         });
 	}
@@ -400,7 +400,7 @@
 						hub.avatarImage = new Image();
 						hub.avatarImage.src = "data:image/png;base64," + data.avatarImage;
 					}
-					cb(data.bag, hub.health, hub.statuses, hub.avatarImage, symps.symptoms);
+					cb(data.bag, hub.health, hub.statuses, hub.avatarImage, symp);
 				});
             }else{
                 cb({
@@ -450,7 +450,11 @@
 
     hub.updateEquiptItems = function(obj, cb){
         comms.update_equipped_items(obj, function(data){
-            cb(base64ToImg(data.avatarImage));
+			if(data.avatarImage){
+				hub.avatarImage = new Image();
+				hub.avatarImage.src = "data:image/png;base64," + data.avatarImage;
+			}
+			cb(hub.avatarImage);
         });
     }
 	

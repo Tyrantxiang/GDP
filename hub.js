@@ -597,11 +597,12 @@ var commsEventListeners = {
 		var retValue = [];
 		
 		for(var i in words){
-			if(words.i < this.health) 
-				retValue.push(words.i);
+			if(this.health < i){	
+				retValue.push(words[i]);
+			}
 		}
 		
-		fn({"symptoms": words});
+		fn(retValue);
 	}
 };
 
