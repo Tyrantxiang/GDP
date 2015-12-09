@@ -28,7 +28,7 @@
 		sky.style.zIndex					= '-1';
 		sky.style.backgroundColor			= 'rgb(126,192,238)';
 		document.body.style.backgroundColor	= 'rgb(1,166,17)';
-		document.body.appendChild(test);
+		document.body.appendChild(sky);
 
 		var canvas	= new fabric.Canvas(cnvs);
 
