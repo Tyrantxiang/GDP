@@ -75,7 +75,6 @@ function Hub(userId, comms){
     this.health = 100;
 	
 	this.avatarImage = undefined;
-	this.avatarNeedsUpdating = true;
 
     // Get the user data from the db
     db.createSession(function(){},
@@ -113,14 +112,39 @@ Hub.prototype.exit = function(){
     db.endSession(function(){}, function(){}, disconnectTime.toISOString(), this.userId);
 };
 
+Hub.prototype.generateSymptoms = function(health, fn){
+    var words = {
+        60 : "tired",
+        40 : "cold",
+        20 : "nauseated"
+    };
+    var retValue = [];
+    
+    for(var i in words){
+        if(health < i) 
+            retValue.push(words[i]);
+    }
+    
+    fn(retValue);
+};
+
+Hub.prototype.newAvatarImageNeeded = function(oldHealth, newHealth, fn){
+    var h = this;
+    h.generateSymptoms(oldHealth, function(oldSymps){
+        h.generateSymptoms(newHealth, function(newSymps){
+
+            if(oldSymps.length !== newSymps.length){
+                fn(true);
+            } else {
+                fn(false);
+            }
+
+        });
+    });
+};
+
 Hub.prototype.generateAvatarImage = function(fn){
-    if(!this.avatarNeedsUpdating){
-		fn();
-		return;
-	}
-	
-	this.avatarNeedsUpdating = false;
-	var urls = [],
+    var urls = [],
         h = this;
 		
 	var order = ["skin", "eyes", "shirt", "head"];
@@ -267,7 +291,6 @@ var commsEventListeners = {
 		
         db.createUserEquipped(
             function(results){
-				t.avatarNeedsUpdating = true;
                 t.generateAvatarImage(function(){
                     fn({ avatarImage : t.avatarImage });
                 });
@@ -481,7 +504,6 @@ var commsEventListeners = {
     },
 
     modify_hp_value : function(data, fn){
-		this.avatarNeedsUpdating = true;
 		
         var value = data.value;
 		
@@ -495,24 +517,25 @@ var commsEventListeners = {
 		else value = Math.floor(value / multiplier);
 		
         // Keep health between 100 and 0;
+        var oldHealth = this.health;
         this.health = Math.max(0, Math.min(100, this.health + value));
 
         var h = this;
-		
-		/*
-			var newSymptoms = generateSymptoms();
-			if(newSymptoms.length != oldSymptoms.length){
-				newImage = generateAvatarImage();
-			} else {
-				newImage = false;
-			}
-		*/
-        
-        this.generateAvatarImage(function(){
-            fn({
-                newhp: h.health,
-                avatarImage: h.avatarImage
-            });
+
+        this.newAvatarImageNeeded(oldHealth, this.health, function(newImageNeed){
+            if(newImageNeed){
+                h.generateAvatarImage(function(){
+                    fn({
+                        newhp: h.health,
+                        avatarImage: h.avatarImage
+                    });
+                });
+            } else {
+                fn({
+                    newhp: h.health,
+                    avatarImage: false
+                });
+            }
         });
 
     },
@@ -574,7 +597,6 @@ var commsEventListeners = {
 
 	set_hp_value : function(data, fn){
 		this.health = data.newhp;
-		this.avatarNeedsUpdating = true;
 		
 		// Keep health between 100 and 0;
         this.health = Math.max(0, Math.min(100, this.health));
@@ -591,20 +613,7 @@ var commsEventListeners = {
 	},
 	
 	get_symptoms : function(data, fn){
-		var words = {
-			60 : "tired",
-			40 : "cold",
-			20 : "nauseated"			
-		};
-		var retValue = [];
-		
-		for(var i in words){
-			if(this.health < i){	
-				retValue.push(words[i]);
-			}
-		}
-		
-		fn(retValue);
+        this.generateSymptoms(this.health, fn);
 	}
 };
 

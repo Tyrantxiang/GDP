@@ -22,8 +22,6 @@
 		currency = 0;
 		currentBag = bag;
 
-		console.log(currentBag);
-
 		// Handle keyboard controls
 		api.addKeyListener("keydown", keyPressed);
 
@@ -157,7 +155,7 @@
 	}
 
 	function updateCarriables(newBag, newHp, newStatuses, avatarImage){
-		console.log(newHp);
+		//console.log(newHp);
 		updateHealthAndAvatar(newHp, avatarImage);
 		//!!!!!!!!!!!!!
 		//statuses = newStatuses;
@@ -189,9 +187,7 @@
 		ctx.fillText("Score: "+score, 10, 410);
 		ctx.fillText("Currency: "+currency, 10, 440);
 		ctx.fillText("Carriables: "+makeBagString(), 10, 470);
-		
-		console.log(api.getAvatarImage());
-		console.log(api.getAvatarImage().src);
+
 		ctx.drawImage(api.getAvatarImage(),canvas.width-300,0);
 	};
 
