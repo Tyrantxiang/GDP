@@ -221,10 +221,6 @@
 		});
 	};
 
-
-
-
-
 	/****************** Healthbar code *******************/
 	var hb = {
 		//Fabric canvas object
@@ -486,7 +482,28 @@
 
 	/*********** End healthbar functions ******************/
 
+	// TODO: Pull out reliance on canvas once pulled.
+	function add_avatar()
+	{
+		var canvas	= document.getElementById('canvas').fabric;
 
+		var avatar_image	= hub.avatarImage;
+
+		// TODO: Scaling should be based upon canvas size.
+		var avatar_instance	= new fabric.Image(avatar_image, {
+			name:	'avatar',
+
+			left:	0.5 * canvas.width,
+			top:	0.45 * canvas.height,
+
+			scaleX:	0.5,
+			scaleY:	0.5
+		});
+
+		canvas.add(avatar_instance);
+
+		canvas.renderAll();
+	};
 
 	window.draw			= {};
 	window.draw.init	= function(cnvs, images)
@@ -497,17 +514,39 @@
 		initialise_canvas(cnvs, background);
 		attach_items(background, items);
 		attach_event_listeners();
+		add_avatar();
 
 		window.draw.healthbar = hb;
 
 		// TODO: Uncomment once we can safely lock scrolling.
 		//$("body").css('overflow', 'hidden');
 
-		// TODO: Put in proper place.
+		// TODO: Put in proper place -> hub.load().
 		document.getElementById('main-content-area').style.backgroundImage	= 'url(http://localhost:3000/assets/img/hub/test_background.png)';
 		document.getElementById('main-content-area').style.backgroundSize	= '100% 100%';
 		document.getElementById('main-content-area').style.backgroundRepeat	= 'no-repeat';
 
 		return window.draw;
+	};
+
+	// TODO: Pull out reliance on canvas once pulled.
+	window.draw.update_avatar	= function()
+	{
+		var canvas			= document.getElementById('canvas').fabric;
+		var canvas_items	= canvas.getObjects();
+
+		var avatar			= canvas_items.filter(function(i) {
+			if('name' in i && i.name === 'avatar')
+			{
+				return true
+			}
+			else
+			{
+				return false
+			}
+		});
+
+		avatar				= avatar[0].getElement();
+		avatar.setAttribute('src', hub.avatarImage.src);
 	};
 })();

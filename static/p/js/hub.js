@@ -507,7 +507,9 @@
     hub.sleep = function(cb) {
         hub.setAbsoluteHealth(100, function() {
             menu.stairs.load();
+
             draw.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
+            draw.update_avatar();
         });
     };
 
@@ -728,6 +730,8 @@
 
                 draw.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
                 draw.healthbar.updateStatuses(hub.statuses);
+
+                window.draw.update_avatar();
             }.bind(this));
         };
 
