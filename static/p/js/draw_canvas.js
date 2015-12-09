@@ -27,6 +27,7 @@
 		cnvs.id 	= 'canvas';
 		cnvs.fabric = canvas;
 
+		// TODO: Not sure if this is working anymore.
 		canvas.hoverCursor					= 'pointer';
 		fabric.Object.prototype.selectable	= false;
 
@@ -161,57 +162,55 @@
 			}
 		});
 
-		canvas.on('mouse:down', function(i) {
-			if(typeof i.target !== 'undefined')
+		canvas.on('mouse:down', function(i)
+		{
+			if(i.target.name === 'stairs' ||
+				i.target.name === 'trophy' ||
+				i.target.name === 'mirror' ||
+				i.target.name === 'laptop' ||
+				i.target.name === 'backpack' ||
+				i.target.name === 'paint' ||
+				i.target.name === 'path')
 			{
-				if(i.target.name === 'stairs' ||
-					i.target.name === 'trophy' ||
-					i.target.name === 'mirror' ||
-					i.target.name === 'laptop' ||
-					i.target.name === 'backpack' ||
-					i.target.name === 'paint' ||
-					i.target.name === 'path')
+				i.target.setLeft(i.target.orig_left);
+				i.target.setTop(i.target.orig_top);
+				i.target.scale(i.target.default_scale);
+				canvas.renderAll();
+
+				// TODO: Remove once background properly dealt with.
+				//document.getElementById('sky-overlay').style.visibility	= 'hidden';
+
+				switch(i.target.name)
 				{
-					i.target.setLeft(i.target.orig_left);
-					i.target.setTop(i.target.orig_top);
-					i.target.scale(i.target.default_scale);
-					canvas.renderAll();
+					case 'stairs':
+						hub.sleep();
+						break;
 
-					// TODO: Remove once background properly dealt with.
-					//document.getElementById('sky-overlay').style.visibility	= 'hidden';
+					case 'trophy':
+						hub.launchScores();
+						break;
 
-					switch(i.target.name)
-					{
-						case 'stairs':
-							hub.sleep();
-							break;
+					case 'mirror':
+						hub.launchAvatarCreation();
+						break;
 
-						case 'trophy':
-							hub.launchScores();
-							break;
+					case 'laptop':
+						console.log('laptop clicked');
+						break;
 
-						case 'mirror':
-							hub.launchAvatarCreation();
-							break;
+					case 'backpack':
+						hub.launchBackpack();
+						break;
 
-						case 'laptop':
-							console.log('laptop clicked');
-							break;
+					case 'paint':
+						hub.launchHomeCustomisation();
+						break;
 
-						case 'backpack':
-							hub.launchBackpack();
-							break;
-
-						case 'paint':
-							hub.launchHomeCustomisation();
-							break;
-
-						case 'path':
-							hub.launchGameSelect();
-							break;
-					}
+					case 'path':
+						hub.launchGameSelect();
+						break;
 				}
-			};
+			}
 		});
 	};
 
