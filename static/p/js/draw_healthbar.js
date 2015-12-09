@@ -30,9 +30,6 @@ var hb = {
 	statuslist : [],
 
 	draw : function(health, statuses, symptoms){
-		console.log(statuses);
-		console.log(symptoms);
-
 		hb.canvas = document.getElementById('canvas').fabric;
 
 		hb.fontSize = hb.canvas.height * (1/30); //30 lines in canvas
@@ -156,6 +153,8 @@ var hb = {
 			hb.canvas.add(s);
 		});
 
+		hb.canvas.renderAll();
+
 		//var hbElements = hb.statuslist;
 		//hbElements.splice(hbElements.length-1, 0, hb.statuslistborder, hb.symptomborder, hb.symptom, hb.barborder, hb.bar);
 		//hb.mouseoverGroup = new fabric.Group(hbElements, {
@@ -182,10 +181,12 @@ var hb = {
 	updateHealthSymptoms : function(health, symptoms){
 		changeHealth(health);
 		changeSymptom(symptoms);
+		hb.canvas.renderAll();
 	},
 
 	updateStatuses : function(statuses){
 		changeStatuses(statuses);
+		hb.canvas.renderAll();
 	},
 
 	setStatusesVisiblity : function(isVisible){
