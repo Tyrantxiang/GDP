@@ -190,12 +190,10 @@
 		ctx.fillText("Currency: "+currency, 10, 440);
 		ctx.fillText("Carriables: "+makeBagString(), 10, 470);
 		
-		drawing = new Image();
-		drawing.onload = function(){ ctx.drawImage(drawing,canvas.width-300,0); };
-		console.log(canvas.width);
-		drawing.src = "data:image/png;base64,"+api.getAvatarImage();
+		console.log(api.getAvatarImage());
+		console.log(api.getAvatarImage().src);
+		ctx.drawImage(api.getAvatarImage(),canvas.width-300,0);
 	};
-
 
 	var makeBagString = function(){
 		var arr = [];
