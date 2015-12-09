@@ -500,10 +500,10 @@
 
 
     // Sleep, resetting health.
-	//TODO: Joe
     hub.sleep = function(cb) {
         hub.setAbsoluteHealth(100, function() {
             menu.stairs.load();
+            window.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
         });
     };
 
@@ -721,6 +721,9 @@
 
                 // Recover the window functions
                 recoverWindowFunctions();
+
+                window.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
+                window.healthbar.updateStatuses(hub.statuses);
             }.bind(this));
         };
 
