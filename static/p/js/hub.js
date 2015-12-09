@@ -149,7 +149,6 @@
         var scripts = [
             ['//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js', false],
             ['/p/js/draw_canvas.js', true],
-            ['/p/js/draw_healthbar.js', true],
             ['/p/js/avatar.js', true],
             ['/p/js/menus.js', true]
         ];
@@ -250,7 +249,8 @@
                                     draw = window.draw;
                                     menu = window.menu;
 
-                                    draw.init(hubCanvas, getAssetsByType("images"));
+                                    draw.init(hubCanvas, getAssetsByType("images"))
+                                        .healthbar.init(hub.health, hub.statuses, hub.symptoms);
 
                                     if(cb){
                                         cb.call(hub);
@@ -507,7 +507,7 @@
     hub.sleep = function(cb) {
         hub.setAbsoluteHealth(100, function() {
             menu.stairs.load();
-            window.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
+            draw.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
         });
     };
 
@@ -726,8 +726,8 @@
                 // Recover the window functions
                 recoverWindowFunctions();
 
-                window.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
-                window.healthbar.updateStatuses(hub.statuses);
+                draw.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
+                draw.healthbar.updateStatuses(hub.statuses);
             }.bind(this));
         };
 

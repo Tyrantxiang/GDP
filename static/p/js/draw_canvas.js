@@ -5,6 +5,10 @@
 	// Body and main-content-area have margins and paddings to remove, also.
 	// Remove initialise_canvas' reliance on background.
 
+	// Closure variables that can be accessed in draw functions
+	var canvas, // The fabric canvas that we are drawing on
+		canvasEl; // The raw canvas element
+
 	/*
 	Parameters:
 		canvas_name, string
@@ -20,12 +24,9 @@
 	// TODO: Rewrite this reliance on backpack, make better scaling for pages.
 	function initialise_canvas(cnvs, background)
 	{
-		var canvas	= new fabric.Canvas(cnvs);
+		canvasEl = cnvs;
+		canvas	= new fabric.Canvas(cnvs);
 
-		// Set ID and Canvas object to canvas element for later retrieval.
-		// TODO: Pull ID out to config file/find some way of making it across-the-board.
-		cnvs.id 	= 'canvas';
-		cnvs.fabric = canvas;
 
 		// TODO: Not sure if this is working anymore.
 		canvas.hoverCursor					= 'pointer';
@@ -74,7 +75,7 @@
 	Functionality:
 		Adds the items to the canvas, setting their attributes and locking them in place.
 	*/
-	function attach_items(canvas, background, items)
+	function attach_items(background, items)
 	{
 		var background_img	= background.image;
 
@@ -113,7 +114,7 @@
 	Functionality:
 		Adds event listeners to scale the items on hover-over/move away, plus ones for clicking to launch menus.
 	*/
-	function attach_event_listeners(canvas)
+	function attach_event_listeners()
 	{
 		// TODO: Add filter so it's only the objects we actually care about (i.e. menu items).
 		canvas.on('mouse:over', function(i) {
@@ -220,17 +221,287 @@
 		});
 	};
 
+
+
+
+
+	/****************** Healthbar code *******************/
+	var hb = {
+		//Fabric canvas object
+		canvas : undefined,
+
+		currHealth : undefined,
+		currSymptoms : undefined,
+		currStatuses : undefined,
+
+		mouseoverGroup : undefined,
+		mouseoverGroupName : "mouseoverGroup",
+
+		fontSize : undefined,
+
+		barborderVals : {},
+		barborder : undefined,
+
+		barVals : {},
+		bar : undefined,
+
+		symptomborderVals : {},
+		symptomborder : undefined,
+
+		symptomVals : {},
+		symptom : undefined,
+
+		statuslistborderVals : {},
+		statuslistborder : undefined,
+
+		//statuslistVals : [],
+		statuslist : [],
+
+		init : function(health, statuses, symptoms){
+			hb.canvas = canvas;
+
+			hb.fontSize = hb.canvas.height * (1/30); //30 lines in canvas
+
+			/*
+			 * Border rectangle around health bar
+			*/
+			hb.barborderVals.width  		= hb.canvas.width*0.25;
+			hb.barborderVals.height 		= hb.canvas.height*0.0625;
+			hb.barborderVals.left			= hb.canvas.width  - (hb.barborderVals.width*1.1);
+			hb.barborderVals.top			= hb.canvas.height - (hb.barborderVals.height*1.5);
+			hb.barborderVals.fill			= "black";
+			hb.barborderVals.opacity		= 0.75;
+			hb.barborderVals.stroke 		= "white";
+			hb.barborderVals.strokeWidth	= 3;
+
+			hb.barborderVals.name = hb.mouseoverGroupName;
+
+			hb.barborder = new fabric.Rect(hb.barborderVals);
+
+			/*
+			 * Health bar itself
+			*/
+			hb.barVals.xscaler  = 0.9,
+			hb.barVals.xpadding = ( 1-hb.barVals.xscaler )/2,
+			hb.barVals.yscaler  = 0.7,
+			hb.barVals.ypadding = ( 1-hb.barVals.yscaler )/1.45;
+
+			hb.barVals.width  	= hb.barborderVals.width  * hb.barVals.xscaler;
+			hb.barVals.height 	= hb.barborderVals.height * hb.barVals.yscaler;
+			hb.barVals.left		= hb.barborderVals.left   + (hb.barborderVals.width  * hb.barVals.xpadding);
+			hb.barVals.top		= hb.barborderVals.top    + (hb.barborderVals.height * hb.barVals.ypadding);
+
+			hb.barVals.name = hb.mouseoverGroupName;
+
+			hb.bar = new fabric.Rect(hb.barVals);
+			//Changes bar to represent current hp val
+			changeHealth(health);
+
+			/*
+			 * Symptom border
+			*/
+			hb.symptomborderVals.width  		= hb.barborderVals.width;
+			hb.symptomborderVals.height 		= hb.fontSize * 1.5;
+			hb.symptomborderVals.left			= hb.barborderVals.left;
+			hb.symptomborderVals.top			= hb.barborderVals.top - hb.symptomborderVals.height;
+			hb.symptomborderVals.fill			= hb.barborderVals.fill;
+			hb.symptomborderVals.opacity		= hb.barborderVals.opacity;
+			hb.symptomborderVals.stroke 		= hb.barborderVals.stroke;
+			hb.symptomborderVals.strokeWidth	= hb.barborderVals.strokeWidth;
+
+			hb.symptomborderVals.name = hb.mouseoverGroupName;
+
+			hb.symptomborder = new fabric.Rect(hb.symptomborderVals);
+
+			/*
+			 * Symptom text
+			*/
+			hb.symptomVals.startText 	= "";
+			hb.symptomVals.fill 		= "white";
+			hb.symptomVals.fontSize  	= hb.fontSize;
+			hb.symptomVals.left 		= hb.barVals.left;
+			hb.symptomVals.top 			= hb.symptomborderVals.top + (hb.symptomborderVals.height * hb.barVals.ypadding);
+
+			hb.symptomVals.name = hb.mouseoverGroupName;
+
+			//No text at first, set straight after
+			hb.symptom = new fabric.Text("", hb.symptomVals);
+			changeSymptom(symptoms);
+
+			/*
+			 * Statuses border
+			*/
+			hb.statuslistborderVals.width  		= hb.barborderVals.width;
+			hb.statuslistborderVals.padScale	= 0.1;
+			hb.statuslistborderVals.padHeight   = hb.fontSize * statuses.length * hb.statuslistborderVals.padScale;
+			hb.statuslistborderVals.height 		= hb.fontSize * statuses.length + (hb.statuslistborderVals.padHeight * (statuses.length+1));
+			hb.statuslistborderVals.left		= hb.barborderVals.left;
+			hb.statuslistborderVals.top			= hb.symptomborderVals.top - hb.statuslistborderVals.height;
+			hb.statuslistborderVals.fill		= hb.barborderVals.fill;
+			hb.statuslistborderVals.opacity		= hb.barborderVals.opacity;
+			hb.statuslistborderVals.stroke 		= hb.barborderVals.stroke;
+			hb.statuslistborderVals.strokeWidth	= hb.barborderVals.strokeWidth;
+
+			hb.statuslistborderVals.name = hb.mouseoverGroupName;
+
+			hb.statuslistborderVals.visible = false;
+
+			hb.statuslistborder = new fabric.Rect(hb.statuslistborderVals);
+
+			/*
+			 * Statuses text
+			*/
+			for(var i in statuses){
+				var numOfPads = parseInt(i) + 1;
+
+				var textVals = {};
+				textVals.fill 		= "white";
+				textVals.fontSize  	= hb.fontSize;
+				textVals.left 		= hb.barVals.left;
+				textVals.top 		= hb.statuslistborderVals.top + (hb.statuslistborderVals.padHeight * numOfPads) + (hb.fontSize*i);
+
+				textVals.name = hb.mouseoverGroupName;
+
+				textVals.visible = false;
+				//Will set text after
+				var statusText = new fabric.Text("", textVals);
+
+				hb.statuslist.push(statusText);
+			};
+			changeStatuses(statuses);
+
+
+			//Adding all to canvas
+			hb.canvas.add(hb.barborder);
+			hb.canvas.add(hb.bar);
+			hb.canvas.add(hb.symptomborder);
+			hb.canvas.add(hb.symptom);
+			hb.canvas.add(hb.statuslistborder);
+			hb.statuslist.forEach(function(s){
+				hb.canvas.add(s);
+			});
+
+			hb.canvas.renderAll();
+
+			//var hbElements = hb.statuslist;
+			//hbElements.splice(hbElements.length-1, 0, hb.statuslistborder, hb.symptomborder, hb.symptom, hb.barborder, hb.bar);
+			//hb.mouseoverGroup = new fabric.Group(hbElements, {
+			//	name : hb.mouseoverGroupName,
+			//	top  : hb.symptomborderVals.top,
+			//	left : hb.symptomborderVals.left
+			//});
+
+			/*
+			hb.canvas.on('mouse:over', function(i){
+				if(i.target.name === "mouseoverGroup"){
+					setStatusesVisiblity(true);
+				}
+			});
+
+			hb.canvas.on('mouse:out', function(i){
+				if(i.target.name === "mouseoverGroup"){
+					setStatusesVisiblity(false);
+				}
+			});
+			*/
+		},
+
+		updateHealthSymptoms : function(health, symptoms){
+			changeHealth(health);
+			changeSymptom(symptoms);
+			hb.canvas.renderAll();
+		},
+
+		updateStatuses : function(statuses){
+			changeStatuses(statuses);
+			hb.canvas.renderAll();
+		},
+
+		setStatusesVisiblity : function(isVisible){
+			hb.statuslistborder.set({visible: isVisible});
+			hb.statuslist.forEach(function(s){
+				s.set({visible:isVisible});
+			});
+
+		},
+
+		toggleVisiblity : function(){
+			var newVis = !hb.statuslistborder.get("visible");
+
+			hb.statuslistborder.set({visible: newVis});
+			hb.statuslist.forEach(function(s){
+				s.set({visible: newVis});
+			});
+
+		}
+	};
+
+	function changeHealth(health){
+		hb.health = health;
+		var fillColour;
+		switch(true){
+			case (health < 20):
+				fillColour = "red";
+				break;
+			case (health < 40):
+				fillColour = "orange";
+				break;
+			case (health < 60):
+				fillColour = "yellow";
+				break;
+			default:
+				fillColour = "rgb(63,255,0)";
+				break;
+		}
+		hb.bar.set({
+			width: hb.barVals.width * health/100,
+			fill : fillColour
+		});
+
+		hb.currHealth = health;
+	}
+
+	function changeSymptom(symptoms){
+		var symp = symptoms[symptoms.length-1] || "healthy";
+
+		var str = (hb.symptomVals.startText + symp).toUpperCase();
+		hb.symptom.setText(str);
+
+		hb.currSymptoms = symptoms;
+	}
+
+	function changeStatuses(statuses){
+		//if(statuses.length != hb.statuslist.length){
+		//	hb.currStatuses = statuses;
+		//	hb.draw(hb.currHealth, statuses, hb.currSymptoms);
+		//} else {
+			for(var i in statuses){
+				var statusString = statuses[i].name+": "+statuses[i].value;
+				statuslist[i].setText(statusString);
+			}
+			hb.currStatuses = statuses;
+		//}
+	}
+
+
+	/*********** End healthbar functions ******************/
+
+
+
 	window.draw			= {};
 	window.draw.init	= function(cnvs, images)
 	{
 		var background	= images.background;
 		var items		= images.items;
 
-		var canvas	= initialise_canvas(cnvs, background);
-		attach_items(canvas, background, items);
+		initialise_canvas(cnvs, background);
+		attach_items(background, items);
+		attach_event_listeners();
+
+		window.draw.healthbar = hb;
+
 		// TODO: Pass in variables when they're defined/function complete.
-		window.healthbar.draw(hub.health, hub.statuses, hub.symptoms);
-		attach_event_listeners(canvas);
+		//window.healthbar.draw(hub.health, hub.statuses, hub.symptoms);
 
 		// TODO: Uncomment once we can safely lock scrolling.
 		//$("body").css('overflow', 'hidden');
@@ -239,5 +510,7 @@
 		document.getElementById('main-content-area').style.backgroundImage	= 'url(http://localhost:3000/assets/img/hub/test_background.png)';
 		document.getElementById('main-content-area').style.backgroundSize	= '100% 100%';
 		document.getElementById('main-content-area').style.backgroundRepeat	= 'no-repeat';
+
+		return window.draw;
 	};
 })();
