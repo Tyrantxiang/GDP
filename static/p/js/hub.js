@@ -170,7 +170,10 @@
 								hub.avatarImage = new Image();
 								hub.avatarImage.src = "data:image/png;base64," + imgData;
 							});
-							
+							comms.get_symptoms(function(symps){
+								hub.symptoms = symps.symptoms;
+							});
+								
                             // How much do we load?
                             var imagesToLoad = Object.keys(items).length + 1,
                                 // All including scripts
