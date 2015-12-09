@@ -73,6 +73,9 @@ function Hub(userId, comms){
 
     this.statuses = {};
     this.health = 100;
+	
+	this.avatarImage = undefined;
+	this.avatarNeedsUpdating = true;
 
     // Get the user data from the db
     db.createSession(function(){},
@@ -96,7 +99,6 @@ function Hub(userId, comms){
             this.userId);
 
     this.imgMaker = require("./imageCompositer")(300);
-
 }
 // Set the locations as "class constants"
 Hub.locations = locations;
@@ -112,7 +114,13 @@ Hub.prototype.exit = function(){
 };
 
 Hub.prototype.generateAvatarImage = function(fn){
-    var urls = [],
+    if(!this.avatarNeedsUpdating){
+		fn();
+		return;
+	}
+	
+	this.avatarNeedsUpdating = false;
+	var urls = [],
         h = this;
 		
 	var order = ["skin", "eyes", "shirt", "head"];
@@ -151,8 +159,8 @@ Hub.prototype.generateAvatarImage = function(fn){
 			if(eyes) urls.splice(1, 0, eyes);
 			urls.splice(1, 0, healthImg);
 			
-            var base64string = h.imgMaker(urls);
-            fn(base64string);
+            h.avatarImage = h.imgMaker(urls);
+            fn();
         });
 };
 
@@ -211,7 +219,6 @@ var commsEventListeners = {
 					
                 for(slot in itemMetaData){
 					
-					//console.log(slot + " = " + results[slot]);
 					let md = itemMetaData[slot],
                         itemConfig = config.items.getConfig(results[slot] || md.default),
                         url = config.items.getSpriteURL(itemConfig.id);
@@ -258,8 +265,9 @@ var commsEventListeners = {
 		
         db.createUserEquipped(
             function(results){
-                t.generateAvatarImage(function(imageString){
-                    fn({ avatarImage : imageString });
+				t.avatarNeedsUpdating = true;
+                t.generateAvatarImage(function(){
+                    fn({ avatarImage : t.avatarImage });
                 });
             }, function(err){
                 fn({err: err});
@@ -315,12 +323,12 @@ var commsEventListeners = {
             }
 
             // Generate the avatar image
-            h.generateAvatarImage(function(imageString){
+            h.generateAvatarImage(function(){
                 fn({
                     bag : h.bag.getCarriables(),
                     newhp : h.health,
                     newStatuses : o,
-                    avatarImage : imageString
+                    avatarImage : h.avatarImage
                 });
             });
         });
@@ -471,6 +479,8 @@ var commsEventListeners = {
     },
 
     modify_hp_value : function(data, fn){
+		this.avatarNeedsUpdating = true;
+		
         var value = data.value;
 		
 		var multiplier = 1;
@@ -486,11 +496,20 @@ var commsEventListeners = {
         this.health = Math.max(0, Math.min(100, this.health + value));
 
         var h = this;
+		
+		/*
+			var newSymptoms = generateSymptoms();
+			if(newSymptoms.length != oldSymptoms.length){
+				newImage = generateAvatarImage();
+			} else {
+				newImage = false;
+			}
+		*/
         
-        this.generateAvatarImage(function(imageString){
+        this.generateAvatarImage(function(){
             fn({
                 newhp: h.health,
-                avatarImage: imageString
+                avatarImage: h.avatarImage
             });
         });
 
@@ -545,21 +564,26 @@ var commsEventListeners = {
     },
 	
 	get_avatar : function(data, fn){
-		this.generateAvatarImage(fn);
+		var h = this;
+		this.generateAvatarImage(function(){
+			fn(h.avatarImage);
+		});
 	},
 
 	set_hp_value : function(data, fn){
 		this.health = data.newhp;
+		this.avatarNeedsUpdating = true;
 		
 		// Keep health between 100 and 0;
         this.health = Math.max(0, Math.min(100, this.health));
 		
 		var h = this;
 		
-		this.generateAvatarImage(function(imageString){
+		this.generateAvatarImage(function(){
+			
             fn({
                 newhp: h.health,
-                avatarImage: imageString
+                avatarImage: h.avatarImage
             });
         });
 	},
