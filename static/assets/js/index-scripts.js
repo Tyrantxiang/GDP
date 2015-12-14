@@ -121,13 +121,12 @@ var active = false;
 
   // Login submission button
   $(document).on('click', '.login-submit', function () {
-    // Get the values
-    console.log(active);
     if(!active)
     {
       active = true;
+      // Get the values
       var username = $("#login_username").val(),
-        password = $("#login_password").val();
+      password = $("#login_password").val();
 
       login(username, password);
     }

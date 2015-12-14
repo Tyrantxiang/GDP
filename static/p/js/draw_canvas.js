@@ -10,6 +10,8 @@
 	var canvas, // The fabric canvas that we are drawing on
 		canvasEl; // The raw canvas element
 
+	var clickable_elements	= ['stairs', 'trophy', 'mirror', 'laptop', 'backpack', 'paint', 'path'];
+
 	/*
 	Parameters:
 		canvas_name, string
@@ -120,13 +122,14 @@
 	{
 		// TODO: Add filter so it's only the objects we actually care about (i.e. menu items).
 		canvas.on('mouse:over', function(i) {
-			if(i.target.name === 'stairs' ||
+			/*if(i.target.name === 'stairs' ||
 				i.target.name === 'trophy' ||
 				i.target.name === 'mirror' ||
 				i.target.name === 'laptop' ||
 				i.target.name === 'backpack' ||
 				i.target.name === 'paint' ||
-				i.target.name === 'path')
+				i.target.name === 'path')*/
+			if(clickable_elements.indexOf(i.target.name) !== -1)
 			{
 				var x 			= i.target.getLeft();
 				var y 			= i.target.getTop();
@@ -149,13 +152,15 @@
 		});
 
 		canvas.on('mouse:out', function(i) {
+			/*
 			if(i.target.name === 'stairs' ||
 				i.target.name === 'trophy' ||
 				i.target.name === 'mirror' ||
 				i.target.name === 'laptop' ||
 				i.target.name === 'backpack' ||
 				i.target.name === 'paint' ||
-				i.target.name === 'path')
+				i.target.name === 'path')*/
+			if(clickable_elements.indexOf(i.target.name) !== -1)
 			{
 				i.target.setLeft(i.target.orig_left);
 				i.target.setTop(i.target.orig_top);
@@ -169,13 +174,15 @@
 		{
 			if(typeof i.target !== 'undefined')
 			{
+				/*
 				if(i.target.name === 'stairs' ||
 					i.target.name === 'trophy' ||
 					i.target.name === 'mirror' ||
 					i.target.name === 'laptop' ||
 					i.target.name === 'backpack' ||
 					i.target.name === 'paint' ||
-					i.target.name === 'path')
+					i.target.name === 'path')*/
+				if(clickable_elements.indexOf(i.target.name) !== -1)
 				{
 					i.target.setLeft(i.target.orig_left);
 					i.target.setTop(i.target.orig_top);
