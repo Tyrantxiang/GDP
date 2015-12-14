@@ -23,13 +23,28 @@
 	Functionality:
 		Scales the canvas to suit the window size, scales and adds the background image.
 	*/
-	// TODO: Rewrite this reliance on backpack, make better scaling for pages.
+	// TODO: Rewrite this reliance on background, make better scaling for pages.
 	// Might still rely on it, if background split into middle and periphery.
+	function initialise_canvas(cnvs)
+	{
+		canvasEl							= cnvs;
+		canvas								= new fabric.Canvas(cnvs);
+
+		canvas.hoverCursor					= 'pointer';
+		fabric.Object.prototype.selectable	= false;
+
+		var screen_w_to_h					= window.innerWidth / window.innerHeight;
+
+		canvas.setHeight(window.innerHeight);
+		canvas.setWidth(window.innerHeight * 1.26);
+		// Default width is ~1.26 times the height.
+		// 1096 / 868, to be specific.
+	}
+	/*
 	function initialise_canvas(cnvs, background)
 	{
 		canvasEl	= cnvs;
 		canvas		= new fabric.Canvas(cnvs);
-
 
 		// TODO: The 'pointer' mouse no longer displays.
 		// The line below prevents it from working, but I think we need to deal with the selection boxes first.
@@ -64,8 +79,10 @@
 			height: 	canvas.height,
 			originX:	'left',
 			originY: 	'top'
-		});*/
+		});
+		// TODO: Re-add ending the comment above.
 	};
+	*/
 
 	/*
 	Parameters:
