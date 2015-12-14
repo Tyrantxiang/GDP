@@ -528,7 +528,6 @@
 		return window.draw;
 	};
 
-	// TODO: Pull out reliance on canvas once pulled.
 	window.draw.update_avatar	= function()
 	{
 		var canvas_items	= canvas.getObjects();
@@ -546,5 +545,6 @@
 
 		avatar				= avatar[0].getElement();
 		avatar.setAttribute('src', hub.avatarImage.src);
+		canvas.renderAll();
 	};
 })();

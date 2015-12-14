@@ -495,6 +495,7 @@
         document.getElementById("avatar-creation-overlay").style.display = "none";
         document.body.style.backgroundColor = "transparent";
         container.appendChild(hubCanvasContainer);
+        draw.update_avatar();
     };
 
 
@@ -734,7 +735,7 @@
                 draw.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
                 draw.healthbar.updateStatuses(hub.statuses);
 
-                window.draw.update_avatar();
+                draw.update_avatar();
             }.bind(this));
         };
 
