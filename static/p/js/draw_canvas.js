@@ -29,7 +29,9 @@
 		canvas	= new fabric.Canvas(cnvs);
 
 
-		// TODO: Not sure if this is working anymore.
+		// TODO: The 'pointer' mouse no longer displays.
+		// The line below prevents it from working, but I think we need to deal with the selection boxes first.
+		// I.e. most of the screen will have the mouse as a pointer, currently.
 		canvas.hoverCursor					= 'pointer';
 		fabric.Object.prototype.selectable	= false;
 
@@ -61,8 +63,6 @@
 			originX:	'left',
 			originY: 	'top'
 		});*/
-
-		return canvas;
 	};
 
 	/*
