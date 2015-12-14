@@ -2,9 +2,8 @@
 	'use strict';
 	// TODO: Look into no-scroll -> $("body").css('overflow', 'hidden');
 	// Remove the 'if'-hack for event listeners.
-	// Body and main-content-area have margins and paddings to remove, also.
 	// Remove initialise_canvas' reliance on background.
-	// Fix select-box/hover cursor.
+	// Fix hover cursor.
 	// Fix path staying expanded if move out of canvas (attach out event listener to entire canvas).
 
 	// Closure variables that can be accessed in draw functions
@@ -167,58 +166,61 @@
 
 		canvas.on('mouse:down', function(i)
 		{
-			if(i.target.name === 'stairs' ||
-				i.target.name === 'trophy' ||
-				i.target.name === 'mirror' ||
-				i.target.name === 'laptop' ||
-				i.target.name === 'backpack' ||
-				i.target.name === 'paint' ||
-				i.target.name === 'path')
+			if(typeof i.target !== 'undefined')
 			{
-				i.target.setLeft(i.target.orig_left);
-				i.target.setTop(i.target.orig_top);
-				i.target.scale(i.target.default_scale);
-				canvas.renderAll();
-
-				// TODO: Remove once background properly dealt with.
-				//document.getElementById('sky-overlay').style.visibility	= 'hidden';
-
-				switch(i.target.name)
+				if(i.target.name === 'stairs' ||
+					i.target.name === 'trophy' ||
+					i.target.name === 'mirror' ||
+					i.target.name === 'laptop' ||
+					i.target.name === 'backpack' ||
+					i.target.name === 'paint' ||
+					i.target.name === 'path')
 				{
-					case 'stairs':
-						hub.sleep();
-						break;
+					i.target.setLeft(i.target.orig_left);
+					i.target.setTop(i.target.orig_top);
+					i.target.scale(i.target.default_scale);
+					canvas.renderAll();
 
-					case 'trophy':
-						hub.launchScores();
-						break;
+					// TODO: Remove once background properly dealt with.
+					//document.getElementById('sky-overlay').style.visibility	= 'hidden';
 
-					case 'mirror':
-						hub.launchAvatarCreation();
-						break;
+					switch(i.target.name)
+					{
+						case 'stairs':
+							hub.sleep();
+							break;
 
-					case 'laptop':
-						console.log('laptop clicked');
-						break;
+						case 'trophy':
+							hub.launchScores();
+							break;
 
-					case 'backpack':
-						hub.launchBackpack();
-						break;
+						case 'mirror':
+							hub.launchAvatarCreation();
+							break;
 
-					case 'paint':
-						hub.launchHomeCustomisation();
-						break;
+						case 'laptop':
+							console.log('laptop clicked');
+							break;
 
-					case 'path':
-						hub.launchGameSelect();
-						break;
+						case 'backpack':
+							hub.launchBackpack();
+							break;
+
+						case 'paint':
+							hub.launchHomeCustomisation();
+							break;
+
+						case 'path':
+							hub.launchGameSelect();
+							break;
+					}
 				}
-			}
-			else if(i.target.name === hb.mouseoverGroupName)
-			{
-				console.log("hb click");
-				hb.toggleVisiblity();
-				canvas.renderAll();
+				else if(i.target.name === hb.mouseoverGroupName)
+				{
+					console.log("hb click");
+					hb.toggleVisiblity();
+					canvas.renderAll();
+				}
 			}
 		});
 	};
