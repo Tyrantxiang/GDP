@@ -115,13 +115,22 @@ $(function() {
   $(document).on('click', '.login-btn', loadLogin);
 
 
+// Non-ideal fix, but does prevent multiple being launched.
+// May cause issues if/when we include a logout button.
+var active = false;
+
   // Login submission button
   $(document).on('click', '.login-submit', function () {
     // Get the values
-    var username = $("#login_username").val(),
-      password = $("#login_password").val();
+    console.log(active);
+    if(!active)
+    {
+      active = true;
+      var username = $("#login_username").val(),
+        password = $("#login_password").val();
 
-    login(username, password);
+      login(username, password);
+    }
   });
 
 
