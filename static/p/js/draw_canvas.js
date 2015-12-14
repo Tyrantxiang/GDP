@@ -1,7 +1,6 @@
 (function(){
 	'use strict';
 	// TODO: Look into no-scroll -> $("body").css('overflow', 'hidden');
-	// Remove the 'if'-hack for event listeners.
 	// Remove initialise_canvas' reliance on background.
 	// Fix hover cursor.
 	// Fix path staying expanded if move out of canvas (attach out event listener to entire canvas).
@@ -121,7 +120,8 @@
 	function attach_event_listeners()
 	{
 		// TODO: Add filter so it's only the objects we actually care about (i.e. menu items).
-		canvas.on('mouse:over', function(i) {
+		canvas.on('mouse:over', function(i)
+		{
 			if(clickable_elements.indexOf(i.target.name) > -1)
 			{
 				var x 			= i.target.getLeft();
@@ -144,7 +144,8 @@
 			}
 		});
 
-		canvas.on('mouse:out', function(i) {
+		canvas.on('mouse:out', function(i)
+		{
 			if(clickable_elements.indexOf(i.target.name) > -1)
 			{
 				i.target.setLeft(i.target.orig_left);
@@ -203,7 +204,7 @@
 				}
 				else if(i.target.name === hb.mouseoverGroupName)
 				{
-					console.log("hb click");
+					console.log('hb click');
 					hb.toggleVisiblity();
 
 					canvas.renderAll();
@@ -222,7 +223,7 @@
 		currStatuses : undefined,
 
 		mouseoverGroup : undefined,
-		mouseoverGroupName : "mouseoverGroup",
+		mouseoverGroupName : 'mouseoverGroup',
 
 		fontSize : undefined,
 
@@ -256,9 +257,9 @@
 			hb.barborderVals.height 		= hb.canvas.height*0.0625;
 			hb.barborderVals.left			= hb.canvas.width  - (hb.barborderVals.width*1.1);
 			hb.barborderVals.top			= hb.canvas.height - (hb.barborderVals.height*1.5);
-			hb.barborderVals.fill			= "black";
+			hb.barborderVals.fill			= 'black';
 			hb.barborderVals.opacity		= 0.75;
-			hb.barborderVals.stroke 		= "white";
+			hb.barborderVals.stroke 		= 'white';
 			hb.barborderVals.strokeWidth	= 3;
 
 			hb.barborderVals.name = hb.mouseoverGroupName;
@@ -303,8 +304,8 @@
 			/*
 			 * Symptom text
 			*/
-			hb.symptomVals.startText 	= "";
-			hb.symptomVals.fill 		= "white";
+			hb.symptomVals.startText 	= '';
+			hb.symptomVals.fill 		= 'white';
 			hb.symptomVals.fontSize  	= hb.fontSize;
 			hb.symptomVals.left 		= hb.barVals.left;
 			hb.symptomVals.top 			= hb.symptomborderVals.top + (hb.symptomborderVals.height * hb.barVals.ypadding);
@@ -312,7 +313,7 @@
 			hb.symptomVals.name = hb.mouseoverGroupName;
 
 			//No text at first, set straight after
-			hb.symptom = new fabric.Text("", hb.symptomVals);
+			hb.symptom = new fabric.Text('', hb.symptomVals);
 			changeSymptom(symptoms);
 
 			/*
@@ -342,7 +343,7 @@
 				var numOfPads = parseInt(i) + 1;
 
 				var textVals = {};
-				textVals.fill 		= "white";
+				textVals.fill 		= 'white';
 				textVals.fontSize  	= hb.fontSize;
 				textVals.left 		= hb.barVals.left;
 				textVals.top 		= hb.statuslistborderVals.top + (hb.statuslistborderVals.padHeight * numOfPads) + (hb.fontSize*i);
@@ -351,7 +352,7 @@
 
 				textVals.visible = false;
 				//Will set text after
-				var statusText = new fabric.Text("", textVals);
+				var statusText = new fabric.Text('', textVals);
 
 				hb.statuslist.push(statusText);
 			};
@@ -413,7 +414,7 @@
 		},
 
 		toggleVisiblity : function(){
-			var newVis = !hb.statuslistborder.get("visible");
+			var newVis = !hb.statuslistborder.get('visible');
 
 			hb.statuslistborder.set({visible: newVis});
 			hb.statuslist.forEach(function(s){
@@ -428,16 +429,16 @@
 		var fillColour;
 		switch(true){
 			case (health < 20):
-				fillColour = "red";
+				fillColour = 'red';
 				break;
 			case (health < 40):
-				fillColour = "orange";
+				fillColour = 'orange';
 				break;
 			case (health < 60):
-				fillColour = "yellow";
+				fillColour = 'yellow';
 				break;
 			default:
-				fillColour = "rgb(63,255,0)";
+				fillColour = 'rgb(63,255,0)';
 				break;
 		}
 		hb.bar.set({
@@ -449,7 +450,7 @@
 	}
 
 	function changeSymptom(symptoms){
-		var symp = symptoms[0] || "healthy";
+		var symp = symptoms[0] || 'healthy';
 
 		var str = (hb.symptomVals.startText + symp).toUpperCase();
 		hb.symptom.setText(str);
@@ -463,7 +464,7 @@
 		//	hb.draw(hb.currHealth, statuses, hb.currSymptoms);
 		//} else {
 			for(var i in statuses){
-				var statusString = statuses[i].name+": "+statuses[i].value;
+				var statusString = statuses[i].name+': '+statuses[i].value;
 				statuslist[i].setText(statusString);
 			}
 			hb.currStatuses = statuses;

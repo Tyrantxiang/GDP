@@ -726,9 +726,6 @@
                 container.removeChild(this.getCanvasContainer());
                 container.appendChild(hubCanvasContainer);
 
-                // TODO: Put in proper handling if changed.
-                document.getElementById('main-content-area').style.backgroundImage  = 'url(http://localhost:3000/assets/img/hub/test_background.png)';
-
                 // Recover the window functions
                 recoverWindowFunctions();
 
