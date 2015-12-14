@@ -23,10 +23,11 @@
 		Scales the canvas to suit the window size, scales and adds the background image.
 	*/
 	// TODO: Rewrite this reliance on backpack, make better scaling for pages.
+	// Might still rely on it, if background split into middle and periphery.
 	function initialise_canvas(cnvs, background)
 	{
-		canvasEl = cnvs;
-		canvas	= new fabric.Canvas(cnvs);
+		canvasEl	= cnvs;
+		canvas		= new fabric.Canvas(cnvs);
 
 
 		// TODO: The 'pointer' mouse no longer displays.
@@ -141,8 +142,8 @@
 
 				i.target.setLeft(new_x);
 				i.target.setTop(new_y);
-
 				i.target.scale(i.target.select_scale);
+
 				canvas.renderAll();
 			}
 		});
@@ -158,8 +159,8 @@
 			{
 				i.target.setLeft(i.target.orig_left);
 				i.target.setTop(i.target.orig_top);
-
 				i.target.scale(i.target.default_scale);
+
 				canvas.renderAll();
 			}
 		});
@@ -179,6 +180,7 @@
 					i.target.setLeft(i.target.orig_left);
 					i.target.setTop(i.target.orig_top);
 					i.target.scale(i.target.default_scale);
+
 					canvas.renderAll();
 
 					// TODO: Remove once background properly dealt with.
@@ -219,6 +221,7 @@
 				{
 					console.log("hb click");
 					hb.toggleVisiblity();
+
 					canvas.renderAll();
 				}
 			}
