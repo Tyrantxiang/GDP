@@ -272,7 +272,7 @@
     // Launches a game
     GameLauncher.prototype.launchGame = function(entryObject, canvas){
 
-        var assetBaseURL = this.options.scriptLocation + "/" this.options.gameAssetUrl;
+        var assetBaseURL = this.options.gameAssetUrl;
         // Create the API object
         var api = new GameAPI(
             1, // Dummy
