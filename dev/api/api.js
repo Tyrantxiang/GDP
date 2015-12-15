@@ -153,6 +153,7 @@
 
     function GameLauncher(options){
         // Fill in the passed in options with default ones
+        options = options || {};
         for(var o in defaultOptions){
             if(!options[o]){
                 options[o] = defaultOptions[o];
@@ -388,5 +389,5 @@
 
 
 
-    window.hub = hub;
+    window.GameLauncher = GameLauncher;
 })();
