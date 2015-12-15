@@ -15,7 +15,7 @@
         if(Array.isArray(carriablesArray)) this.carriables = carriablesArray;
     };
     Bag.prototype.useItem = function(itemId){
-        var i = this.carriables.indexOf(itemId.toString());
+        var i = this.carriables.indexOf(itemId);
         if(i > -1){
             this.carriables.splice(i, 1);
         }else{
@@ -90,7 +90,7 @@
         101 : {
             id: 101,
             name: "Apple",
-            url : "api/carriables/apple/sprite.png"
+            url : "api/carriables/apple/sprite.png",
             effects: [
                 {
                     id: 1,
@@ -106,7 +106,7 @@
         102 : {
             id: 102,
             name: "Insulin",
-            url : "api/carriables/insulin/sprite.png"
+            url : "api/carriables/insulin/sprite.png",
             effects: [
                 {
                   id: 1,
@@ -118,7 +118,7 @@
         103 : {
             id: 103,
             name: "Kidney Medicine",
-            url : "api/carriables/kidneymedicine/sprite.png"
+            url : "api/carriables/kidneymedicine/sprite.png",
             effects: [
                 {
                 name: 3,
@@ -168,16 +168,32 @@
             return new Status(s);
         });
 
-        this.health = options.health;
+        this.health = options.startHp;
         this.avatarImage = options.avatarImage;
     }
 
+
+    GameLauncher.prototype.generateSymptoms = function(health, cb){
+        var words = {
+            60 : "tired",
+            40 : "cold",
+            20 : "nauseated"
+        };
+        var retValue = [];
+        
+        for(var i in words){
+            if(health < i) 
+                retValue.push(words[i]);
+        }
+        
+        cb(retValue);
+    };
 
     //
     GameLauncher.prototype.modifyHealth = function(changeVal, cb){
         // Add the mutlipliers
         var multiplier = 1,
-            val = changeVal;
+            value = changeVal;
         for(var stat in this.statuses){
             multiplier *= this.statuses[stat].getMultiplier();
         }
@@ -189,13 +205,15 @@
         // Keep health between 100 and 0;
         this.health = Math.max(0, Math.min(100, this.health + value));
 
-        cb(this.health, this.avatarImage);
+        this.generateSymptoms(this.health, function(symps){
+            cb(this.health, this.avatarImage, symps);
+        }.bind(this));
     };
 
     //
     GameLauncher.prototype.useCarriable = function(carriableId, cb){
         try {
-            this.bag.useCarriable(carriableId);
+            this.bag.useItem(carriableId);
 
 
             var cfg = carriables[carriableId];
@@ -205,25 +223,29 @@
             }
         }catch(e){
             cb({
-                err : e.message;
+                err : e.message
             });
             return;
         }
 
         var effects = cfg.effects,
+            t = this,
             l = latch(effects.length, function(){
                 var o = {};
                 // THIS WILL NEED TO INCLUDE THE NAME
                 for(var status in this.statuses){
-                    o[status] = this.statuses[status].value;
+                    o[status] = t.statuses[status].value;
                 }
 
-                cb(
-                    this.bag.getCarriables(),
-                    this.health,
-                    o,
-                    this.avatarImage
-                );
+                t.generateSymptoms(t.health, function(symps){
+                    cb(
+                        t.cloneBag(),
+                        t.health,
+                        o,
+                        t.avatarImage,
+                        symps
+                    );
+                });
             }.bind(this));
 
         effects.forEach(function(effect){
@@ -254,14 +276,14 @@
         for(var si in this.statuses){
             var s = this.statuses[si];
             o[s.id] = {
-                s.name,
-                s.value
+                name : s.name,
+                value : s.value
             };
         }
         return o;
     };
 
-    Game.prototype.cloneBag = function(){
+    GameLauncher.prototype.cloneBag = function(){
         var b = {};
         this.bag.getCarriables().forEach(function(c){
             if(carriables[c]){
@@ -292,7 +314,7 @@
 
 
         // Assume the scripts are loaded
-        entryObject.run.call(e, api, canvas, assetBaseURL, this.health, this.cloneStatuses(), this.cloneBag());
+        entryObject.run.call(entryObject, api, canvas, assetBaseURL, this.health, this.cloneStatuses(), this.cloneBag());
     };
 
     
