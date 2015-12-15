@@ -30,8 +30,13 @@ function ajaz(url, verb, data, success, error, responseType, contentType){
 	xhr.open(verb, url, true);
 
 	xhr.addEventListener("load", function(){
+		var r = this.response;
+		if(typeof r === 'string' || r instanceof String){
+			r = JSON.parse(r);
+		}
+
 		if(this.status === 200){
-			success.call(this, this.response);
+			success.call(this, r);
 		}else{
 			if(error){
 				error.call(this);
