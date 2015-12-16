@@ -123,10 +123,10 @@
 
         // All carriables
         carriables : {},
-		
-		symptoms : [],
-		
-		avatarImage : undefined
+
+        symptoms : [],
+
+        avatarImage : undefined
 
 
     };
@@ -164,15 +164,15 @@
 
                             // First add the statuses to hub.statuses
                             hub.statuses = statuses;
-							
-							comms.get_avatar(function(imgData){
-								hub.avatarImage = new Image();
-								hub.avatarImage.src = "data:image/png;base64," + imgData;
-							});
-							comms.get_symptoms(function(symps){
-								hub.symptoms = symps;
-							});
-								
+
+                            comms.get_avatar(function(imgData){
+                                hub.avatarImage = new Image();
+                                hub.avatarImage.src = "data:image/png;base64," + imgData;
+                            });
+                            comms.get_symptoms(function(symps){
+                                hub.symptoms = symps;
+                            });
+
                             // How much do we load?
                             var imagesToLoad = Object.keys(items).length + 1,
                                 // All including scripts
@@ -350,7 +350,7 @@
 
 
     //Status modification functions
-	//TODO: Joe
+    //TODO: Joe
     hub.getHealth = function(cb){
         comms.get_hp_value(function(data){
             hub.health = data.health;
@@ -358,47 +358,47 @@
         });
     };
 
-	//TODO: Joe
+    //TODO: Joe
     hub.modifyHealth = function(changeVal, cb){
         comms.modify_hp_value(changeVal, function(data) {
-			comms.get_symptoms(function(symps){
-				hub.health = data.newhp;
-				hub.symptoms = symps;
-				if(data.avatarImage){
+            comms.get_symptoms(function(symps){
+                hub.health = data.newhp;
+                hub.symptoms = symps;
+                if(data.avatarImage){
                     hub.avatarImage = base64ToImg(data.avatarImage);
-				}
-				cb(hub.health, hub.avatarImage, hub.symptoms);
-			});
+                }
+                cb(hub.health, hub.avatarImage, hub.symptoms);
+            });
         });
     };
-	
-	//TODO: Joe
-	hub.setAbsoluteHealth = function(value, cb){
-		comms.set_hp_value(value, function(data) {
-            comms.get_symptoms(function(symps){
-				hub.health = data.newhp;
-				hub.symptoms = symps;
-				if(data.avatarImage){
-                    hub.avatarImage = base64ToImg(data.avatarImage);
-				}
-				cb(hub.health, hub.avatarImage, hub.symptoms);
-			});
-        });
-	}
 
-	//TODO: Joe
+    //TODO: Joe
+    hub.setAbsoluteHealth = function(value, cb){
+        comms.set_hp_value(value, function(data) {
+            comms.get_symptoms(function(symps){
+                hub.health = data.newhp;
+                hub.symptoms = symps;
+                if(data.avatarImage){
+                    hub.avatarImage = base64ToImg(data.avatarImage);
+                }
+                cb(hub.health, hub.avatarImage, hub.symptoms);
+            });
+        });
+    }
+
+    //TODO: Joe
     hub.useCarriable = function(carriableId, cb){
         comms.use_carriable(carriableId, function(data){
             if(!data.err){
-				comms.get_symptoms(function(symps){
-					hub.symptoms = symps;
-					hub.health = data.newhp;
-					hub.statuses = data.newStatuses;
-					if(data.avatarImage){
-						hub.avatarImage = base64ToImg(data.avatarImage);
-					}
-					cb(data.bag, hub.health, hub.cloneStatuses(), hub.avatarImage, hub.symptoms);
-				});
+                comms.get_symptoms(function(symps){
+                    hub.symptoms = symps;
+                    hub.health = data.newhp;
+                    hub.statuses = data.newStatuses;
+                    if(data.avatarImage){
+                        hub.avatarImage = base64ToImg(data.avatarImage);
+                    }
+                    cb(data.bag, hub.health, hub.cloneStatuses(), hub.avatarImage, hub.symptoms);
+                });
             }else{
                 cb({
                     err : data.err
@@ -407,7 +407,7 @@
         });
     };
 
-	//TODO: Joe
+    //TODO: Joe
     hub.modifyStatus = function(statusId, changeVal, cb){
         comms.modify_status_value(statusId, changeVal, function(data){
             if(!data.err){
@@ -419,53 +419,53 @@
         });
     };
 
-	hub.getAllMinigames = function(cb){
-		comms.list_minigames(cb);
-	};
-	
-	hub.getHighScoresForAllGames = function(cb){
-		comms.get_scores(2, null, null, cb);
-	};
-	
-	hub.getHighScoresForGame = function(gameid, cb){
-		comms.get_scores(3, null, gameid, cb)
-	};
-	
-	//an array of ints, referring to item ids
-	hub.getUserUnlockedItems = function(cb){
-		comms.get_user_unlocked_items(cb);
-	};
+    hub.getAllMinigames = function(cb){
+        comms.list_minigames(cb);
+    };
+
+    hub.getHighScoresForAllGames = function(cb){
+        comms.get_scores(2, null, null, cb);
+    };
+
+    hub.getHighScoresForGame = function(gameid, cb){
+        comms.get_scores(3, null, gameid, cb)
+    };
+
+    //an array of ints, referring to item ids
+    hub.getUserUnlockedItems = function(cb){
+        comms.get_user_unlocked_items(cb);
+    };
 
     // Get information on an item
     hub.getItemInfo = function(id, cb){
         comms.get_single_item_info(id, cb);
     };
-	
-	hub.getAllItems = function(cb){
-		comms.get_all_item_info(cb);
-	};
+
+    hub.getAllItems = function(cb){
+        comms.get_all_item_info(cb);
+    };
 
     hub.updateEquiptItems = function(obj, cb){
         comms.update_equipped_items(obj, function(data){
-			if(data.avatarImage){
-				hub.avatarImage = new Image();
-				hub.avatarImage.src = "data:image/png;base64," + data.avatarImage;
-			}
-			cb(hub.avatarImage);
+            if(data.avatarImage){
+                hub.avatarImage = new Image();
+                hub.avatarImage.src = "data:image/png;base64," + data.avatarImage;
+            }
+            cb(hub.avatarImage);
         });
     }
-	
-	hub.getEquippedHouseItems = function(cb){
-		comms.get_user_equipped_items(function(data){
-			var avatar = ["skin", "head", "shirt", "eyes"];
-			for(var i=0; i<avatar.length; i++) delete data[avatar[i]];
-			cb(data);
-		});
-	}
-	
-	hub.getGameInfo = function(gameid, cb){
-		comms.get_minigame_info(gameid, cb);
-	}
+
+    hub.getEquippedHouseItems = function(cb){
+        comms.get_user_equipped_items(function(data){
+            var avatar = ["skin", "head", "shirt", "eyes"];
+            for(var i=0; i<avatar.length; i++) delete data[avatar[i]];
+            cb(data);
+        });
+    }
+
+    hub.getGameInfo = function(gameid, cb){
+        comms.get_minigame_info(gameid, cb);
+    }
 
 
     hub.cloneStatuses = function(){
@@ -475,7 +475,7 @@
         }
         return o;
     };
-	
+
 
 
     hub.launchAvatarCreation = function(){
@@ -733,21 +733,21 @@
         proto.useCarriable = function(carriableId, cb){
             var t = this;
             hub.useCarriable(carriableId, function(bag, health, statuses, avatarImage, symptoms){
-				cb.call(t, bag, health, statuses, avatarImage, symptoms);
+                cb.call(t, bag, health, statuses, avatarImage, symptoms);
             });
         };
 
         proto.modifyHealth = function(changeVal, cb){
             var t = this;
             hub.modifyHealth(changeVal, function(health, avatarImage, symptoms){
-				cb.call(t, health, avatarImage, symptoms);
+                cb.call(t, health, avatarImage, symptoms);
             });
         };
 
         proto.modifyStatus = function(statusId, changeVal, cb){
             var t = this;
             hub.modifyStatus(statusId, changeVal, function(data){
-				cb.call(t, data.id, data.newValue);
+                cb.call(t, data.id, data.newValue);
             });
         };
 
