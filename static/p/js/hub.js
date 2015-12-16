@@ -365,10 +365,9 @@
 				hub.health = data.newhp;
 				hub.symptoms = symps;
 				if(data.avatarImage){
-					hub.avatarImage = new Image();
-					hub.avatarImage.src = "data:image/png;base64," + data.avatarImage;
+                    hub.avatarImage = base64ToImg(data.avatarImage);
 				}
-				cb(hub.health, data.avatarImage, symps);
+				cb(hub.health, hub.avatarImage, hub.symptoms);
 			});
         });
     };
@@ -380,10 +379,9 @@
 				hub.health = data.newhp;
 				hub.symptoms = symps;
 				if(data.avatarImage){
-					hub.avatarImage = new Image();
-					hub.avatarImage.src = "data:image/png;base64," + data.avatarImage;
+                    hub.avatarImage = base64ToImg(data.avatarImage);
 				}
-				cb(hub.health, hub.avatarImage, symps);
+				cb(hub.health, hub.avatarImage, hub.symptoms);
 			});
         });
 	}
@@ -397,10 +395,9 @@
 					hub.health = data.newhp;
 					hub.statuses = data.newStatuses;
 					if(data.avatarImage){
-						hub.avatarImage = new Image();
-						hub.avatarImage.src = "data:image/png;base64," + data.avatarImage;
+						hub.avatarImage = base64ToImg(data.avatarImage);
 					}
-					cb(data.bag, hub.health, hub.statuses, hub.avatarImage, symp);
+					cb(data.bag, hub.health, hub.cloneStatuses(), hub.avatarImage, hub.symptoms);
 				});
             }else{
                 cb({
