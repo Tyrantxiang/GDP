@@ -346,7 +346,7 @@ var commsEventListeners = {
         // Apply the effects
         var l = latch(effects.length, function(){
             // Get all status values
-            h.get_all_status_values(function(statuses){
+            h.get_all_status_values(null, function(statuses){
                 // Generate the avatar image
                 h.generateAvatarImage(function(){
 
