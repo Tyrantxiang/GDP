@@ -415,7 +415,7 @@
         comms.modify_status_value(statusId, changeVal, function(data){
             if(!data.err){
                 if(hub.statuses[data.id]){
-                    hub.statuses[data.id] = data.newValue;
+                    hub.statuses[data.id].value = data.newValue;
                 }
                 cb(data.id, data.newValue);
             }
