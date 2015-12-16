@@ -67,6 +67,16 @@
 
         return multiplier;
     };
+    // Returns an object for sending to the client
+    Status.prototype.getClientObject = function(){
+        return {
+            id : this.id,
+            name : this.name,
+            value : this.value,
+            min : this.min,
+            max : this.max
+        };
+    };
 
 
     function latch(num, complete){
@@ -235,20 +245,16 @@
         var effects = cfg.effects,
             t = this,
             l = latch(effects.length, function(){
-                var o = {};
-                // THIS WILL NEED TO INCLUDE THE NAME
-                for(var status in this.statuses){
-                    o[status] = t.statuses[status].value;
-                }
-
                 t.generateSymptoms(t.health, function(symps){
+
                     cb(
                         t.cloneBag(),
                         t.health,
-                        o,
+                        t.cloneStatuses(),
                         t.avatarImage,
                         symps
                     );
+
                 });
             }.bind(this));
 
@@ -279,10 +285,7 @@
         var o = {};
         for(var si in this.statuses){
             var s = this.statuses[si];
-            o[s.id] = {
-                name : s.name,
-                value : s.value
-            };
+            o[s.id] = s.getClientObject();
         }
         return o;
     };
