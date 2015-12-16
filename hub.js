@@ -327,13 +327,14 @@ var commsEventListeners = {
     },
 
     use_carriable : function(data, fn){
-        var carriable_id = data.carriable_id,
-            carriableCfg = config.carriables.getConfig(carriable_id),
-            effects = carriableCfg.effects,
-            h = this;
-
-        // Check this item is actually being held
         try{
+            var carriable_id = data.carriable_id,
+                carriableCfg = config.carriables.getConfig(carriable_id),
+                effects = carriableCfg.effects,
+                h = this;
+
+
+            // Check this item is actually being held
             this.bag.useItem(carriable_id);
         }catch(e){
             fn({
