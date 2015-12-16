@@ -622,7 +622,7 @@
                 // Remove window functions
                 clearWindowFunctions();
 
-                var newBag = {};
+                var newBag = [];
 
                 var lcarriables = latch(bag.length, function(){
                     // Load the scripts into memory
@@ -642,7 +642,7 @@
 
                 bag.forEach(function(c){
                     hub.getCarriable(c, function(carriable){
-                        newBag[c] = carriable;
+                        newBag.push(carriable);
                         lcarriables();
                     });
                 });
