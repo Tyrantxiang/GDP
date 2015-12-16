@@ -345,19 +345,18 @@ var commsEventListeners = {
 
         // Apply the effects
         var l = latch(effects.length, function(){
-            var o = {};
-            // THIS WILL NEED TO INCLUDE THE NAME
-            for(var status in h.statuses){
-                o[status] = h.statuses[status].value;
-            }
+            // Get all status values
+            h.get_all_status_values(function(statuses){
+                // Generate the avatar image
+                h.generateAvatarImage(function(){
 
-            // Generate the avatar image
-            h.generateAvatarImage(function(){
-                fn({
-                    bag : h.bag.getCarriables(),
-                    newhp : h.health,
-                    newStatuses : o,
-                    avatarImage : h.avatarImage
+                    fn({
+                        bag : h.bag.getCarriables(),
+                        newhp : h.health,
+                        newStatuses : statuses,
+                        avatarImage : h.avatarImage
+                    });
+
                 });
             });
         });
@@ -549,10 +548,7 @@ var commsEventListeners = {
         if(status){
             status.addToValue(data.value);
 
-            fn({
-                id : status.id,
-                newValue : status.value
-            });
+            fn(statuses.getClientObject());
         }else{
             fn({
                 err : "User does not have that status"
@@ -569,11 +565,7 @@ var commsEventListeners = {
     get_status_value : function(data, fn){
         var status = this.statuses[data.id];
         if(status){
-            fn({
-                id : status.id,
-                name : status.name,
-                value : status.value
-            });
+            fn(status.getClientObject());
         }else{
             fn({
                 err : "User does not have that status"
@@ -585,8 +577,7 @@ var commsEventListeners = {
         var statuses = {};
         for(var id in this.statuses){
             var status = this.statuses[id];
-            statuses[id] = config.statuses.getConfig(id);
-			 statuses[id].value = status.value;
+            statuses[status.id] = status.getClientObject();
         }
 
         fn(statuses);
@@ -697,6 +688,16 @@ Status.prototype.getMultiplier = function(){
     }
 
     return multiplier;
+};
+// Returns an object for sending to the client
+Status.prototype.getClientObject = function(){
+    return {
+        id : this.id,
+        name : this.name,
+        value : this.value,
+        min : this.min,
+        max : this.max
+    };
 };
 
 
