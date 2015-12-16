@@ -33,6 +33,10 @@ function generateSessionId(gameId){
 }
 
 function latch(num, complete){
+    if(num < 1){
+        complete();
+    }
+
     return function(){
         if(!--num){
             complete();

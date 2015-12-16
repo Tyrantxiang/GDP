@@ -285,9 +285,9 @@
         comms.get_all_carriables(function(data){
             var needToLoad = data.filter(function(c){
                     return !hub.carriables[c.id];
-                });
-            if(needToLoad.length > 0){
-                var l = latch(needToLoad.length, function(){
+                }),
+
+                l = latch(needToLoad.length, function(){
                     cb(hub.carriables);
                 });
 
@@ -303,9 +303,6 @@
                     });
                     i.src = c.url;
                 });
-            }else{
-                cb(hub.carriables);
-            }
         });
     };
 
