@@ -137,7 +137,7 @@
 	function updateHealthAndAvatar(newHealth, newAvatar, newSymps){
 		health = newHealth;
 		//Do something with avatar
-		symptom = (newSymps[0] || "healthy").toUpperCase();
+		symptom = ((newSymps && newSymps[0]) || "healthy").toUpperCase();
 		render();
 	}
 
