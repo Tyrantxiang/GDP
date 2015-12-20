@@ -294,11 +294,19 @@
         var b = {};
         this.bag.getCarriables().forEach(function(c){
             if(carriables[c]){
-                b[c] = carriables[c];
+                b[c] = cloneCarriable(c);
             }
         });
 
         return b;
+    };
+
+    GameLauncher.prototype.cloneCarriable = function(carriableId){
+        var c = carriables[carriableId], o, i;
+        for(i in c){
+            o[i] = c[i];
+        }
+        return o;
     };
 
     // Launches a game
@@ -390,6 +398,10 @@
             this.launcher.useCarriable(carriableId, function(bag, health, statuses, avatarImage, symptoms){
                 cb.call(t, bag, health, statuses, avatarImage, symptoms);
             });
+        };
+
+        proto.getCarriableInfo = function(carriableId, cb){
+            cb.call(this, this.launcher.cloneCarriable(carriableId));
         };
 
         proto.modifyHealth = function(changeVal, cb){
