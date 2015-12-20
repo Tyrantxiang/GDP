@@ -738,6 +738,13 @@
             });
         };
 
+        proto.getCarriableInfo = function(carriableId, cb){
+            var t = this;
+            hub.getCarriable(carriableId, function(carriable){
+                cb.call(t, carriable);
+            });
+        }
+
         proto.modifyHealth = function(changeVal, cb){
             var t = this;
             hub.modifyHealth(changeVal, function(health, avatarImage, symptoms){
