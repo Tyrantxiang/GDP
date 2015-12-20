@@ -589,9 +589,6 @@
 
     // Launches a game
     hub.launchGame = function(gameId){
-        // TODO: Put in proper handling if changed.
-        document.getElementById('main-content-area').style.backgroundImage = '';
-
         // Get the minigame info
         comms.launch_minigame(gameId, function(data){
             hub.getCarriablesInBag(function(bag){
