@@ -50,6 +50,18 @@
     }
 
 
+    // Clones an arbitrary object
+    function cloneObject(obj){
+        var o = {}, i;
+        for(i in obj){
+            if(obj.hasOwnProperty(i)){
+                o[i] = obj[i];
+            }
+        }
+        return o;
+    }
+
+
     // Gets a clone of an assets object (eg images, audio), given by type
     function getAssetsByType(type){
         var t = assets[type];
@@ -57,19 +69,12 @@
             return undefined;
         }
 
-        var o = {};
-        for(var i in t){
-            if(t.hasOwnProperty(i)){
-                o[i] = t[i];
-            }
-        }
-
-        return o;
+        return cloneObject(t);
     }
 
     function getCloneOfAssets(){
-        var o = {};
-        for(var i in assets){
+        var o = {}, i;
+        for(i in assets){
             if(assets.hasOwnProperty(i)){
                 o[i] = getAssetsByType(i);
             }
@@ -333,7 +338,9 @@
         } else {
             hub.getAllCarriables(function(){
                 if(hub.carriables[id]){
-                    cb(hub.carriables[id]);
+                    cb(
+                        hub.cloneCarriableInfo(hub.carriables[id])
+                    );
                 } else {
                     cb(null);
                 }
@@ -343,9 +350,7 @@
 
     // Set the bag
     hub.setBag = function(carriables, cb){
-        comms.set_bag(carriables, function(){
-            cb && cb();
-        });
+        comms.set_bag(carriables, cb);
     };
 
 
@@ -469,13 +474,12 @@
 
 
     hub.cloneStatuses = function(){
-        var o = {};
-        for(var s in hub.statuses){
-            o[s] = hub.statuses[s];
-        }
-        return o;
+        return cloneObject(hub.statuses);
     };
 
+    hub.cloneCarriableInfo = function(carriable){
+        return cloneObject(carriable);
+    };
 
 
     hub.launchAvatarCreation = function(){
