@@ -311,6 +311,13 @@ window.comms = {
 						);
 	},
 
+	get_user_unlocked_items_by_slot : function(slot, cb){
+		client_socket_call( 'get_user_unlocked_items_by_slot',
+							{slot : slot},
+							cb
+						);
+	},
+
 	get_user_equipped_items : function(cb){
 		client_socket_call( 'get_user_equipped_items',
 							{},

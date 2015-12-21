@@ -246,6 +246,22 @@ var commsEventListeners = {
         );
     },
 
+    get_user_unlocked_items_by_slot : function(data, fn){
+        var h = this;
+        h.get_user_unlocked_items(null, function(unlocked_items){
+            h.get_items_for_slot({ slot : data.slot }, function(slot_items){
+                console.log(slot_items);
+                console.log(unlocked_items)
+                var uSlotItems = slot_items.filter(function(i){
+                    var index = unlocked_items.indexOf(i.id.toString());
+                    return index >= 0;
+                });
+
+                fn(uSlotItems);
+            });
+        });
+    },
+
     get_user_equipped_items : function(data, fn){
         db.getEquippedForUser(
             function(results){
