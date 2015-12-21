@@ -406,6 +406,15 @@ module.exports.items = (function(){
         })(func);
     }
 
+    funcs.listItemsForSlot = function(slot){
+        var s = slots.indexOf(slot);
+        if(s < 0){
+            return null;
+        }
+
+        return slotFunctions[s].listAll();
+    };
+
 
     funcs.getSpriteURL = function(id){
         return itemsRelativeDir + "/" + id + "/" + "sprite" + spritesExt;
