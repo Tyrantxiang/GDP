@@ -297,6 +297,13 @@ window.comms = {
 						);
 	},
 
+	get_items_for_slot : function(slot, cb){
+			client_socket_call(	'get_items_for_slot',
+							{slot: slot},
+							cb
+						);
+	},
+
 	get_user_unlocked_items : function(cb){
 		client_socket_call( 'get_user_unlocked_items',
 							{},

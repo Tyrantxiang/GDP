@@ -224,6 +224,13 @@ var commsEventListeners = {
         fn(obj);
     },
 
+    get_items_for_slot : function(data, fn){
+        fn(config.items.listItemsForSlot(data.slot).map(function(i){
+            i.url = config.items.getSpriteURL(i.id);
+            return i;
+        }));
+    },
+
     get_hub_backgroud_image : function(data, fn){
         fn(config.hub.getBackgroundImages());
     },
