@@ -171,8 +171,7 @@
                             hub.statuses = statuses;
 
                             comms.get_avatar(function(imgData){
-                                hub.avatarImage = new Image();
-                                hub.avatarImage.src = "data:image/png;base64," + imgData;
+                                hub.avatarImage = base64ToImg(imgData);
                             });
                             comms.get_symptoms(function(symps){
                                 hub.symptoms = symps;
@@ -453,8 +452,7 @@
     hub.updateEquiptItems = function(obj, cb){
         comms.update_equipped_items(obj, function(data){
             if(data.avatarImage){
-                hub.avatarImage = new Image();
-                hub.avatarImage.src = "data:image/png;base64," + data.avatarImage;
+                hub.avatarImage = base64ToImg(data.avatarImage);
             }
             cb(hub.avatarImage);
         });
