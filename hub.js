@@ -250,9 +250,10 @@ var commsEventListeners = {
         var h = this;
         h.get_user_unlocked_items(null, function(unlocked_items){
             h.get_items_for_slot({ slot : data.slot }, function(slot_items){
-                console.log(slot_items);
-                console.log(unlocked_items)
                 var uSlotItems = slot_items.filter(function(i){
+                    if(i.price == 0){
+                        return true;
+                    }
                     var index = unlocked_items.indexOf(i.id.toString());
                     return index >= 0;
                 });

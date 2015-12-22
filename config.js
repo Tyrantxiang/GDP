@@ -427,7 +427,6 @@ module.exports.items = (function(){
                 if(slotFunctions[slot].exists(itemId)){
                     var dir = slotFunctions[slot].getConfig(itemId, "directory"),
                         p = path.join(dir, filename);
-                    console.log(p);
 
                     res.sendFile(p);
                     return true;
