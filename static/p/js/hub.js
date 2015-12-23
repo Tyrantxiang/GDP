@@ -440,6 +440,35 @@
         comms.get_user_unlocked_items(cb);
     };
 
+    /* Takes a slot to get the unlocked items for (in full form)
+     * Or an array of slots to get the unlocked items for
+     */
+    hub.getUserUnlockedItemsForSlot = function(slot, cb){
+        if(!slot){
+            hub.getUserUnlockedItems(cb);
+            return;
+        }
+
+
+        if(!Array.isArray(slot)){
+            comms.get_user_unlocked_items_by_slot(slot, cb);
+        }else{
+            var obj = {},
+                l = latch(slot.length, function(){
+                    cb(obj);
+                });
+
+            slot.forEach(function(s){
+                comms.get_user_unlocked_items_by_slot(s, function(a){
+                    obj[s] = a;
+                    l();
+                });
+            });
+        }
+
+    };
+
+
     // Get information on an item
     hub.getItemInfo = function(id, cb){
         comms.get_single_item_info(id, cb);
