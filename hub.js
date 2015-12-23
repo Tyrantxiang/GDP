@@ -225,7 +225,16 @@ var commsEventListeners = {
     },
 
     get_items_for_slot : function(data, fn){
-        fn(config.items.listItemsForSlot(data.slot).map(function(i){
+        var slot = config.items.listItemsForSlot(data.slot);
+        if(!slot){
+            fn({
+                err : "No such slot",
+                slot : data.slot
+            });
+            return;
+        }
+
+        fn(slot.map(function(i){
             i.url = config.items.getSpriteURL(i.id);
             return i;
         }));
@@ -250,6 +259,11 @@ var commsEventListeners = {
         var h = this;
         h.get_user_unlocked_items(null, function(unlocked_items){
             h.get_items_for_slot({ slot : data.slot }, function(slot_items){
+                if(slot_items.err){
+                    fn(slot_items);
+                    return;
+                }
+
                 var uSlotItems = slot_items.filter(function(i){
                     if(i.price == 0){
                         return true;
