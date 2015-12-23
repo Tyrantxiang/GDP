@@ -31,6 +31,7 @@ function getDatabase(){
 function checkIsValid(arrNames, objToTest){
 	var valid = Object.keys(objToTest).length === arrNames.length;
 	for(var i=0; i<arrNames.length; i++){
+		if(objToTest[arrNames[i]] === undefined) console.log(arrNames[i]);
 		valid = valid && (objToTest[arrNames[i]] !== undefined);
 	}
 	return valid;
@@ -77,6 +78,15 @@ function createFiles(spriteLoc, newLoc, configObj, otherFiles){
 	});
 }
 
+function isJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
 function removeFiles(path){
 	fs.unlink(path + "/config.json", function(err){
 		fs.unlink(path + "/sprite.png", function(err){
@@ -89,18 +99,18 @@ function removeFiles(path){
 var routes = {
 	
 	add_bag_item : function(req, res){		
-		var properties = ["name"];
+		var properties = ["name", "effects"];
 		var valid = checkIsValid(properties, req.body);
 		if(valid){
-			req.body.effects = {};
-			var id = getRandomUnusedId(config.carriables);
+			req.body.effects = JSON.parse(req.body.effects);
+			
 			var obj = {};
 			for(var i=0; i<properties.length; i++){
 				obj[properties[i]] = req.body[properties[i]];
 			}
-			obj.id = id;
+			obj.id = getRandomUnusedId(config.carriables);;
 			
-			createFiles(req.file.path, "/carriables/" + id.toString(), obj, undefined);
+			createFiles(req.file.path, "/carriables/" + obj.id.toString(), obj, undefined);
 
 			res.json({"okay": "A OK!"});
 		}else{

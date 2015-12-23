@@ -25,9 +25,9 @@
 
 <body>
 	
-<div style="width: 50%">
-	<!--  Effects to be changed. Will be a list of status-id and amount. Will need a way to get and display the statuses without needing to know the status id.
-			On form submit, will then need to concat all the effects into a json array. e.g. [{"id": 1, "effects": 20}, {etc...}, {etc...}]
+<div style="width: 60%">
+	<!--
+		On form submit, will then need to concat all the effects into a json array. e.g. [{"id": 1, "effects": 20}, {etc...}, {etc...}]
 	-->
 	<h3>Add carriable</h3>
 	<form class="form-horizontal" id="add_carriable" action="/superuser/add_bag_item" method="POST" enctype="multipart/form-data">
@@ -38,21 +38,30 @@
 			</div>
 		</div>
 		<div class="form-group">
-			<label for="add_carriable_sprite" class="col-sm-2 control-label">Sprite file:</label>
+			<label for="add_carriable_sprite" class="col-sm-2 control-label">Sprite:</label>
 			<div class="col-sm-10">
 				<input id="add_carriable_sprite" type="file" name="sprite" accept="image/png"/>
 			</div>
-		</div><!--
+		</div>
 		<div class="form-group">
-			<label for="add_carriable_effects" class="col-sm-2 control-label">Effects</label>
-			<div id="add_carriable_effects" class="col-sm-10">
+			<label for="add_carriable_effects" class="col-sm-2 control-label">Effects:</label>
+			<div class="col-sm-10">
+				<div id="add_carriable_effects">
+				</div>
 			</div>
-		</div>-->
+		</div>
+		<div class="form-group" id="add_carriable_remove">
+			<div class="col-sm-offset-2 col-sm-10">
+				<button type="button" class="btn btn-success" id="add_carriable_effect">Add effect</button>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<button id="add_carriable_submit" type="button" class="btn btn-default">Submit</button>
+			</div>
+		</div>
 		
-		<button type="submit" class="btn btn-default">Submit</button>
 	</form>
-	
-	<button id="add_carriable_effect">Add new effect</button>
 	
 	<br>
 	<hr>
