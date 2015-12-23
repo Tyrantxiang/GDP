@@ -229,6 +229,16 @@ var routes = {
 var dataRoutes = {
 	get_all_statuses : function(req, res){
 		res.status(200).json(config.statuses.listAll());
+	},
+	
+	get_all_carriables : function(req, res){
+		var allitems = config.carriables.listAll();
+		allitems = allitems.map(function(item){
+			item.url = config.carriables.getSpriteURL(item.id);
+			return item;
+		});
+		
+		res.status(200).json(allitems);
 	}
 	
 };

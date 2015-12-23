@@ -1,5 +1,6 @@
 (function(){
-		
+	
+(function(){
 	//Set up add cariable
 	$.post("/superuser/get_all_statuses", {}, function(data){
 		
@@ -46,7 +47,44 @@
 		//console.log("here")
 		$('#add_carriable').submit();
 	});
+})();	
 	
-	
+(function(){
+	$.post("/superuser/get_all_carriables", {}, function(data){		
+		var selectForm = $('<select>').addClass('form-control').attr('id', 'remove_carriable_name').attr('name', 'id');
+		$(data).each(function(){
+			selectForm.append($("<option>").attr('value', this.id).text(this.name));
+		});
+		
+		selectForm.val(selectForm.children().first().attr("value"));
+		
+		var getSprite = function(){
+			var id = $(selectForm).children('option:selected').first().attr("value");
+			var url = data.filter(function(ele){
+				return ele.id.toString()===id;
+			})[0].url;
+			
+			var sprite = new Image();
+			sprite.onload = function(){
+				var maxPreviewDimension = 75;
+				if($(sprite).width() > $(sprite).height()) { 
+					$(sprite).css('width',maxPreviewDimension+'px');
+					$(sprite).css('height','auto');
+				} else {
+					$(sprite).css('height',maxPreviewDimension+'px');
+					$(sprite).css('width','auto');
+				}
+				
+				$('#remove_carriable_label').empty();
+				$('#remove_carriable_label').append(sprite);
+			};
+			sprite.src = url;
+		};	
+		
+		getSprite();
+		selectForm.change(getSprite);
+		$('#remove_carriable_div').append(selectForm);
+	});
+})();
 	
 })();
