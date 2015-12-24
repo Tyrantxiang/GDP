@@ -12,6 +12,7 @@
 			$(data).each(function(){
 				sel.append($("<option>").attr('value', this.id).text(this.name));
 			});
+			sel.val(sel.children().first().attr("value"));
 			
 			var inputDiv = $("<div>").addClass("col-sm-3").appendTo(div);
 			$('<input>').attr("type", "text").addClass("form-control").appendTo(inputDiv);
@@ -87,4 +88,51 @@
 	});
 })();
 	
+(function(){
+	$.post("/superuser/get_all_statuses", {}, function(data){
+		var selectForm = $('<select>').addClass('form-control').attr('id', 'remove_status_select').attr('name', 'id');
+		$(data).each(function(){
+			selectForm.append($("<option>").attr('value', this.id).text(this.name));
+		});
+		
+		selectForm.val(selectForm.children().first().attr("value"));
+		
+		$('#remove_status_div').append(selectForm);
+	});
+})();
+
+//TODO: Add condition
+(function(){
+	$.post("/superuser/get_all_statuses", {}, function(data){
+		
+		var add_condition_statuses = function(){
+			var div = $('<div>').addClass("form-group");
+			
+			var selDiv = $("<div>").addClass("col-sm-10").appendTo(div);
+			var sel = $('<select>').addClass("form-control").appendTo(selDiv);
+			$(data).each(function(){
+				sel.append($("<option>").attr('value', this.id).text(this.name));
+			});
+			sel.val(sel.children().first().attr("value"));
+			
+			var removeBtn = $("<button>").addClass("btn").addClass("btn-danger").attr("type", "button").appendTo(div);
+			$("<span>").addClass("glyphicon").addClass("glyphicon-minus").appendTo(removeBtn);
+			removeBtn.click(function(e){
+				div.remove();
+			});
+			
+			div.appendTo('#add_condition_statuses');
+		};
+		
+		add_condition_statuses();
+		$("#add_condition_stat").click(add_condition_statuses);
+	});
+	
+	$('#add_condition_submit').click(function(e){
+		$('#add_condition_statuses').children().each(function(){
+			console.log(this);
+		});
+	});
+})();
+
 })();
