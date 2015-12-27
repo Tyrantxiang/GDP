@@ -247,6 +247,13 @@ var dataRoutes = {
 	
 	get_item_slots : function(req, res){
 		res.status(200).json(config.hub.getItemSlots());
+	},
+	
+	get_items_for_slot : function(req, res){
+		if(config.hub.getItemSlots().indexOf(req.body.slot) > -1)
+			res.status(200).json(config.items.listItemsForSlot(req.body.slot));
+		else
+			res.status(400).json({"success": false});
 	}
 	
 };

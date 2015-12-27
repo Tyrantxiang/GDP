@@ -163,4 +163,30 @@
 	});
 })();
 
+(function(){
+	$.post("/superuser/get_item_slots", {}, function(data){	
+		var selectForm = $('#remove_store_item_slot');
+		$(data).each(function(){
+			$(selectForm).append($("<option>").attr('value', this).text(this));
+		});
+		
+		$(selectForm).val($(selectForm).children().first().attr("value"));
+		
+		var changeFunc = function(e){
+			$.post("/superuser/get_items_for_slot", {"slot": $(selectForm).val()}, function(data){
+				$("#remove_store_item_item").empty();
+				
+				$(data).each(function(){
+					$("#remove_store_item_item").append($("<option>").attr('value', this.id).text(this.name));
+				});
+				
+				$("#remove_store_item_item").val($("#remove_store_item_item").children().first().attr("value"));
+			});
+		};
+		
+		changeFunc();
+		$(selectForm).change(changeFunc);
+	});
+})();
+
 })();
