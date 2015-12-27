@@ -239,6 +239,14 @@ var dataRoutes = {
 		});
 		
 		res.status(200).json(allitems);
+	},
+	
+	get_all_conditions : function(req, res){
+		res.status(200).json(config.conditions.listAll());
+	},
+	
+	get_item_slots : function(req, res){
+		res.status(200).json(config.hub.getItemSlots());
 	}
 	
 };

@@ -57,7 +57,6 @@
 				<button id="add_carriable_submit" type="button" class="btn btn-default">Submit</button>
 			</div>
 		</div>
-		
 	</form>
 	
 	<br>
@@ -174,7 +173,7 @@
 	<hr>
 	<br>
 </div>
-<div style="width: 60%">
+<div style="display: none">
 	<!-- Need to display statuses as a list, and concat all statuses into an array at submit -->
 	<h3>Add condition</h3>
 	<form id="add_condition" class="form-horizontal" action="/superuser/add_condition" method="POST">
@@ -210,9 +209,20 @@
 <div style="display: none">
 	<!-- Display a list of names, not IDs -->
 	<h3>Remove condition</h3>
-	<form id="remove_condition" action="/superuser/remove_condition" method="POST">
-		<label>Names:</label><input type="text" name="id" /><br>
-		<label>Submit:</label><input type="submit" value="Submit" />
+	<form id="remove_condition" class="form-horizontal" action="/superuser/remove_condition" method="POST">
+		<div class="form-group">
+			<label for="remove_condition_name" class="col-sm-2 control-label">Name:</label>
+			<div class="col-sm-10">
+				<select id="remove_condition_select" name="id" class="form-control" >
+				
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<button id="remove_condition_submit" type="button" class="btn btn-default">Submit</button>
+			</div>
+		</div>
 	</form>
 	
 	<br>
@@ -222,25 +232,64 @@
 <div style="display: none">
 	<!-- This is both house items AND avatar items, will provide a list of available slots for them to choose from -->
 	<h3>Add store item</h3>
-	<form id="add_store_item" action="/superuser/add_store_item" method="POST">
-		<label>Name:</label><input type="text" name="name" /><br>
-		<label>Description:</label><input type="text" name="id" /><br>
-		<label>Slot:</label><input type="text" name="id" /><br>
-		<label>Price:</label><input type="text" name="id" /><br>
-		<label>Sprite file:</label><input type="file" name="sprite" accept="image/png" /><br>
-		<label>Submit:</label><input type="submit" value="Submit" />
+	<form id="add_store_item" class="form-horizontal" action="/superuser/add_store_item" method="POST">
+		<div class="form-group">
+			<label for="add_store_item_name" class="col-sm-2 control-label">Name:</label>
+			<div class="col-sm-10">
+				<input id="add_store_item_name" type="text" name="name" class="form-control"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="add_store_item_description" class="col-sm-2 control-label">Description:</label>
+			<div class="col-sm-10">
+				<textarea id="add_store_item_description" type="text" name="descrpition" class="form-control"></textarea>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="add_store_item_description" class="col-sm-2 control-label">Slot:</label>
+			<div class="col-sm-10">
+				<select id="add_store_item_slot" type="text" name="slot" class="form-control">
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="add_store_item_price" class="col-sm-2 control-label">Price:</label>
+			<div class="col-sm-10">
+				<input id="add_store_item_price" type="number" name="price" class="form-control" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="add_store_item_sprite" class="col-sm-2 control-label">Sprite:</label>
+			<div class="col-sm-10">
+				<input id="add_store_item_sprite" type="file" name="sprite" accept="image/png"/>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<button id="add_store_item_submit" type="button" class="btn btn-default">Submit</button>
+			</div>
+		</div>
 	</form>
 	
 	<br>
 	<hr>
 	<br>
 </div>
-<div style="display: none">
+<div style="width: 60%">
 	<!-- display as sprites and names? -->
 	<h3>Remove store item</h3>
-	<form id="remove_store_item" action="/superuser/remove_store_item" method="POST">
-		<label>ID:</label><input type="text" name="id" /><br>
-		<label>Submit:</label><input type="submit" value="Submit" />
+	<form id="remove_store_item" class="form-horizontal" action="/superuser/remove_store_item" method="POST">
+		<div class="form-group">
+			<label for="remove_store_item_id" class="col-sm-2 control-label">Name:</label>
+			<div class="col-sm-10">
+				<input id="remove_store_item_id" type="number" name="id" class="form-control" />
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<button id="remove_store_item_submit" type="button" class="btn btn-default">Submit</button>
+			</div>
+		</div>
 	</form>
 	
 	<br>

@@ -45,7 +45,6 @@
 		$('#add_carriable_remove').remove();
 		$('<input>').attr('type', 'text').attr('name', 'effects').val(JSON.stringify(allEffects)).appendTo('#add_carriable');
 		
-		//console.log("here")
 		$('#add_carriable').submit();
 	});
 })();	
@@ -101,7 +100,6 @@
 	});
 })();
 
-//TODO: Add condition
 (function(){
 	$.post("/superuser/get_all_statuses", {}, function(data){
 		
@@ -119,7 +117,7 @@
 			$("<span>").addClass("glyphicon").addClass("glyphicon-minus").appendTo(removeBtn);
 			removeBtn.click(function(e){
 				div.remove();
-			});
+			});			
 			
 			div.appendTo('#add_condition_statuses');
 		};
@@ -129,9 +127,39 @@
 	});
 	
 	$('#add_condition_submit').click(function(e){
-		$('#add_condition_statuses').children().each(function(){
-			console.log(this);
+		var statuses = [];
+		$('#add_condition_statuses').children().map(function(){
+			return $(this).children().first().children().first();
+		}).each(function(){
+			statuses.push(parseInt(this.val()));
 		});
+		
+		$('#add_condition_statuses').remove();
+		$('<input>').attr('type', 'text').attr('name', 'effects').val(JSON.stringify(statuses)).appendTo('#add_condition');
+		
+	});
+})();
+
+(function(){
+	$.post("/superuser/get_all_conditions", {}, function(data){	
+		var selectForm = $('#remove_condition_select');
+		$(data).each(function(){
+			$(selectForm).append($("<option>").attr('value', this.id).text(this.name));
+		});
+		
+		$(selectForm).val($(selectForm).children().first().attr("value"));
+		
+	});
+})();
+
+(function(){
+	$.post("/superuser/get_item_slots", {}, function(data){	
+		var selectForm = $('#add_store_item_slot');
+		$(data).each(function(){
+			$(selectForm).append($("<option>").attr('value', this).text(this));
+		});
+		
+		$(selectForm).val($(selectForm).children().first().attr("value"));
 	});
 })();
 
