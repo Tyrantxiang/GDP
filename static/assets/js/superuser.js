@@ -1,5 +1,17 @@
 (function(){
 	
+	var getDefaultSelectOption = function(selectElement){
+		return $(selectElement).children().first().attr("value");
+	};
+	
+	var attachOptions = function(selectForm, data){
+		$(data).each(function(){
+			selectForm.append($("<option>").attr('value', this.id).text(this.name));
+		});
+		
+		selectForm.val(getDefaultSelectOption(selectForm));
+	};
+	
 (function(){
 	//Set up add cariable
 	$.post("/superuser/get_all_statuses", {}, function(data){
@@ -9,10 +21,7 @@
 			
 			var selDiv = $("<div>").addClass("col-sm-7").appendTo(div);
 			var sel = $('<select>').addClass("form-control").appendTo(selDiv);
-			$(data).each(function(){
-				sel.append($("<option>").attr('value', this.id).text(this.name));
-			});
-			sel.val(sel.children().first().attr("value"));
+			attachOptions(sel, data);
 			
 			var inputDiv = $("<div>").addClass("col-sm-3").appendTo(div);
 			$('<input>').attr("type", "text").addClass("form-control").appendTo(inputDiv);
@@ -51,12 +60,8 @@
 	
 (function(){
 	$.post("/superuser/get_all_carriables", {}, function(data){		
-		var selectForm = $('<select>').addClass('form-control').attr('id', 'remove_carriable_name').attr('name', 'id');
-		$(data).each(function(){
-			selectForm.append($("<option>").attr('value', this.id).text(this.name));
-		});
-		
-		selectForm.val(selectForm.children().first().attr("value"));
+		var selectForm = $('<select>').addClass('form-control').attr('id', 'remove_carriable_name').attr('name', 'id');		
+		attachOptions(selectForm, data);
 		
 		var getSprite = function(){
 			var id = $(selectForm).children('option:selected').first().attr("value");
@@ -90,11 +95,7 @@
 (function(){
 	$.post("/superuser/get_all_statuses", {}, function(data){
 		var selectForm = $('<select>').addClass('form-control').attr('id', 'remove_status_select').attr('name', 'id');
-		$(data).each(function(){
-			selectForm.append($("<option>").attr('value', this.id).text(this.name));
-		});
-		
-		selectForm.val(selectForm.children().first().attr("value"));
+		attachOptions(selectForm, data);
 		
 		$('#remove_status_div').append(selectForm);
 	});
@@ -108,10 +109,7 @@
 			
 			var selDiv = $("<div>").addClass("col-sm-10").appendTo(div);
 			var sel = $('<select>').addClass("form-control").appendTo(selDiv);
-			$(data).each(function(){
-				sel.append($("<option>").attr('value', this.id).text(this.name));
-			});
-			sel.val(sel.children().first().attr("value"));
+			attachOptions(sel, data);
 			
 			var removeBtn = $("<button>").addClass("btn").addClass("btn-danger").attr("type", "button").appendTo(div);
 			$("<span>").addClass("glyphicon").addClass("glyphicon-minus").appendTo(removeBtn);
@@ -143,44 +141,33 @@
 (function(){
 	$.post("/superuser/get_all_conditions", {}, function(data){	
 		var selectForm = $('#remove_condition_select');
-		$(data).each(function(){
-			$(selectForm).append($("<option>").attr('value', this.id).text(this.name));
-		});
-		
-		$(selectForm).val($(selectForm).children().first().attr("value"));
-		
+		attachOptions(selectForm, data);
 	});
 })();
 
 (function(){
 	$.post("/superuser/get_item_slots", {}, function(data){	
 		var selectForm = $('#add_store_item_slot');
-		$(data).each(function(){
-			$(selectForm).append($("<option>").attr('value', this).text(this));
+		var dataArr = $(data).map(function(){
+			return {id: this, name: this};
 		});
-		
-		$(selectForm).val($(selectForm).children().first().attr("value"));
+		attachOptions(selectForm, dataArr);
 	});
 })();
 
 (function(){
 	$.post("/superuser/get_item_slots", {}, function(data){	
 		var selectForm = $('#remove_store_item_slot');
-		$(data).each(function(){
-			$(selectForm).append($("<option>").attr('value', this).text(this));
+		var dataArr = $(data).map(function(){
+			return {id: this, name: this};
 		});
-		
-		$(selectForm).val($(selectForm).children().first().attr("value"));
+		attachOptions(selectForm, dataArr);
 		
 		var changeFunc = function(e){
 			$.post("/superuser/get_items_for_slot", {"slot": $(selectForm).val()}, function(data){
 				$("#remove_store_item_item").empty();
 				
-				$(data).each(function(){
-					$("#remove_store_item_item").append($("<option>").attr('value', this.id).text(this.name));
-				});
-				
-				$("#remove_store_item_item").val($("#remove_store_item_item").children().first().attr("value"));
+				attachOptions(selectForm, dataArr, "id", "name");
 			});
 		};
 		
