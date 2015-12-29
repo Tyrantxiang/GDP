@@ -1,137 +1,117 @@
 <html>
 
 <head>
+    <!-- Bootstrap JS and jQuery -->
 	<script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-    <!-- Latest compiled and minified JavaScript -->
     <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="//code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
 	
-	<!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-	
-	<script type="text/javascript">
-		$(document).ready(function(){
-			
-		});
-		
-		function doit(str){
-			var i = document.createElement("img");
-			i.src = "data:image/png;base64," + str;
-			document.getElementById("body").appendChild(i);
-		}
-	</script>
-	
+	<!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">	
 </head>
 
 <body>
 	
 <div style="width: 60%">
 	<h3>Add carriable</h3>
-	<form class="form-horizontal" id="add_carriable" action="/superuser/add_bag_item" method="POST" enctype="multipart/form-data">
-		<div class="form-group">
-			<label for="add_carriable_name" class="col-sm-2 control-label">Name:</label>
+	<form id="add_carriable" action="/superuser/add_bag_item" enctype="multipart/form-data">
+		<div>
+			<label for="add_carriable_name">Name:</label>
 			<div class="col-sm-10">
-				<input id="add_carriable_name" type="text" name="name" class="form-control"/>
+				<input id="add_carriable_name" type="text" name="name"/>
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="add_carriable_sprite" class="col-sm-2 control-label">Sprite:</label>
+		<div>
+			<label for="add_carriable_sprite">Sprite:</label>
 			<div class="col-sm-10">
 				<input id="add_carriable_sprite" type="file" name="sprite" accept="image/png"/>
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="add_carriable_effects" class="col-sm-2 control-label">Effects:</label>
+		<div>
+			<label for="add_carriable_effects">Effects:</label>
 			<div class="col-sm-10">
 				<div id="add_carriable_effects">
 				</div>
 			</div>
 		</div>
-		<div class="form-group">
+		<div>
 			<div class="col-sm-offset-2 col-sm-10">
 				<button type="button" class="btn btn-success" id="add_carriable_effect">Add effect</button>
 			</div>
 		</div>
-		<div class="form-group">
+		<div>
 			<div class="col-sm-offset-2 col-sm-10">
 				<button id="add_carriable_submit" type="button" class="btn btn-default">Submit</button>
 			</div>
 		</div>
 	</form>
-	
-	<br>
-	<hr>
-	<br>
 </div>
 <div style="width: 60%">
 	<!-- Display each carriable with its picture and name, so they don't need to know the ID -->
 	<h3>Remove carriable</h3>
-	<form id="remove_carriable" class="form-horizontal" action="/superuser/remove_bag_item" method="POST">
-		<div class="form-group">
-			<label for="remove_carriable_name" class="col-sm-2 control-label">Name:</label>
+	<form id="remove_carriable" action="/superuser/remove_bag_item">
+		<div>
+			<label for="remove_carriable_name">Name:</label>
 			<div class="col-sm-10" id="remove_carriable_div">
-				
+				<select id="remove_carriable_name" name="id" class="form-control">
+				</select>
 			</div>
 		</div>
-		<div class="form-group" id="remove_carriable_picture">
-			<label for="remove_carriable_label" class="col-sm-2 control-label">Picture:</label>
+		<div id="remove_carriable_picture">
+			<label for="remove_carriable_label">Picture:</label>
 			<div class="col-sm-10" id="remove_carriable_label">
 				
 			</div>
 		</div>
-		<div class="form-group">
+		<div>
 			<div class="col-sm-offset-2 col-sm-10">
 				<button id="remove_carriable_submit" type="submit" class="btn btn-default">Submit</button>
 			</div>
 		</div>
 	</form>
-	
-	<br>
-	<hr>
-	<br>
 </div>
 <div style="width: 60%">
 	<!-- Words only if isNumber is false. Words is a JSON object with number keys to the word associated with that status value -->
 	<h3>Add status</h3>
-	<form class="form-horizontal" id="add_status" action="/superuser/add_status" method="POST" enctype="multipart/form-data">
-		<div class="form-group">
-			<label for="add_status_name" class="col-sm-2 control-label">Name:</label>
+	<form id="add_status" action="/superuser/add_status" enctype="multipart/form-data">
+		<div>
+			<label for="add_status_name">Name:</label>
 			<div class="col-sm-10">
-				<input id="add_status_name" class="form-control" type="text" name="name"/>
+				<input id="add_status_name" type="text" name="name"/>
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="add_status_minval" class="col-sm-2 control-label">Min value:</label>
+		<div>
+			<label for="add_status_minval">Min value:</label>
 			<div class="col-sm-10">
-				<input id="add_status_minval" class="form-control" type="number" name="min_val">
+				<input id="add_status_minval" type="number" name="min_val">
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="add_status_maxval" class="col-sm-2 control-label">Max value:</label>
+		<div>
+			<label for="add_status_maxval">Max value:</label>
 			<div class="col-sm-10">
-				<input id="add_status_maxval" class="form-control" type="number" name="max_val">
+				<input id="add_status_maxval" type="number" name="max_val">
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="add_status_healthyminval" class="col-sm-2 control-label">Healthy min value:</label>
+		<div>
+			<label for="add_status_healthyminval">Healthy min value:</label>
 			<div class="col-sm-10">
-				<input id="add_status_healthyminval" class="form-control" type="number" name="healthy_min">
+				<input id="add_status_healthyminval" type="number" name="healthy_min">
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="add_status_healthymaxval" class="col-sm-2 control-label">Healthy max value:</label>
+		<div>
+			<label for="add_status_healthymaxval">Healthy max value:</label>
 			<div class="col-sm-10">
-				<input id="add_status_healthymaxval" class="form-control" type="number" name="healthy_max">
+				<input id="add_status_healthymaxval" type="number" name="healthy_max">
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="add_status_sprite" class="col-sm-2 control-label">Sprite file:</label>
+		<div>
+			<label for="add_status_sprite">Sprite file:</label>
 			<div class="col-sm-10" >
 				<input id="add_status_sprite" type="file" name="sprite" accept="image/png"/>
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="add_status_numbers" class="col-sm-2 control-label">Use word labels?:</label>
+		<div>
+			<label for="add_status_numbers">Use word labels?:</label>
 			<div class="col-sm-10">
 				<div class="checkbox">
 				  <label>
@@ -141,13 +121,13 @@
 			</div>
 		</div>
 		
-		<div class="form-group">
-			<label for="add_status_name" class="col-sm-2 control-label">Word labels:</label>
+		<div>
+			<label for="add_status_name">Word labels:</label>
 			<div class="col-sm-10" id="add_status_div">
 				TODO
 			</div>
 		</div>
-		<div class="form-group">
+		<div>
 			<div class="col-sm-offset-2 col-sm-10">
 				<button id="add_status_submit" type="button" class="btn btn-default">Submit</button>
 			</div>
@@ -156,177 +136,151 @@
 </div>
 <div style="width: 60%">
 	<h3>Remove status</h3>
-	<form id="remove_status" class="form-horizontal" action="/superuser/remove_status" method="POST">
-		<div class="form-group">
-			<label for="remove_status_select" class="col-sm-2 control-label">Status:</label>
+	<form id="remove_status" action="/superuser/remove_status">
+		<div>
+			<label for="remove_status_select">Status:</label>
 			<div class="col-sm-10" id="remove_status_div">
+				<select id="remove_status_select" class="form-control" name="id">
+				</select>
 			</div>
 		</div>
-		<div class="form-group">
+		<div>
 			<div class="col-sm-offset-2 col-sm-10">
 				<button id="remove_status_submit" type="button" class="btn btn-default">Submit</button>
 			</div>
 		</div>
 	</form>
-	
-	<br>
-	<hr>
-	<br>
 </div>
 <div style="width: 60%">
 	<!-- Need to display statuses as a list, and concat all statuses into an array at submit -->
 	<h3>Add condition</h3>
-	<form id="add_condition" class="form-horizontal" action="/superuser/add_condition" method="POST">
-		<div class="form-group">
-			<label for="add_condition_name" class="col-sm-2 control-label">Name:</label>
+	<form id="add_condition" action="/superuser/add_condition">
+		<div>
+			<label for="add_condition_name">Name:</label>
 			<div class="col-sm-10">
-				<input id="add_condition_name" type="text" name="name" class="form-control" />
+				<input id="add_condition_name" type="text" name="name"/>
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="add_condition_statuses" class="col-sm-2 control-label">Statuses:</label>
+		<div>
+			<label for="add_condition_statuses">Statuses:</label>
 			<div class="col-sm-10">
 				<div id="add_condition_statuses">
 				</div>
 			</div>
 		</div>
-		<div class="form-group">
+		<div>
 			<div class="col-sm-offset-2 col-sm-10">
 				<button type="button" class="btn btn-success" id="add_condition_stat">Add effect</button>
 			</div>
 		</div>
-		<div class="form-group">
+		<div>
 			<div class="col-sm-offset-2 col-sm-10">
 				<button id="add_condition_submit" type="button" class="btn btn-default">Submit</button>
 			</div>
 		</div>
 	</form>
-	
-	<br>
-	<hr>
-	<br>
 </div>
 <div style="width: 60%">
 	<!-- Display a list of names, not IDs -->
 	<h3>Remove condition</h3>
-	<form id="remove_condition" class="form-horizontal" action="/superuser/remove_condition" method="POST">
-		<div class="form-group">
-			<label for="remove_condition_name" class="col-sm-2 control-label">Name:</label>
+	<form id="remove_condition" action="/superuser/remove_condition">
+		<div>
+			<label for="remove_condition_name">Name:</label>
 			<div class="col-sm-10">
 				<select id="remove_condition_select" name="id" class="form-control" >
 				
 				</select>
 			</div>
 		</div>
-		<div class="form-group">
+		<div>
 			<div class="col-sm-offset-2 col-sm-10">
 				<button id="remove_condition_submit" type="button" class="btn btn-default">Submit</button>
 			</div>
 		</div>
 	</form>
-	
-	<br>
-	<hr>
-	<br>
 </div>
 <div style="width: 60%">
 	<!-- This is both house items AND avatar items, will provide a list of available slots for them to choose from -->
 	<h3>Add store item</h3>
-	<form id="add_store_item" class="form-horizontal" action="/superuser/add_store_item" method="POST">
-		<div class="form-group">
-			<label for="add_store_item_name" class="col-sm-2 control-label">Name:</label>
+	<form id="add_store_item" action="/superuser/add_store_item">
+		<div>
+			<label for="add_store_item_name">Name:</label>
 			<div class="col-sm-10">
-				<input id="add_store_item_name" type="text" name="name" class="form-control"/>
+				<input id="add_store_item_name" type="text" name="name"/>
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="add_store_item_description" class="col-sm-2 control-label">Description:</label>
+		<div>
+			<label for="add_store_item_description">Description:</label>
 			<div class="col-sm-10">
 				<textarea id="add_store_item_description" type="text" name="descrpition" class="form-control"></textarea>
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="add_store_item_slot" class="col-sm-2 control-label">Slot:</label>
+		<div>
+			<label for="add_store_item_slot">Slot:</label>
 			<div class="col-sm-10">
-				<select id="add_store_item_slot" type="text" name="slot" class="form-control">
+				<select id="add_store_item_slot" name="slot" class="form-control">
 				</select>
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="add_store_item_price" class="col-sm-2 control-label">Price:</label>
+		<div>
+			<label for="add_store_item_price">Price:</label>
 			<div class="col-sm-10">
-				<input id="add_store_item_price" type="number" name="price" class="form-control" />
+				<input id="add_store_item_price" type="number" name="price"/>
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="add_store_item_sprite" class="col-sm-2 control-label">Sprite:</label>
+		<div>
+			<label for="add_store_item_sprite">Sprite:</label>
 			<div class="col-sm-10">
 				<input id="add_store_item_sprite" type="file" name="sprite" accept="image/png"/>
 			</div>
 		</div>
-		<div class="form-group">
+		<div>
 			<div class="col-sm-offset-2 col-sm-10">
 				<button id="add_store_item_submit" type="button" class="btn btn-default">Submit</button>
 			</div>
 		</div>
 	</form>
-	
-	<br>
-	<hr>
-	<br>
 </div>
 <div style="width: 60%">
 	<!-- display as sprites and names? -->
 	<h3>Remove store item</h3>
-	<form id="remove_store_item" class="form-horizontal" action="/superuser/remove_store_item" method="POST">
-		<div class="form-group">
-			<label for="remove_store_item_slot" class="col-sm-2 control-label">Slot:</label>
+	<form id="remove_store_item" action="/superuser/remove_store_item">
+		<div>
+			<label for="remove_store_item_slot">Slot:</label>
 			<div class="col-sm-10">
-				<select id="remove_store_item_slot" type="text" class="form-control">
+				<select id="remove_store_item_slot" class="form-control">
 				</select>
 			</div>
 		</div>
-		<div class="form-group">
-			<label for="remove_store_item_item" class="col-sm-2 control-label">Item:</label>
+		<div>
+			<label for="remove_store_item_item">Item:</label>
 			<div class="col-sm-10">
 				<select id="remove_store_item_item" class="form-control">
 				</select>
 			</div>
 		</div>
-		<div class="form-group">
+		<div>
 			<div class="col-sm-offset-2 col-sm-10">
 				<button id="remove_store_item_submit" type="button" class="btn btn-default">Submit</button>
 			</div>
 		</div>
 	</form>
-	
-	<br>
-	<hr>
-	<br>
 </div>
 <div style="display: none">
 	<!-- leave for now -->
 	<h3>Add minigame</h3>
-	<form id="add_minigame" action="/superuser/add_minigame" method="POST">
+	<form id="add_minigame" action="/superuser/add_minigame">
 		<label>ID:</label><input type="text" name="id" /><br>
 		<label>Submit:</label><input type="submit" value="Submit" />
 	</form>
-	
-	<br>
-	<hr>
-	<br>
 </div>
 <div style="display: none">
 	<!-- leave for now -->
 	<h3>Remove minigame</h3>
-	<form id="remove_minigame" action="/superuser/remove_minigame" method="POST">
+	<form id="remove_minigame" action="/superuser/remove_minigame">
 		<label>ID:</label><input type="text" name="id" /><br>
 		<label>Submit:</label><input type="submit" value="Submit" />
 	</form>
-	
-	<br>
-	<hr>
-	<br>
 </div>
 
 	<script type="text/javascript" src="/assets/js/superuser.js"></script>

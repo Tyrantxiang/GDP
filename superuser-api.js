@@ -235,6 +235,7 @@ var dataRoutes = {
 		var allitems = config.carriables.listAll();
 		allitems = allitems.map(function(item){
 			item.url = config.carriables.getSpriteURL(item.id);
+			delete item.effects;
 			return item;
 		});
 		
