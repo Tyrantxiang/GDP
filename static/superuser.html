@@ -257,7 +257,6 @@
 		</form>
 	</div>
 	<div style="display: none;">
-		<!-- display as sprites and names? -->
 		<h3>Remove store item</h3>
 		<form id="remove_store_item" action="/superuser/remove_store_item">
 			<div>
@@ -282,19 +281,35 @@
 		</form>
 	</div>
 	<div style="display: none;">
-		<!-- leave for now -->
 		<h3>Add minigame</h3>
 		<form id="add_minigame" action="/superuser/add_minigame">
-			<label>ID:</label><input type="text" name="id" /><br>
-			<label>Submit:</label><input type="submit" value="Submit" />
+			<div>
+				<label for="add_minigame_name">Name:</label>
+				<div class="col-sm-10">
+					<input id="add_minigame_name" type="text" name="name"/>
+				</div>
+			</div>
+			<div>
+				<div class="col-sm-offset-2 col-sm-10">
+					<button id="add_carriable_submit" type="button" class="btn btn-default">Submit</button>
+				</div>
+			</div>
 		</form>
 	</div>
 	<div style="display: none;">
-		<!-- leave for now -->
 		<h3>Remove minigame</h3>
 		<form id="remove_minigame" action="/superuser/remove_minigame">
-			<label>ID:</label><input type="text" name="id" /><br>
-			<label>Submit:</label><input type="submit" value="Submit" />
+			<div>
+				<label for="remove_minigame_id">ID:</label>
+				<div class="col-sm-10">
+					<input id="remove_minigame_id" type="text" name="id"/>
+				</div>
+			</div>
+			<div>
+				<div class="col-sm-offset-2 col-sm-10">
+					<button id="add_carriable_submit" type="button" class="btn btn-default">Submit</button>
+				</div>
+			</div>
 		</form>
 	</div>
 </div> <!-- content-div -->

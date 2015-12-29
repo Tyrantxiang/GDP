@@ -97,8 +97,7 @@
 				var bigSide 	= $(sprite).width() > $(sprite).height() 	? "width" : "height";
 				var smallSide 	= bigSide === "width" 						? "height" : "width";
 				
-				$(sprite).css(bigSide, maxPreviewDimension+'px');
-				$(sprite).css(smallSide, 'auto');
+				$(sprite).css(bigSide, maxPreviewDimension+'px').css(smallSide, 'auto');
 				
 				$('#remove_carriable_label').empty().append(sprite);
 			};
@@ -143,7 +142,7 @@
 		}).toArray();
 		
 		$('#add_condition_statuses').remove();
-		$('<input>').attr('type', 'text').attr('name', 'effects').val(JSON.stringify(statuses)).appendTo('#add_condition');
+		$('<input>').attr({'type': 'text', 'name': 'effects'}).val(JSON.stringify(statuses)).appendTo('#add_condition');
 		
 		$('#add_condition').submit();
 	});

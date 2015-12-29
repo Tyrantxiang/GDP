@@ -13,9 +13,6 @@ function setConfig(cfg){
     }
     config = cfg;
 }
-function getConfig(){
-    return config;
-}
 
 var db;
 function setDatabase(database){
@@ -24,34 +21,30 @@ function setDatabase(database){
     }
     db = database;
 }
-function getDatabase(){
-    return db;
-}
 
 function checkIsValid(arrNames, objToTest){
-	var valid = Object.keys(objToTest).length === arrNames.length;
+	var invalid = [];
+	
 	for(var i=0; i<arrNames.length; i++){
-		if(objToTest[arrNames[i]] === undefined) console.log(arrNames[i]);
-		valid = valid && (objToTest[arrNames[i]] !== undefined);
+		if(objToTest[arrNames[i]] === undefined) invalid.push(arrNames[i]);
 	}
-	return valid;
+	
+	return invalid.join(", ");
 }
 
-function returnInvalidMessage(res){
+function returnInvalidMessage(res, message){
 	res.status(400).json({
-		"error" : "Request body not valid - missing, extra or undefined components"
+		"error" : "Request body not valid - missing: " + message
 	});
 }
 
 function getRandomUnusedId(configObj){
-	var newIdFound = false,
-		newId = undefined;
-	while(!newIdFound){
+	var newId = undefined;
+	while(!newId){
 		var currentId = Math.floor(Math.random() * 32767);
 		
 		if(configObj.getConfig(currentId) === null){
 			newId = currentId;
-			newIdFound = true;
 		}
 	}
 	return newId;
@@ -114,7 +107,7 @@ var routes = {
 
 			res.json({"okay": "A OK!"});
 		}else{
-			returnInvalidMessage(res);
+			returnInvalidMessage(res, valid);
 		}
 	},
 
@@ -128,7 +121,7 @@ var routes = {
 			
 			res.json({"okay": "A OK!"});
 		}else{
-			returnInvalidMessage(res);
+			returnInvalidMessage(res, valid);
 		}
 	},
 
@@ -145,7 +138,7 @@ var routes = {
 			
 			createFiles(req.file.path, "/statuses/" + id.toString(), obj, undefined);
 		}else{
-			returnInvalidMessage(res);
+			returnInvalidMessage(res, valid);
 		}
 	},
 
@@ -158,7 +151,7 @@ var routes = {
 			
 			res.json({"okay": "A OK!"});
 		}else{
-			returnInvalidMessage(res);
+			returnInvalidMessage(res, valid);
 		}
 	},
 
@@ -167,7 +160,7 @@ var routes = {
 		if(valid){
 			
 		}else{
-			returnInvalidMessage(res);
+			returnInvalidMessage(res, valid);
 		}
 	},
 
@@ -180,7 +173,7 @@ var routes = {
 			
 			res.json({"okay": "A OK!"});
 		}else{
-			returnInvalidMessage(res);
+			returnInvalidMessage(res, valid);
 		}
 	},
 
@@ -189,7 +182,7 @@ var routes = {
 		if(valid){
 			
 		}else{
-			returnInvalidMessage(res);
+			returnInvalidMessage(res, valid);
 		}
 	},
 
@@ -202,7 +195,7 @@ var routes = {
 			
 			res.json({"okay": "A OK!"});
 		}else{
-			returnInvalidMessage(res);
+			returnInvalidMessage(res, valid);
 		}
 	},
 	/*
@@ -211,7 +204,7 @@ var routes = {
 		if(valid){
 			
 		}else{
-			returnInvalidMessage(res);
+			returnInvalidMessage(res, valid);
 		}
 	},
 
@@ -220,7 +213,7 @@ var routes = {
 		if(valid){
 			
 		}else{
-			returnInvalidMessage(res);
+			returnInvalidMessage(res, valid);
 		}
 	}
 	*/
