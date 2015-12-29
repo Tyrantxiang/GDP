@@ -12,277 +12,293 @@
 
 <body>
 	
-<div style="width: 60%">
-	<h3>Add carriable</h3>
-	<form id="add_carriable" action="/superuser/add_bag_item" enctype="multipart/form-data">
-		<div>
-			<label for="add_carriable_name">Name:</label>
-			<div class="col-sm-10">
-				<input id="add_carriable_name" type="text" name="name"/>
-			</div>
-		</div>
-		<div>
-			<label for="add_carriable_sprite">Sprite:</label>
-			<div class="col-sm-10">
-				<input id="add_carriable_sprite" type="file" name="sprite" accept="image/png"/>
-			</div>
-		</div>
-		<div>
-			<label for="add_carriable_effects">Effects:</label>
-			<div class="col-sm-10">
-				<div id="add_carriable_effects">
+<div id="nav-div">
+	<ul class="nav nav-pills nav-justified">
+	  <li class="active"><a href="#">Add carriable</a></li>
+	  <li><a href="#">Remove carriable</a></li>
+	  <li><a href="#">Add status</a></li>
+	  <li><a href="#">Remove status</a></li>
+	  <li><a href="#">Add condition</a></li>
+	  <li><a href="#">Remove condition</a></li>
+	  <li><a href="#">Add store item</a></li>
+	  <li><a href="#">Remove store item</a></li>
+	  <li><a href="#">Add minigame</a></li>
+	  <li><a href="#">Remove minigame</a></li>
+	</ul>
+</div>
+<div id="content-div" style="width: 60%; margin: auto">
+	<div style="display: inline;">
+		<h3>Add carriable</h3>
+		<form id="add_carriable" action="/superuser/add_bag_item" enctype="multipart/form-data">
+			<div>
+				<label for="add_carriable_name">Name:</label>
+				<div class="col-sm-10">
+					<input id="add_carriable_name" type="text" name="name"/>
 				</div>
 			</div>
-		</div>
-		<div>
-			<div class="col-sm-offset-2 col-sm-10">
-				<button type="button" class="btn btn-success" id="add_carriable_effect">Add effect</button>
-			</div>
-		</div>
-		<div>
-			<div class="col-sm-offset-2 col-sm-10">
-				<button id="add_carriable_submit" type="button" class="btn btn-default">Submit</button>
-			</div>
-		</div>
-	</form>
-</div>
-<div style="width: 60%">
-	<!-- Display each carriable with its picture and name, so they don't need to know the ID -->
-	<h3>Remove carriable</h3>
-	<form id="remove_carriable" action="/superuser/remove_bag_item">
-		<div>
-			<label for="remove_carriable_name">Name:</label>
-			<div class="col-sm-10" id="remove_carriable_div">
-				<select id="remove_carriable_name" name="id" class="form-control">
-				</select>
-			</div>
-		</div>
-		<div id="remove_carriable_picture">
-			<label for="remove_carriable_label">Picture:</label>
-			<div class="col-sm-10" id="remove_carriable_label">
-				
-			</div>
-		</div>
-		<div>
-			<div class="col-sm-offset-2 col-sm-10">
-				<button id="remove_carriable_submit" type="submit" class="btn btn-default">Submit</button>
-			</div>
-		</div>
-	</form>
-</div>
-<div style="width: 60%">
-	<!-- Words only if isNumber is false. Words is a JSON object with number keys to the word associated with that status value -->
-	<h3>Add status</h3>
-	<form id="add_status" action="/superuser/add_status" enctype="multipart/form-data">
-		<div>
-			<label for="add_status_name">Name:</label>
-			<div class="col-sm-10">
-				<input id="add_status_name" type="text" name="name"/>
-			</div>
-		</div>
-		<div>
-			<label for="add_status_minval">Min value:</label>
-			<div class="col-sm-10">
-				<input id="add_status_minval" type="number" name="min_val">
-			</div>
-		</div>
-		<div>
-			<label for="add_status_maxval">Max value:</label>
-			<div class="col-sm-10">
-				<input id="add_status_maxval" type="number" name="max_val">
-			</div>
-		</div>
-		<div>
-			<label for="add_status_healthyminval">Healthy min value:</label>
-			<div class="col-sm-10">
-				<input id="add_status_healthyminval" type="number" name="healthy_min">
-			</div>
-		</div>
-		<div>
-			<label for="add_status_healthymaxval">Healthy max value:</label>
-			<div class="col-sm-10">
-				<input id="add_status_healthymaxval" type="number" name="healthy_max">
-			</div>
-		</div>
-		<div>
-			<label for="add_status_sprite">Sprite file:</label>
-			<div class="col-sm-10" >
-				<input id="add_status_sprite" type="file" name="sprite" accept="image/png"/>
-			</div>
-		</div>
-		<div>
-			<label for="add_status_numbers">Use word labels?:</label>
-			<div class="col-sm-10">
-				<div class="checkbox">
-				  <label>
-					<input type="checkbox" id="add_status_numbers" value="1">
-				  </label>
+			<div>
+				<label for="add_carriable_sprite">Sprite:</label>
+				<div class="col-sm-10">
+					<input id="add_carriable_sprite" type="file" name="sprite" accept="image/png"/>
 				</div>
 			</div>
-		</div>
-		
-		<div>
-			<label for="add_status_name">Word labels:</label>
-			<div class="col-sm-10" id="add_status_div">
-				TODO
-			</div>
-		</div>
-		<div>
-			<div class="col-sm-offset-2 col-sm-10">
-				<button id="add_status_submit" type="button" class="btn btn-default">Submit</button>
-			</div>
-		</div>
-	</form>
-</div>
-<div style="width: 60%">
-	<h3>Remove status</h3>
-	<form id="remove_status" action="/superuser/remove_status">
-		<div>
-			<label for="remove_status_select">Status:</label>
-			<div class="col-sm-10" id="remove_status_div">
-				<select id="remove_status_select" class="form-control" name="id">
-				</select>
-			</div>
-		</div>
-		<div>
-			<div class="col-sm-offset-2 col-sm-10">
-				<button id="remove_status_submit" type="button" class="btn btn-default">Submit</button>
-			</div>
-		</div>
-	</form>
-</div>
-<div style="width: 60%">
-	<!-- Need to display statuses as a list, and concat all statuses into an array at submit -->
-	<h3>Add condition</h3>
-	<form id="add_condition" action="/superuser/add_condition">
-		<div>
-			<label for="add_condition_name">Name:</label>
-			<div class="col-sm-10">
-				<input id="add_condition_name" type="text" name="name"/>
-			</div>
-		</div>
-		<div>
-			<label for="add_condition_statuses">Statuses:</label>
-			<div class="col-sm-10">
-				<div id="add_condition_statuses">
+			<div>
+				<label for="add_carriable_effects">Effects:</label>
+				<div class="col-sm-10">
+					<div id="add_carriable_effects">
+					</div>
 				</div>
 			</div>
-		</div>
-		<div>
-			<div class="col-sm-offset-2 col-sm-10">
-				<button type="button" class="btn btn-success" id="add_condition_stat">Add effect</button>
+			<div>
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="button" class="btn btn-success" id="add_carriable_effect">Add effect</button>
+				</div>
 			</div>
-		</div>
-		<div>
-			<div class="col-sm-offset-2 col-sm-10">
-				<button id="add_condition_submit" type="button" class="btn btn-default">Submit</button>
+			<div>
+				<div class="col-sm-offset-2 col-sm-10">
+					<button id="add_carriable_submit" type="button" class="btn btn-default">Submit</button>
+				</div>
 			</div>
-		</div>
-	</form>
-</div>
-<div style="width: 60%">
-	<!-- Display a list of names, not IDs -->
-	<h3>Remove condition</h3>
-	<form id="remove_condition" action="/superuser/remove_condition">
-		<div>
-			<label for="remove_condition_name">Name:</label>
-			<div class="col-sm-10">
-				<select id="remove_condition_select" name="id" class="form-control" >
-				
-				</select>
+		</form>
+	</div>
+	<div style="display: none;">
+		<!-- Display each carriable with its picture and name, so they don't need to know the ID -->
+		<h3>Remove carriable</h3>
+		<form id="remove_carriable" action="/superuser/remove_bag_item">
+			<div>
+				<label for="remove_carriable_name">Name:</label>
+				<div class="col-sm-10" id="remove_carriable_div">
+					<select id="remove_carriable_name" name="id" class="form-control">
+					</select>
+				</div>
 			</div>
-		</div>
-		<div>
-			<div class="col-sm-offset-2 col-sm-10">
-				<button id="remove_condition_submit" type="button" class="btn btn-default">Submit</button>
+			<div id="remove_carriable_picture">
+				<label for="remove_carriable_label">Picture:</label>
+				<div class="col-sm-10" id="remove_carriable_label">
+					
+				</div>
 			</div>
-		</div>
-	</form>
-</div>
-<div style="width: 60%">
-	<!-- This is both house items AND avatar items, will provide a list of available slots for them to choose from -->
-	<h3>Add store item</h3>
-	<form id="add_store_item" action="/superuser/add_store_item">
-		<div>
-			<label for="add_store_item_name">Name:</label>
-			<div class="col-sm-10">
-				<input id="add_store_item_name" type="text" name="name"/>
+			<div>
+				<div class="col-sm-offset-2 col-sm-10">
+					<button id="remove_carriable_submit" type="submit" class="btn btn-default">Submit</button>
+				</div>
 			</div>
-		</div>
-		<div>
-			<label for="add_store_item_description">Description:</label>
-			<div class="col-sm-10">
-				<textarea id="add_store_item_description" type="text" name="descrpition" class="form-control"></textarea>
+		</form>
+	</div>
+	<div style="display: none;">
+		<!-- Words only if isNumber is false. Words is a JSON object with number keys to the word associated with that status value -->
+		<h3>Add status</h3>
+		<form id="add_status" action="/superuser/add_status" enctype="multipart/form-data">
+			<div>
+				<label for="add_status_name">Name:</label>
+				<div class="col-sm-10">
+					<input id="add_status_name" type="text" name="name"/>
+				</div>
 			</div>
-		</div>
-		<div>
-			<label for="add_store_item_slot">Slot:</label>
-			<div class="col-sm-10">
-				<select id="add_store_item_slot" name="slot" class="form-control">
-				</select>
+			<div>
+				<label for="add_status_minval">Min value:</label>
+				<div class="col-sm-10">
+					<input id="add_status_minval" type="number" name="min_val">
+				</div>
 			</div>
-		</div>
-		<div>
-			<label for="add_store_item_price">Price:</label>
-			<div class="col-sm-10">
-				<input id="add_store_item_price" type="number" name="price"/>
+			<div>
+				<label for="add_status_maxval">Max value:</label>
+				<div class="col-sm-10">
+					<input id="add_status_maxval" type="number" name="max_val">
+				</div>
 			</div>
-		</div>
-		<div>
-			<label for="add_store_item_sprite">Sprite:</label>
-			<div class="col-sm-10">
-				<input id="add_store_item_sprite" type="file" name="sprite" accept="image/png"/>
+			<div>
+				<label for="add_status_healthyminval">Healthy min value:</label>
+				<div class="col-sm-10">
+					<input id="add_status_healthyminval" type="number" name="healthy_min">
+				</div>
 			</div>
-		</div>
-		<div>
-			<div class="col-sm-offset-2 col-sm-10">
-				<button id="add_store_item_submit" type="button" class="btn btn-default">Submit</button>
+			<div>
+				<label for="add_status_healthymaxval">Healthy max value:</label>
+				<div class="col-sm-10">
+					<input id="add_status_healthymaxval" type="number" name="healthy_max">
+				</div>
 			</div>
-		</div>
-	</form>
-</div>
-<div style="width: 60%">
-	<!-- display as sprites and names? -->
-	<h3>Remove store item</h3>
-	<form id="remove_store_item" action="/superuser/remove_store_item">
-		<div>
-			<label for="remove_store_item_slot">Slot:</label>
-			<div class="col-sm-10">
-				<select id="remove_store_item_slot" class="form-control">
-				</select>
+			<div>
+				<label for="add_status_sprite">Sprite file:</label>
+				<div class="col-sm-10" >
+					<input id="add_status_sprite" type="file" name="sprite" accept="image/png"/>
+				</div>
 			</div>
-		</div>
-		<div>
-			<label for="remove_store_item_item">Item:</label>
-			<div class="col-sm-10">
-				<select id="remove_store_item_item" class="form-control">
-				</select>
+			<div>
+				<label for="add_status_numbers">Use word labels?:</label>
+				<div class="col-sm-10">
+					<div class="checkbox">
+					  <label>
+						<input type="checkbox" id="add_status_numbers" value="1">
+					  </label>
+					</div>
+				</div>
 			</div>
-		</div>
-		<div>
-			<div class="col-sm-offset-2 col-sm-10">
-				<button id="remove_store_item_submit" type="button" class="btn btn-default">Submit</button>
+			
+			<div>
+				<label for="add_status_name">Word labels:</label>
+				<div class="col-sm-10" id="add_status_div">
+					TODO
+				</div>
 			</div>
-		</div>
-	</form>
-</div>
-<div style="display: none">
-	<!-- leave for now -->
-	<h3>Add minigame</h3>
-	<form id="add_minigame" action="/superuser/add_minigame">
-		<label>ID:</label><input type="text" name="id" /><br>
-		<label>Submit:</label><input type="submit" value="Submit" />
-	</form>
-</div>
-<div style="display: none">
-	<!-- leave for now -->
-	<h3>Remove minigame</h3>
-	<form id="remove_minigame" action="/superuser/remove_minigame">
-		<label>ID:</label><input type="text" name="id" /><br>
-		<label>Submit:</label><input type="submit" value="Submit" />
-	</form>
-</div>
-
+			<div>
+				<div class="col-sm-offset-2 col-sm-10">
+					<button id="add_status_submit" type="button" class="btn btn-default">Submit</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div style="display: none;">
+		<h3>Remove status</h3>
+		<form id="remove_status" action="/superuser/remove_status">
+			<div>
+				<label for="remove_status_select">Status:</label>
+				<div class="col-sm-10" id="remove_status_div">
+					<select id="remove_status_select" class="form-control" name="id">
+					</select>
+				</div>
+			</div>
+			<div>
+				<div class="col-sm-offset-2 col-sm-10">
+					<button id="remove_status_submit" type="button" class="btn btn-default">Submit</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div style="display: none;">
+		<!-- Need to display statuses as a list, and concat all statuses into an array at submit -->
+		<h3>Add condition</h3>
+		<form id="add_condition" action="/superuser/add_condition">
+			<div>
+				<label for="add_condition_name">Name:</label>
+				<div class="col-sm-10">
+					<input id="add_condition_name" type="text" name="name"/>
+				</div>
+			</div>
+			<div>
+				<label for="add_condition_statuses">Statuses:</label>
+				<div class="col-sm-10">
+					<div id="add_condition_statuses">
+					</div>
+				</div>
+			</div>
+			<div>
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="button" class="btn btn-success" id="add_condition_stat">Add effect</button>
+				</div>
+			</div>
+			<div>
+				<div class="col-sm-offset-2 col-sm-10">
+					<button id="add_condition_submit" type="button" class="btn btn-default">Submit</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div style="display: none;">
+		<!-- Display a list of names, not IDs -->
+		<h3>Remove condition</h3>
+		<form id="remove_condition" action="/superuser/remove_condition">
+			<div>
+				<label for="remove_condition_name">Name:</label>
+				<div class="col-sm-10">
+					<select id="remove_condition_select" name="id" class="form-control" >
+					
+					</select>
+				</div>
+			</div>
+			<div>
+				<div class="col-sm-offset-2 col-sm-10">
+					<button id="remove_condition_submit" type="button" class="btn btn-default">Submit</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div style="display: none;">
+		<!-- This is both house items AND avatar items, will provide a list of available slots for them to choose from -->
+		<h3>Add store item</h3>
+		<form id="add_store_item" action="/superuser/add_store_item">
+			<div>
+				<label for="add_store_item_name">Name:</label>
+				<div class="col-sm-10">
+					<input id="add_store_item_name" type="text" name="name"/>
+				</div>
+			</div>
+			<div>
+				<label for="add_store_item_description">Description:</label>
+				<div class="col-sm-10">
+					<textarea id="add_store_item_description" type="text" name="descrpition" class="form-control"></textarea>
+				</div>
+			</div>
+			<div>
+				<label for="add_store_item_slot">Slot:</label>
+				<div class="col-sm-10">
+					<select id="add_store_item_slot" name="slot" class="form-control">
+					</select>
+				</div>
+			</div>
+			<div>
+				<label for="add_store_item_price">Price:</label>
+				<div class="col-sm-10">
+					<input id="add_store_item_price" type="number" name="price"/>
+				</div>
+			</div>
+			<div>
+				<label for="add_store_item_sprite">Sprite:</label>
+				<div class="col-sm-10">
+					<input id="add_store_item_sprite" type="file" name="sprite" accept="image/png"/>
+				</div>
+			</div>
+			<div>
+				<div class="col-sm-offset-2 col-sm-10">
+					<button id="add_store_item_submit" type="button" class="btn btn-default">Submit</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div style="display: none;">
+		<!-- display as sprites and names? -->
+		<h3>Remove store item</h3>
+		<form id="remove_store_item" action="/superuser/remove_store_item">
+			<div>
+				<label for="remove_store_item_slot">Slot:</label>
+				<div class="col-sm-10">
+					<select id="remove_store_item_slot" class="form-control">
+					</select>
+				</div>
+			</div>
+			<div>
+				<label for="remove_store_item_item">Item:</label>
+				<div class="col-sm-10">
+					<select id="remove_store_item_item" class="form-control">
+					</select>
+				</div>
+			</div>
+			<div>
+				<div class="col-sm-offset-2 col-sm-10">
+					<button id="remove_store_item_submit" type="button" class="btn btn-default">Submit</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div style="display: none;">
+		<!-- leave for now -->
+		<h3>Add minigame</h3>
+		<form id="add_minigame" action="/superuser/add_minigame">
+			<label>ID:</label><input type="text" name="id" /><br>
+			<label>Submit:</label><input type="submit" value="Submit" />
+		</form>
+	</div>
+	<div style="display: none;">
+		<!-- leave for now -->
+		<h3>Remove minigame</h3>
+		<form id="remove_minigame" action="/superuser/remove_minigame">
+			<label>ID:</label><input type="text" name="id" /><br>
+			<label>Submit:</label><input type="submit" value="Submit" />
+		</form>
+	</div>
+</div> <!-- content-div -->
+	
 	<script type="text/javascript" src="/assets/js/superuser.js"></script>
 </body>
 

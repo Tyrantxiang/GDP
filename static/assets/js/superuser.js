@@ -17,18 +17,27 @@
 		});
 	};
 	
-	(function(){
-		//add the form-horizontal class to every form
-		$('form').addClass("form-horizontal").attr('method', 'POST');
-		//add columns for every label
-		$('label').addClass('col-sm-2').addClass('control-label');
-		//add form-group to each form subdiv
-		$('form > div').addClass('form-group');
-		//every <INPUT> element
-		$('input').addClass('form-control');
-		$('body > div').append($('<hr>'));
-	})();
+	//add the form-horizontal class to every form
+	$('form').addClass("form-horizontal").attr('method', 'POST');
+	//add columns for every label
+	$('label').addClass('col-sm-2').addClass('control-label');
+	//add form-group to each form subdiv
+	$('form > div').addClass('form-group');
+	//every <INPUT> element
+	$('input').addClass('form-control');
+	//$('body > div').append($('<hr>'));
 
+	$('#nav-div li').click(function(e){
+		$('li.active').removeClass('active');
+		$(this).addClass('active');
+		
+		$('#content-div').children().each(function(){
+			$(this).css('display', 'none');
+		});
+		
+		$('#content-div').children().eq($(this).index()).css('display', 'inline');
+	});
+	
 //Add carriable	
 (function(){
 	$.post("/superuser/get_all_statuses", {}, function(data){
