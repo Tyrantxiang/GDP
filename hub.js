@@ -1,8 +1,11 @@
 "use strict";
 
-/* File to handle the buiness logic of the server side application
+/**
+ * Module to handle the buiness logic of the server side application
  * Each session has a hub object that deals with it's interaction with the application
  * and acts as a proxy for loading the minigames
+ *
+ * @module server/hub
  */
 
 var config;
@@ -46,36 +49,55 @@ function latch(num, complete){
 
 
 
-var locations = {
-    IN_HUB : 0,
-    IN_MINIGAME : 1
-};
 
+/** 
+ * Represents a user's session while in the Hub.
+ *
+ * This is the central object, containing all
+ * the server side implementations of socket endpoints.
+ * Also keeps track of the session variables, such as
+ * health, status values and bag contents.
+ * They are created by client comms when a socket opens
+ * 
+ * @constructor
+ * @param {int} userId  - The ID for the user this hub is associated with (see {@link Hub#userId})
+ * @param {Comms} comms - The {@link Comms} object that created the Hub
+ */
 function Hub(userId, comms){
     if(!userId || !comms){
         throw new Error("UserId and comms must be defined");
     }
 
+    /** The ID for the user this hub is associated with */
     this.userId = userId;
+    /** Further information about the user. Currently unused */
     this.user = null;
 
+    /** The user's bag
+     @type {Bag} */
     this.bag = new Bag();
 
-    // Where the player currently resides, always starts in the hub
-    this.currentlocation = locations.IN_HUB;
+    /** Where the player currently resides, always starts in the hub
+     @type {Hub.locations} */
+    this.currentlocation = Hub.locations.IN_HUB;
 
-    // The minigame ID that the player is currently in
+    /** The minigame ID that the player is currently in */
     this.gameId = null;
-    // The ID for the current game session, generated randomly
+    /** The ID for the current game session, generated randomly */
     this.gameSessionId = null;
 
-    // The time the player started the current game
+    /** The time the player started the current game
+      @type {Date} */
     this.gameStartTime = null;
 
-    // Time they logged on (this object was created)
+    /** Time they logged on (this object was created)
+     @type {Date} */
     this.connectedTime = new Date();
 
+    /** The statuses of a user
+     @type Object.<int, Status> */
     this.statuses = {};
+    /** The user's current health */
     this.health = 100;
 	
 	this.avatarImage = undefined;
@@ -101,22 +123,39 @@ function Hub(userId, comms){
             },
             this.userId);
 
+    /** A function that generates images for given parts */
     this.imgMaker = require("./imageCompositer")(300);
 }
-// Set the locations as "class constants"
-Hub.locations = locations;
 
+/**
+ * Enum representing the location of the user in a hub
+ * @readonly
+ * @enum {int}
+ */
+Hub.locations = {
+    IN_HUB : 0,
+    IN_MINIGAME : 1
+};
 
+/**
+ * Cleans up the Hub object and stores session information
+ * in the database
+ * Called when the client disconnects
+ */
 Hub.prototype.exit = function(){
-    // Cleanup code when a client disconnects
-
     // Save session data in db
     var disconnectTime = new Date();
 
     db.endSession(function(){}, function(){}, disconnectTime.toISOString(), this.userId);
 };
 
-Hub.prototype.generateSymptoms = function(health, fn){
+/**
+ * Generates and returns symtoms from a given health value
+ *
+ * @param {int} health  - The health value to generate symtoms
+ * @param {function} cb - Callback with the array of symtoms the user has
+ */
+Hub.prototype.generateSymptoms = function(health, cb){
     var words = {
         60 : "tired",
         40 : "cold",
@@ -129,25 +168,39 @@ Hub.prototype.generateSymptoms = function(health, fn){
             retValue.push(words[i]);
     }
     
-    fn(retValue);
+    cb(retValue);
 };
 
-Hub.prototype.newAvatarImageNeeded = function(oldHealth, newHealth, fn){
+/**
+ * Function to determine whether a new avatar image needs to be generated
+ * (There has been a change in how the avatar looks)
+ *
+ * @param {int} oldHealth - The health of the user before the request
+ * @param {int} newHealth - The health of the user after the request
+ * @param {function} cb   - Callback with it's first parameter as whether a new avatar image is needed
+ */
+Hub.prototype.newAvatarImageNeeded = function(oldHealth, newHealth, cb){
     var h = this;
     h.generateSymptoms(oldHealth, function(oldSymps){
         h.generateSymptoms(newHealth, function(newSymps){
 
             if(oldSymps.length !== newSymps.length){
-                fn(true);
+                cb(true);
             } else {
-                fn(false);
+                cb(false);
             }
 
         });
     });
 };
 
-Hub.prototype.generateAvatarImage = function(fn){
+/**
+ * Generates an avatar image using the user's equipt items and status.
+ * Updates Hub#avatarImage with the new image as well as returning it
+ *
+ * @param {function} cb - Called when the image has been generated
+ */
+Hub.prototype.generateAvatarImage = function(cb){
     var urls = [],
         h = this;
 		
@@ -190,13 +243,19 @@ Hub.prototype.generateAvatarImage = function(fn){
 			urls.splice(1, 0, healthImg);
 			
             h.avatarImage = h.imgMaker(urls);
-            fn();
+            cb(h.avatarImage);
         });
 };
 
 
 
-// Define functions here
+/*
+ * Functions exposed to the server via the related {@link module:server/comms~Comms|Comms} instance.
+ * This are added to the prototype of {@link Hub} so all the this values for all functions
+ * are the instance of hub
+ *
+ *  @mixin commsEventListeners
+ */
 var commsEventListeners = {
     //options are unused, here for completions sake. Can be implemented in future for
     //options such as colour blindness etc.
@@ -208,7 +267,12 @@ var commsEventListeners = {
     set_options : function(data, fn){
         fn({});
     },
-
+    /* This is a function
+    * @function
+    * @memberOf module:server/hub~Hub.prototype
+    * @param {int} - An int
+    * @this Hub
+    */
     get_all_item_info : function(data, fn){
         fn(config.items.listAll());
     },
@@ -373,7 +437,7 @@ var commsEventListeners = {
 
 
             // Check this item is actually being held
-            this.bag.useItem(carriable_id);
+            this.bag.useCarriable(carriable_id);
         }catch(e){
             fn({
                 err : "Item not in bag"
@@ -664,28 +728,52 @@ var commsEventListeners = {
 
 
 
-/* Class representing a 'bag', that is the carriables the player currently holds */
+/**
+ * Class representing a 'bag', that is the carriables the player currently holds
+ * @constructor
+ */
 function Bag(){
-    // Modelled as an array of carriables contained in the bag
+    /** Modelled as an array of carriables (by carriable ID) contained in the bag
+     @type int[] */
     this.carriables = [];
 }
+/** Get the id's of the carriables currently in the bag
+ *
+ * @return {int[]} - The carriables in the bag
+ */
 Bag.prototype.getCarriables = function(){
     return this.carriables;
 };
+/** Set the carriables with a new array
+ *
+ * @param {int[]} carriablesArray - The new array of carriables
+ */
 Bag.prototype.setCarriables = function(carriablesArray){
     if(Array.isArray(carriablesArray)) this.carriables = carriablesArray;
 };
-Bag.prototype.useItem = function(itemId){
-    var i = this.carriables.indexOf(itemId.toString());
+/**
+ * Use a carriable, by its ID.
+ * This removes it from the bag
+ *
+ * @param {int} carriableId - The ID of the item to use
+ * @throws {Error}          - When the given carriable is not in the bag
+ */
+Bag.prototype.useCarriable = function(carriableId){
+    var i = this.carriables.indexOf(carriableId.toString());
     if(i > -1){
         this.carriables.splice(i, 1);
     }else{
-        throw new Error("Item not in bag");
+        throw new Error("Carriable not in bag");
     }
 };
 
 
-/* Class represeneting a status for the user */
+/**
+* Class represeneting a status for a user
+*
+* @constructor
+* @param {Object} configObj - The database object for the status
+*/
 function Status(configObj){
     this.id = configObj.id;
     this.name = configObj.name;
@@ -696,10 +784,18 @@ function Status(configObj){
     this.max = configObj.max;
 
 }
+/** Set the value of the status
+ *
+ * @param {int} newValue
+ */
 Status.prototype.setValue = function(newValue){
     this.value = newValue;
 };
-//the addValue may be negative, allow subtraction
+/** 
+ * Adds or subtracts from the current status value.
+ *
+ * @param {int} addValue - Amount to change the value by. May be negative, to allow subtraction
+ */
 Status.prototype.addToValue = function(addValue){
     this.value += addValue;
     if(this.value<this.min){
@@ -714,6 +810,12 @@ Status.prototype.addToValue = function(addValue){
         //do unhealthy stuff
     }
 };
+/**
+ * Get the multiplier for this status.
+ * That is how much this status will effect changes in health
+ *
+ * @return {int} - The multiplier
+ */
 Status.prototype.getMultiplier = function(){
     var multiplier = 1,
         difference;
@@ -728,7 +830,13 @@ Status.prototype.getMultiplier = function(){
 
     return multiplier;
 };
-// Returns an object for sending to the client
+
+
+
+/** Serialises this class into an object that can be sent to the client (via JSON)
+ *
+ * @return {Object}
+ */
 Status.prototype.getClientObject = function(){
     return {
         id : this.id,
@@ -742,6 +850,13 @@ Status.prototype.getClientObject = function(){
 
 
 
+/** Init function for the module
+ * 
+ * @param {Object} cfg - The server configoration
+ * @param {Object} db  - The database object
+ *
+ * @return {Object.<string, function>} - Object with the module's functions
+ */
 module.exports = function (cfg, db){
     setConfig(cfg);
     setDatabase(db);

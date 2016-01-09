@@ -1,11 +1,18 @@
 "use strict";
 
-/*
- * File to set up the socket communication and expose and API to send data to and from the server
+/**
+ * Module to set up the socket communication and expose and API to send data to and from the server
+ *
+ * @module server/comms
  */
 
 
-/* Class to communicate with a specific user, exposes functions to do this */
+/**
+ * Class to communicate with a specific user, exposes functions to do this.
+ *
+ * @constructor
+ * @param {Socket} socket - The {@link http://socket.io/docs/server-api/#socket|Socket.io} Socket object for the connection
+ */
 function Comms(socket){
     var userId = socket.userId;
 
