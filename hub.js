@@ -1,11 +1,11 @@
 "use strict";
 
 /**
- * Module to handle the buiness logic of the server side application
+ * File to handle the buiness logic of the server side application
  * Each session has a hub object that deals with it's interaction with the application
  * and acts as a proxy for loading the minigames
  *
- * @module server/hub
+ * @file
  */
 
 var config;
@@ -60,6 +60,7 @@ function latch(num, complete){
  * They are created by client comms when a socket opens
  * 
  * @constructor
+ * @mixes commsEventListeners
  * @param {int} userId  - The ID for the user this hub is associated with (see {@link Hub#userId})
  * @param {Comms} comms - The {@link Comms} object that created the Hub
  */
@@ -99,8 +100,8 @@ function Hub(userId, comms){
     this.statuses = {};
     /** The user's current health */
     this.health = 100;
-	
-	this.avatarImage = undefined;
+    
+    this.avatarImage = undefined;
 
     // Get the user data from the db
     db.createSession(function(){},
@@ -203,45 +204,45 @@ Hub.prototype.newAvatarImageNeeded = function(oldHealth, newHealth, cb){
 Hub.prototype.generateAvatarImage = function(cb){
     var urls = [],
         h = this;
-		
-	var order = ["skin", "eyes", "shirt", "head"];
+        
+    var order = ["skin", "eyes", "shirt", "head"];
 
     // Equipped items could possibly be saved locally?
     this.get_user_equipped_items(
         {},
         function(data){
-			var trousers = __dirname + "/avatar_items/trousers_blue.png";
-			var healthImg = __dirname + "/avatar_items/health_healthy.png";
-			var mouth = __dirname + "/avatar_items/mouth_smile.png";
-			var eyes = undefined;
-			
-			if(h.health < 60){
-				delete data.eyes;
-				eyes = __dirname + "/avatar_items/eyes_tired.png";
-				mouth = __dirname + "/avatar_items/mouth_sad.png";
-			}
-			if(h.health < 40){
-				healthImg = __dirname + "/avatar_items/health_cold.png";
-				mouth = __dirname + "/avatar_items/mouth_cold.png";
-			}
-			if(h.health < 20){
-				healthImg = __dirname + "/avatar_items/health_nauseated.png";
-				mouth = __dirname + "/avatar_items/mouth_nauseated.png";
-			}
+            var trousers = __dirname + "/avatar_items/trousers_blue.png";
+            var healthImg = __dirname + "/avatar_items/health_healthy.png";
+            var mouth = __dirname + "/avatar_items/mouth_smile.png";
+            var eyes = undefined;
+            
+            if(h.health < 60){
+                delete data.eyes;
+                eyes = __dirname + "/avatar_items/eyes_tired.png";
+                mouth = __dirname + "/avatar_items/mouth_sad.png";
+            }
+            if(h.health < 40){
+                healthImg = __dirname + "/avatar_items/health_cold.png";
+                mouth = __dirname + "/avatar_items/mouth_cold.png";
+            }
+            if(h.health < 20){
+                healthImg = __dirname + "/avatar_items/health_nauseated.png";
+                mouth = __dirname + "/avatar_items/mouth_nauseated.png";
+            }
 
-			for(var i in order){
-				if(data[order[i]]){
-					var direc = config.items.getConfig(data[order[i]].id, "directory");
-					direc += "/sprite.png";
-					urls.push(direc);
-				}
-			}
-			
-			urls.splice(1, 0, mouth);
-			urls.splice(1, 0, trousers);
-			if(eyes) urls.splice(1, 0, eyes);
-			urls.splice(1, 0, healthImg);
-			
+            for(var i in order){
+                if(data[order[i]]){
+                    var direc = config.items.getConfig(data[order[i]].id, "directory");
+                    direc += "/sprite.png";
+                    urls.push(direc);
+                }
+            }
+            
+            urls.splice(1, 0, mouth);
+            urls.splice(1, 0, trousers);
+            if(eyes) urls.splice(1, 0, eyes);
+            urls.splice(1, 0, healthImg);
+            
             h.avatarImage = h.imgMaker(urls);
             cb(h.avatarImage);
         });
@@ -249,45 +250,76 @@ Hub.prototype.generateAvatarImage = function(cb){
 
 
 
-/*
- * Functions exposed to the server via the related {@link module:server/comms~Comms|Comms} instance.
+/**
+ * Callback for the server comms functions, normally implimented in Socket.io and returns data to the client
+ *
+ * @callback commsEventListeners~commsCallback
+ * @param {Object} data - The data to be JSONified and returned to the client
+ */
+
+/**
+ * Functions exposed to the server via the related {@link Comms} instance.
  * This are added to the prototype of {@link Hub} so all the this values for all functions
- * are the instance of hub
+ * are the instance of hub.
+ *
+ * Functions are called by the {@link Comms} class
  *
  *  @mixin commsEventListeners
  */
 var commsEventListeners = {
-    //options are unused, here for completions sake. Can be implemented in future for
-    //options such as colour blindness etc.
-    //UNUSED
+
+    /** 
+     * @todo Options are unused, here for completions sake. Can be implemented in future for
+     * options such as colour blindness etc.
+     * 
+     */
     get_options : function(data, fn){
         fn({});
     },
-    //UNUSED
+    /** 
+     * @todo Options are unused, here for completions sake. Can be implemented in future for
+     * options such as colour blindness etc.
+     * 
+     */
     set_options : function(data, fn){
         fn({});
     },
-    /* This is a function
-    * @function
-    * @memberOf module:server/hub~Hub.prototype
-    * @param {int} - An int
-    * @this Hub
-    */
+
+    /**
+     * Gets information on all items
+     *
+     * @param {Object|null} data - The data passed from the client to the server
+     * @param {commsEventListeners~commsCallback} fn
+     */
     get_all_item_info : function(data, fn){
         fn(config.items.listAll());
     },
 
+    /**
+     * Gets information on a single items
+     *
+     * @param {Object} data    - The data passed from the client to the server
+     * @param {int}    data.id - The item ID
+     * @param {commsEventListeners~commsCallback} fn
+     */
     get_single_item_info : function(data, fn){
-		var obj = config.items.getConfig(data.id, undefined);
-		if(obj){
-			obj.url = config.items.getSpriteURL(data.id);
-		}else{
-			obj = undefined;
-		}
-		
+        var obj = config.items.getConfig(data.id, undefined);
+        if(obj){
+            obj.url = config.items.getSpriteURL(data.id);
+        }else{
+            obj = undefined;
+        }
+        
         fn(obj);
     },
 
+    /**
+     * Gets all the items for a given slot
+     *
+     * @param {Object} data      - The data passed from the client to the server
+     * @param {string} data.slot - The slot to get the items for
+     * @param {commsEventListeners~commsCallback} fn
+     */
     get_items_for_slot : function(data, fn){
         var slot = config.items.listItemsForSlot(data.slot);
         if(!slot){
@@ -304,10 +336,22 @@ var commsEventListeners = {
         }));
     },
 
+    /**
+     * Gets the background image for the Hub
+     *
+     * @param {Object|null} data - The data passed from the client to the server
+     * @param {commsEventListeners~commsCallback} fn
+     */
     get_hub_backgroud_image : function(data, fn){
         fn(config.hub.getBackgroundImages());
     },
 
+    /**
+     * Gets the items this user has unlocked
+     *
+     * @param {Object|null} data - The data passed from the client to the server
+     * @param {commsEventListeners~commsCallback} fn
+     */
     get_user_unlocked_items : function(data, fn){
         db.getInventoryForUser(
             function(results){
@@ -319,6 +363,13 @@ var commsEventListeners = {
         );
     },
 
+    /**
+     * Gets all the items the user has unlocked for a given slot
+     *
+     * @param {Object} data      - The data passed from the client to the server
+     * @param {string} data.slot - The slot to get the items for
+     * @param {commsEventListeners~commsCallback} fn
+     */
     get_user_unlocked_items_by_slot : function(data, fn){
         var h = this;
         h.get_user_unlocked_items(null, function(unlocked_items){
@@ -341,6 +392,12 @@ var commsEventListeners = {
         });
     },
 
+    /**
+     * Gets the items this user currently has equipped
+     *
+     * @param {Object|null} data - The data passed from the client to the server
+     * @param {commsEventListeners~commsCallback} fn
+     */
     get_user_equipped_items : function(data, fn){
         db.getEquippedForUser(
             function(results){
@@ -348,14 +405,14 @@ var commsEventListeners = {
                 var itemMetaData = config.hub.getItemMetaData(),
                     sendBack = {},
                     slot;
-					
+                    
                 for(slot in itemMetaData){
-					
-					let md = itemMetaData[slot],
+                    
+                    let md = itemMetaData[slot],
                         itemConfig = config.items.getConfig(results[slot] || md.default),
                         url = config.items.getSpriteURL(itemConfig.id);
 
-						
+                        
                     sendBack[slot] = {
                         id : itemConfig.id,
                         name : itemConfig.name,
@@ -375,7 +432,7 @@ var commsEventListeners = {
                 fn(sendBack);
             },
             function(err){
-				console.log(err);
+                console.log(err);
                 fn(err);
             },
             this.userId
@@ -384,17 +441,23 @@ var commsEventListeners = {
         
     },
 
+    /**
+     * Updates the items this user has equipped
+     *
+     * @param {Object<string, int>} data - The data passed from the client to the server, mapping from the slot name to the item's ID
+     * @param {commsEventListeners~commsCallback} fn
+     */
     update_equipped_items : function(data, fn){
-		var invObj = {
+        var invObj = {
             user_id : this.userId,
-			head: data.head,
+            head: data.head,
             eyes: data.eyes,
             skin: data.skin,
             shirt: data.shirt
         };
 
-		var t = this;
-		
+        var t = this;
+        
         db.createUserEquipped(
             function(results){
                 t.generateAvatarImage(function(){
@@ -407,16 +470,35 @@ var commsEventListeners = {
         );
     },
 
+    /** 
+     * Gets all the carriables in the users bag
+     *
+     * @param {Object|null} data - The data passed from the client to the server
+     * @param {commsEventListeners~commsCallback} fn
+     */
     get_bag : function(data, fn){
         fn(this.bag.getCarriables());
     },
 
+    /**
+     * Sets the bag contents to a given array (will replace all old carriables)
+     *
+     * @param {Object}     data            - The data passed from the client to the server
+     * @param {Array<int>} data.carriables - Array of carriable IDs to update the bag to
+     * @param {commsEventListeners~commsCallback} fn
+     */
     set_bag : function(data, fn){
         this.bag.setCarriables(data.carriables);
 
         fn();
     },
 
+    /** 
+     * Gets all available carriables
+     *
+     * @param {Object|null} data - The data passed from the client to the server
+     * @param {commsEventListeners~commsCallback} fn
+     */
     get_all_carriables : function(data, fn){
         fn(config.carriables.listAll().map(function(l){
             l.url = config.carriables.getSpriteURL(l.id);
@@ -424,10 +506,24 @@ var commsEventListeners = {
         }));
     },
 
+    /** 
+     * Gets information on a single carriable
+     *
+     * @param {Object} data    - The data passed from the client to the server
+     * @param {int}    data.id - The ID of the carriable to get information on
+     * @param {commsEventListeners~commsCallback} fn
+     */
     get_single_carriable : function(data, fn){
         fn(config.carriables.getConfig(data.id));
     },
 
+    /** 
+     * "Uses" a carriable, thus applying it's effects and removing it from the bag
+     *
+     * @param {Object} data              - The data passed from the client to the server
+     * @param {int}    data.carriable_id - The ID of the carriable to "use"
+     * @param {commsEventListeners~commsCallback} fn
+     */
     use_carriable : function(data, fn){
         try{
             var carriable_id = data.carriable_id,
@@ -479,10 +575,23 @@ var commsEventListeners = {
         });
     },
 
+    /** 
+     * Gets all available minigames
+     *
+     * @param {Object|null} data - The data passed from the client to the server
+     * @param {commsEventListeners~commsCallback} fn
+     */
     list_minigames : function(data, fn){
         fn(config.games.listAll());
     },
 
+    /** 
+     * Launches a given minigame and returns the data needed to run it on the client
+     *
+     * @param {Object} data    - The data passed from the client to the server
+     * @param {int}    data.id - The ID of the game to launch
+     * @param {commsEventListeners~commsCallback} fn
+     */
     launch_minigame : function(data, fn){
         // Get all of the items required for the game and send them to the client
         var id = data.id;
@@ -519,6 +628,15 @@ var commsEventListeners = {
         }
     },
 
+    /** 
+     * Finishes the current minigame and saves the results to the database
+     *
+     * @param {Object} data          - The data passed from the client to the server
+     * @param {int}    data.id       - The ID of the game to finish
+     * @param {int}    data.score    - The score the user attained for this run
+     * @param {int}    data.currency - The currency the user attained for this run
+     * @param {commsEventListeners~commsCallback} fn
+     */
     finish_minigame : function(data, fn){
         var id = data.gameId,
             score = data.score;
@@ -556,6 +674,13 @@ var commsEventListeners = {
         }
     },
 
+    /** 
+     * Finishes the current minigame and saves the results to the database
+     *
+     * @param {Object} data          - The data passed from the client to the server
+     * @param {commsEventListeners~commsCallback} fn
+     * @todo Document
+     */
     get_scores : function(data, fn){
         var numOfScores = 3;
 
@@ -576,30 +701,30 @@ var commsEventListeners = {
         }
 
         db.getScores(   function(results){
-							if(data.option_num === 3){
-								results.sort(function(a, b){
-									return b.score - a.score;
-								});
-								var total = {};
-								total[results[0].game_id] = results;
-								results = total;
-							}else if(data.option_num === 2){
-								var total = {};
-								for(var i=0; i<results.length; i++){
-									var current = results[i];
-									if(!total.hasOwnProperty(current.game_id)){
-										total[current.game_id] = [];
-									}
-									total[current.game_id].push(current);
-								}
-								for(var j in total){
-									total[j].sort(function(a, b){
-										return b.score - a.score;
-									});
-								}
-								results = total;
-							}
-			
+                            if(data.option_num === 3){
+                                results.sort(function(a, b){
+                                    return b.score - a.score;
+                                });
+                                var total = {};
+                                total[results[0].game_id] = results;
+                                results = total;
+                            }else if(data.option_num === 2){
+                                var total = {};
+                                for(var i=0; i<results.length; i++){
+                                    var current = results[i];
+                                    if(!total.hasOwnProperty(current.game_id)){
+                                        total[current.game_id] = [];
+                                    }
+                                    total[current.game_id].push(current);
+                                }
+                                for(var j in total){
+                                    total[j].sort(function(a, b){
+                                        return b.score - a.score;
+                                    });
+                                }
+                                results = total;
+                            }
+            
                             fn(results);
                         },
                         function(err){ fn({err: "Error accessing database entries" }); },
@@ -609,19 +734,26 @@ var commsEventListeners = {
                     );
     },
 
+    /** 
+     * Modify the health of the user, using the status multipliers to effect the past in value
+     *
+     * @param {Object} data       - The data passed from the client to the server
+     * @param {int}    data.value - The amount to modify the user's health by
+     * @param {commsEventListeners~commsCallback} fn
+     */
     modify_hp_value : function(data, fn){
-		
+        
         var value = data.value;
-		
-		var multiplier = 1;
+        
+        var multiplier = 1;
         for(var stat in this.statuses){
             multiplier *= this.statuses[stat].getMultiplier();
         }
-		
-		//The multiplier makes bad health changes go up, and good health changes go down
-		if(value < 0) value = Math.floor(value * multiplier);
-		else value = Math.floor(value / multiplier);
-		
+        
+        //The multiplier makes bad health changes go up, and good health changes go down
+        if(value < 0) value = Math.floor(value * multiplier);
+        else value = Math.floor(value / multiplier);
+        
         // Keep health between 100 and 0;
         var oldHealth = this.health;
         this.health = Math.max(0, Math.min(100, this.health + value));
@@ -646,6 +778,14 @@ var commsEventListeners = {
 
     },
 
+    /** 
+     * Modify the value of a status of the user
+     *
+     * @param {Object} data       - The data passed from the client to the server
+     * @param {int}    data.id    - The ID of the status to modify
+     * @param {int}    data.value - The amount to modify the user's health by
+     * @param {commsEventListeners~commsCallback} fn
+     */
     modify_status_value : function(data, fn){
         var status = this.statuses[data.id];
         if(status){
@@ -659,12 +799,25 @@ var commsEventListeners = {
         }
     },
 
+    /** 
+     * Gets the health of the user
+     *
+     * @param {Object|null} data - The data passed from the client to the server
+     * @param {commsEventListeners~commsCallback} fn
+     */
     get_hp_value : function(data, fn){
         fn({
             health : this.health
         });
     },
 
+    /** 
+     * Gets the information for a given status
+     *
+     * @param {Object} data    - The data passed from the client to the server
+     * @param {int}    data.id - The ID of the status to get the information for
+     * @param {commsEventListeners~commsCallback} fn
+     */
     get_status_value : function(data, fn){
         var status = this.statuses[data.id];
         if(status){
@@ -676,6 +829,12 @@ var commsEventListeners = {
         }
     },
 
+    /** 
+     * Gets the information for all statuses
+     *
+     * @param {Object|null} data - The data passed from the client to the server
+     * @param {commsEventListeners~commsCallback} fn
+     */
     get_all_status_values : function(data, fn){
         var statuses = {};
         for(var id in this.statuses){
@@ -685,34 +844,53 @@ var commsEventListeners = {
 
         fn(statuses);
     },
-	
-	get_avatar : function(data, fn){
-		var h = this;
-		this.generateAvatarImage(function(){
-			fn(h.avatarImage);
-		});
-	},
 
-	set_hp_value : function(data, fn){
-		this.health = data.newhp;
-		
-		// Keep health between 100 and 0;
+    /** 
+     * Get the avatar image for the user
+     *
+     * @param {Object|null} data - The data passed from the client to the server
+     * @param {commsEventListeners~commsCallback} fn
+     */
+    get_avatar : function(data, fn){
+        var h = this;
+        this.generateAvatarImage(function(){
+            fn(h.avatarImage);
+        });
+    },
+
+    /** 
+     * Sets the haelth of the user to the given value, ignoring all status modifiers
+     *
+     * @param {Object} data       - The data passed from the client to the server
+     * @param {int}    data.value - The amount to set the user's health to
+     * @param {commsEventListeners~commsCallback} fn
+     */
+    set_hp_value : function(data, fn){
+        this.health = data.newhp;
+        
+        // Keep health between 100 and 0;
         this.health = Math.max(0, Math.min(100, this.health));
-		
-		var h = this;
-		
-		this.generateAvatarImage(function(){
-			
+        
+        var h = this;
+        
+        this.generateAvatarImage(function(){
+            
             fn({
                 newhp: h.health,
                 avatarImage: h.avatarImage
             });
         });
-	},
-	
-	get_symptoms : function(data, fn){
+    },
+
+    /** 
+     * Get the symtoms the user currently has
+     *
+     * @param {Object|null} data - The data passed from the client to the server
+     * @param {commsEventListeners~commsCallback} fn
+     */
+    get_symptoms : function(data, fn){
         this.generateSymptoms(this.health, fn);
-	}
+    }
 };
 
 

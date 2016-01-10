@@ -3,7 +3,7 @@
 /**
  * Module to set up the socket communication and expose and API to send data to and from the server
  *
- * @module server/comms
+ * @file
  */
 
 
