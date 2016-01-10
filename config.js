@@ -1,8 +1,11 @@
 "use strict";
 
-/* File to store the configoration for all aspects of the system
+/**
+ * Module that stores the configuration for all aspects of the system
  * Deals with system properties (port, pg database info, etc)
  * Scans the filesystem for new games and returns the file paths and assets when a game is requested
+ *
+ * @file
  */
 
 
@@ -21,10 +24,16 @@ var fs = require("fs"),
 
 
 
+var exporter = {};
 
 
-// General app configs
-module.exports.app = {
+
+exporter.app = {
+    /**
+     * Gets the port to bind the web server to
+     * 
+     * @return {int|null} - The port number, or null if it is not specified in config.json
+     */
     getPort : function() {
         if(config.app.port){
             return config.app.port;
@@ -32,17 +41,27 @@ module.exports.app = {
         return null;
     },
 
+    /**
+     * Gets the version of the client currently stored on the server
+     *
+     * @return {int|undefined} - The version number of the client, or undefined if it is not specified in config.json
+     */
     getClientVersion : function(){
         return config.app.clientVersion;
     },
 
+    /**
+     * Gets the version of the client currently stored on the server
+     *
+     * @return {int|undefined} - The version number of the client, or undefined if it is not specified in config.json
+     */
     getServerVersion : function(){
         return config.app.serverVersion;
     }
 };
 
 //Database settings config
-module.exports.database = {
+exporter.database = {
     getDefaultSchema : function(){
         return config.defaultDatabase || "main";
     },
@@ -52,7 +71,7 @@ module.exports.database = {
     }
 };
 
-module.exports.hub = {
+exporter.hub = {
     getBackgroundImages : function(){
         return config.hub.backgroundImages;
     },
@@ -260,12 +279,21 @@ function configReaderFactory(directory){
 
         // Functions wrapped in their own object
         functions : {
-            /* Return if a config file exists, given by ID */
+            /**
+             * Return if a config file exists for the given ID
+             *
+             * @param {int} id - The config ID
+             * @return {boolean} - True if the config file exists, false if not
+             */
             exists : function(id){
                 return !!configs[id];
             },
 
-            /* Return a list of objects representing the avalible games */
+            /**
+             * Return an array of objects representing all the config files
+             *
+             * @return {Object[]} - Array of objects each representing a config file
+             */
             listAll : function(){
                 var a = [];
                 for(var cfg in configs){
@@ -274,12 +302,23 @@ function configReaderFactory(directory){
                 return a;
             },
 
-            /* Get the name of a game from a given ID */
+            /**
+             * Gets the name of the config for the given ID
+             *
+             * @param {int} id - The config ID
+             * @return {string} - The config's name
+             */
             getName : function(id){
                 return configs[id] && configs[id].name;
             },
 
-            /* Get a specific config from the game ID or all configs is 'configName' is falsy */
+            /**
+             * Get a specific config from the game ID or all configs is 'configName' is falsy
+             * 
+             * @param {int} id - The config ID
+             * @param {string} [configName] - The config value requested
+             * @return {Object} - The request config value or the entire config file as an object
+             */
             getConfig : function(id, configName){
                 var cfg = configs[id];
                 if(!cfg){
@@ -308,7 +347,7 @@ function configReaderFactory(directory){
 /* Wrapper to contain the code for game config, keeps it seperate from other config
  * Self calling
  */
-module.exports.games = (function(){
+exporter.games = (function(){
     console.log("Loading configs for games");
     // Variables
     var gamesRelativeDir = config.app.gamesDir || "games",
@@ -374,13 +413,14 @@ module.exports.games = (function(){
 
 
 
-module.exports.items = (function(){
+exporter.items = (function(){
     console.log("Loading configs for items");
 
     var itemsRelativeDir = config.app.itemsDir || "items",
         itemsDir = path.join(__dirname, itemsRelativeDir),
         spritesExt = ".png",
-        slots = module.exports.hub.getItemSlots(),
+   
+        slots = exporter.hub.getItemSlots(),
         funcs = {},
 
         slotFunctions = slots.map(function(slot){
@@ -450,7 +490,7 @@ module.exports.items = (function(){
 })();
 
 
-module.exports.carriables = (function(){
+exporter.carriables = (function(){
     console.log("Loading configs for carriables");
 
     var carriablesRelativeDir = config.app.carriablesDir || "carriables",
@@ -493,7 +533,7 @@ module.exports.carriables = (function(){
 /* Wrapper for disease configs
  *
  */
-module.exports.conditions = (function(){
+exporter.conditions = (function(){
     console.log("Loading configs for conditions");
 
     var conditionsRelativeDir = config.app.conditionsDir || "conditions",
@@ -509,7 +549,7 @@ module.exports.conditions = (function(){
 
 })();
 
-module.exports.statuses = (function(){
+exporter.statuses = (function(){
     console.log("Loading configs for statuses");
 
     var statusesRelativeDir = config.app.statusesDir || "statuses",
@@ -524,3 +564,6 @@ module.exports.statuses = (function(){
     return functions;
 
 })();
+
+
+module.exports = exporter;
