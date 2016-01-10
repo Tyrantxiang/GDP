@@ -1,5 +1,11 @@
 "use strict";
 
+/**
+ * The entry point to the application. Requires all the needed libraries and files, sets up the routes and starts the web server
+ *
+ * @file
+ */
+
 
 var config = require("./config.js");
 
