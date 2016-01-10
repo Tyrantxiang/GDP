@@ -25,11 +25,24 @@ function Comms(socket){
     this.listeners = {};
 }
 
+/**
+ * Adds event listners to this socket connection
+ *
+ * @param {Object<string, function>} funcs     - Map of the name of the listener to the function to call
+ * @param {Object}                   thisValue - The value to bind this to when the listener is fired
+ */
 Comms.prototype.setEventListeners = function (funcs, thisValue){
     for(var name in funcs){
         this.addEventListener(name, funcs[name], thisValue);
     }
 };
+/**
+ * Adds an event listner to this socket connection
+ *
+ * @param {string}   name      - The name of the event to watch
+ * @param {function} func      - The function to call when the event is triggered
+ * @param {Object}   thisValue - The value to bind this to when the listener is fired
+ */
 Comms.prototype.addEventListener = function (name, func, thisValue){
     if(thisValue){
         func = func.bind(thisValue);
