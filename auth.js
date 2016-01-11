@@ -1,7 +1,6 @@
 "use strict";
 
 /* Authentication module contains the methods to handle login, auth and user handling */
-
 var jwt = require("jsonwebtoken"),
     secret = "trisha is bob";
 
@@ -18,6 +17,10 @@ function getDatabase(){
     return db;
 }
 
+var adminId = -1;
+function setAdminId(){
+	db.readUserByName(function(user){adminId = user.id;}, function(){adminId = -1;}, 'admin');
+}
 
 
 function generateToken(userId){
@@ -106,10 +109,60 @@ function socket_middleware(socket, next){
     });
 }
 
+function admin_authenticate(req, res, next){
+	var username = req.body.username,
+		password = req.body.password;
+	
+	function fail(msg){
+		res.status(400).json({"success": false, "message": msg});
+	};
+	
+	if(!(username && password)){
+		fail("username or password missing");
+	}else if(username !== "admin"){
+		fail("invalid username or password");
+	}else{		
+		// Authenticate and get userId
+		function pass(){
+			next();
+		};
+		db.authenticateUser(pass, fail, username, password);
+	}
+}
+
+function admin_token(req, res, next){
+	var	token = req.query.token || req.body.token;
+	
+	function fail(msg){
+		res.status(400).json({"success": false, "message": msg});
+	};
+	
+	if(token){
+		jwt.verify(token, secret, function(err, decoded){
+			if(err){
+				fail('Not authorized');
+				return;
+			}
+			
+			if(decoded.userId === adminId){
+				next();
+			}else{
+				next(new Error('Invalid token'));
+			}
+			
+		});
+	}else{
+		fail('Token not supplied');
+	}
+}
+
 module.exports = function(db){
     setDatabase(db);
+	setAdminId();
 
     return {
+		admin_token : admin_token,
+		admin_authenticate : admin_authenticate,
         authenticate : authenticate,
         express_middleware : express_middleware,
         socket_middleware : socket_middleware,

@@ -41,8 +41,8 @@ function startApp(db){
 
 	// Set up the authentication middleware
 	app.use([/*"/games",*/ "/p"], auth.express_middleware);
-
-
+	app.use(["/superuser.html", "/assets/js/superuser.js"], auth.admin_token);
+	
 	// Set the static files to be served
 	app.use("/", express.static("static"));
 
@@ -59,15 +59,20 @@ function startApp(db){
 	app.get("/carriables/:carriable/:filename", config.carriables.serveFile);
 	app.get("/items/:item/:filename", config.items.serveFile);
 
-
-
 	// User http RESTful API routes
 	app.get("/user/get_conditions_list", userapi.get_conditions_list);
 	app.post("/user/validate_username", userapi.validate_username);
 	app.post("/user/validate_dob", userapi.validate_dob);
 	app.post("/user/sign_up", userapi.sign_up);
-
+	
 	//Superuser http API routes
+	var superuserRoutes = [ 	"/add_bag_item", "/remove_bag_item", "/add_status", "/remove_status", "/add_condition",
+					"/remove_condition", "/add_store_item", "/remove_store_item", "/add_minigame", "/remove_minigame"];
+
+	db.createUser(console.log, console.log, { username : 'admin', password : 'changeme', dob : new Date(946684800000) });
+	
+	app.use(superuserRoutes, auth.admin_token);
+	
 	var multer = require("multer");
 	var upload = multer({ dest: 'uploads/' });
 	var superuserapi = require('./superuser-api.js')(config, db);

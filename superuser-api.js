@@ -56,14 +56,12 @@ function createFiles(spriteLoc, newLoc, configObj, otherFiles){
 	fs.mkdir(newLoc, function(err){
 		fs.readFile(spriteLoc, function (err, data) {
 			var newPath = newLoc + "sprite.png";
-			fs.writeFile(newPath, data, function (err) {
-			});
+			fs.writeFile(newPath, data, err => {});
 			
-			fs.unlink(spriteLoc, function(err){});
+			fs.unlink(spriteLoc, err => {});
 		});
 		
-		fs.writeFile(newLoc + "config.json", JSON.stringify(configObj), function(err){
-		});
+		fs.writeFile(newLoc + "config.json", JSON.stringify(configObj), err => {});
 		
 		if(otherFiles){
 			
@@ -91,11 +89,24 @@ function removeFiles(path){
 /****** Route functions ******/
 var routes = {
 	
-	add_bag_item : function(req, res){		
+	add_bag_item : function(req, res){
+		function checkEffectsAreValid(arr){
+			if(isJsonString(arr)) arr = JSON.parse(arr);
+			var valid = arr.constructor===Array;
+			valid = valid && arr.every(ele => (typeof ele === "object") && ele.id && ele.amount);
+			valid = valid && arr.every(ele => (typeof ele.id==="number") && (typeof ele.amount==="number"))
+			return valid;
+		};
+		
 		var properties = ["name", "effects"];
-		var valid = checkIsValid(properties, req.body);
-		if(valid){
+		var invalid = checkIsValid(properties, req.body);
+		
+		if(!invalid){
 			req.body.effects = JSON.parse(req.body.effects);
+			if(!checkEffectsAreValid(req.body.effects)){
+				returnInvalidMessage(res, "effects invalid");
+				return;
+			}
 			
 			var obj = {};
 			for(var i=0; i<properties.length; i++){
@@ -105,7 +116,7 @@ var routes = {
 			
 			createFiles(req.file.path, "/carriables/" + obj.id.toString(), obj, undefined);
 
-			res.json({"okay": "A OK!"});
+			res.status(200).json({"okay": "A OK!"});
 		}else{
 			returnInvalidMessage(res, valid);
 		}
@@ -119,7 +130,7 @@ var routes = {
 			
 			removeFiles(path);
 			
-			res.json({"okay": "A OK!"});
+			res.status(200).json({"okay": "A OK!"});
 		}else{
 			returnInvalidMessage(res, valid);
 		}
@@ -197,7 +208,7 @@ var routes = {
 		}else{
 			returnInvalidMessage(res, valid);
 		}
-	},
+	}
 	/*
 	add_minigame : function(req, res){
 		var valid = checkIsValid(["id", "name", "description", "img", "scripts", "entry_point"], req.body);
@@ -225,8 +236,7 @@ var dataRoutes = {
 	},
 	
 	get_all_carriables : function(req, res){
-		var allitems = config.carriables.listAll();
-		allitems = allitems.map(function(item){
+		var allitems = config.carriables.listAll().map(item => {
 			item.url = config.carriables.getSpriteURL(item.id);
 			delete item.effects;
 			return item;
