@@ -1,6 +1,9 @@
 "use strict";
 
-/* File implements routes for the user handling via a http RESTful API
+/**
+ * File implements the express routes for the user handling via a http RESTful API
+ *
+ * @module user-api
  */
 
 var config;
@@ -25,6 +28,12 @@ function getDatabase(){
     return db;
 }
 
+
+/*
+ * TODO:
+ * Callback 
+ *
+ */
 
 
 // Is this call to a validation function successful?
@@ -92,8 +101,17 @@ function isPasswordValid(pw, cb){
 
 
 
-/****** Route functions ******/
+
+/**
+ * The user api express route functions
+ * @namespace routes
+ *
+ */
 var routes = {
+    /** 
+     *  aa
+     * @param a
+     */
     get_conditions_list : function (req, res){
         res.json(config.conditions.listAll());
     },
@@ -198,7 +216,14 @@ function setUpDefaultItems(userid){
 
 
 
+/**
+ *
+ * Returns things
+ * @param {module:config} cfg - A config object
+ * @param {Object} db - A database object
 
+ * @return {module:user-api~routes} The user-api routes
+ */
 module.exports = function (cfg, db){
     setConfig(cfg);
     setDatabase(db);

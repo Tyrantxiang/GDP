@@ -5,7 +5,7 @@
  * Deals with system properties (port, pg database info, etc)
  * Scans the filesystem for new games and returns the file paths and assets when a game is requested
  *
- * @file
+ * @module
  */
 
 
@@ -27,11 +27,17 @@ var fs = require("fs"),
 var exporter = {};
 
 
-
+/**
+ * Contains functions to get configuration for the application as a whole
+ *
+ * @namespace app
+ * @memberof module:config
+ */
 exporter.app = {
     /**
      * Gets the port to bind the web server to
      * 
+     * @memberof module:config.app
      * @return {int|null} - The port number, or null if it is not specified in config.json
      */
     getPort : function() {
@@ -44,6 +50,7 @@ exporter.app = {
     /**
      * Gets the version of the client currently stored on the server
      *
+     * @memberof module:config.app
      * @return {int|undefined} - The version number of the client, or undefined if it is not specified in config.json
      */
     getClientVersion : function(){
@@ -53,6 +60,7 @@ exporter.app = {
     /**
      * Gets the version of the client currently stored on the server
      *
+     * @memberof module:config.app
      * @return {int|undefined} - The version number of the client, or undefined if it is not specified in config.json
      */
     getServerVersion : function(){
@@ -60,35 +68,87 @@ exporter.app = {
     }
 };
 
-//Database settings config
+
+/**
+ * Contains functions to get configuration for accessing and using the database
+ *
+ * @namespace database
+ * @memberof module:config
+ */
 exporter.database = {
+    /**
+     * Gets the default schema to use for the application
+     *
+     * @memberof module:config.database
+     * @return {string} - The name of the default database schema or "main" if not specified
+     */
     getDefaultSchema : function(){
         return config.defaultDatabase || "main";
     },
 
+    /**
+     * Gets the settings for a given database including username, password, schema etc
+     *
+     * @memberof module:config.database
+     * @param {string} databaseName - The name of the database to get settings for
+     * @return {Object} - The settings for the given database
+     */
     getSettings : function(databaseName){
         return config.databases[databaseName];
     }
 };
 
+
+/**
+ * Contains functions to get configuration for accessing and using the database
+ *
+ * @namespace hub
+ * @memberof module:config
+ */
 exporter.hub = {
+    /**
+     * Gets the background image for the hub
+     *
+     * @memberof module:config.hub
+     * @return {Object} config     - Config for the background image
+     * @return {string} config.url - The url of the image
+     */
     getBackgroundImages : function(){
         return config.hub.backgroundImages;
     },
 
+    /**
+     * Gets the metadata on an item slot
+     *
+     * @memberof module:config.hub
+     * @return {Object<string, {
+                    default: int, left: int, top: int, scale: int, select_scale: int
+                }>} - Config for the background image
+     */
     getItemMetaData : function(){
         return config.hub.itemMetaData;
     },
 
+    /**
+     * Gets the all the currently configured items slots
+     *
+     * @memberof module:config.hub
+     * @return {string[]} - Config for the background image
+     */
     getItemSlots : function(){
         return Object.keys(config.hub.itemMetaData);
     }
 };
 
 
-/*
+/**
  * Function takes a directory and sets up watchers on the config files within the subdirectories
  * Also watches the directory itself for new subdirectories
+ *
+ * @private
+ * @constructor
+ * @param {string} directory - The directory to set a config reader up for
+ * @return {module:config~configReader} - The config reader object using the given directory
  */
 function configReaderFactory(directory){
     var configFileName = "config.json",
@@ -278,10 +338,16 @@ function configReaderFactory(directory){
         configs : configs,
 
         // Functions wrapped in their own object
+        /** 
+         * Config reader functions
+         * 
+         * @mixin configReaderFunctions
+         */
         functions : {
             /**
              * Return if a config file exists for the given ID
              *
+             * @memberof module:config~configReaderFunctions
              * @param {int} id - The config ID
              * @return {boolean} - True if the config file exists, false if not
              */
@@ -344,8 +410,12 @@ function configReaderFactory(directory){
 
 
 
-/* Wrapper to contain the code for game config, keeps it seperate from other config
+/** Wrapper to contain the code for game config, keeps it seperate from other config
  * Self calling
+ *
+ * @namespace games
+ * @memberof module:config
+ * @mixes module:config~configReaderFunctions
  */
 exporter.games = (function(){
     console.log("Loading configs for games");
@@ -359,7 +429,9 @@ exporter.games = (function(){
 
 
 
-    /* Get the URLs of the scripts for the given game */
+    /** Get the URLs of the scripts for the given game 
+    @function getScripts
+    @memberof module:config.games */
     functions.getScripts = function(id){
         var scripts = gameConfigs[id].scripts.map(function(s){
             return "/" + gamesRelativeDir + "/" + id + "/" + "scripts" + "/" + s;
@@ -565,5 +637,9 @@ exporter.statuses = (function(){
 
 })();
 
-
+/*
+ * Returns a {@link module:config~config} object
+ *
+ * @returns {module:config~config} - Config object
+ */
 module.exports = exporter;

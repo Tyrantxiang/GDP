@@ -1,6 +1,11 @@
 "use strict";
 
-/* Authentication module contains the methods to handle login, auth and user handling */
+/**
+ * Authentication module contains the methods to handle login, auth and user handling
+ *
+ * @file
+ */
+
 var jwt = require("jsonwebtoken"),
     secret = "trisha is bob";
 
@@ -22,7 +27,12 @@ function setAdminId(){
 	db.readUserByName(function(user){adminId = user.id;}, function(){adminId = -1;}, 'admin');
 }
 
-
+/*
+ * Generate a JSON Web Token (jwt)
+ *
+ * @param {int} userId - The ID of the user to generate the token for
+ * @return {string} - The JSON Web Token 
+ */
 function generateToken(userId){
     /* To make sure we don't send the userId (for db reasons) maybe we should encrypt the
      * user ID here (with AES?)
@@ -30,6 +40,10 @@ function generateToken(userId){
     return jwt.sign({ userId : userId }, secret, { expiresIn : 60 * 60 * 24 });
 }
 
+/*
+ * An express route function that authenticates a username and password against the database.
+ * Returns a jwt to the client for the session on success and an error on failure
+ */
 function authenticate(req, res){
     var username, password,
 
@@ -60,6 +74,10 @@ function authenticate(req, res){
     }
 }
 
+/*
+ * Express middleware that verifies a token before possing on to the next function for the route
+ * Will send a response early if the token isn't present or invalid
+ */
 function express_middleware(req, res, next){
     // Try and get the token from the query string first
     var token = req.query.token || req.query.t;
@@ -89,6 +107,11 @@ function express_middleware(req, res, next){
     });
 }
 
+/*
+ * Socket.io middleware that is run when a socket is opened.
+ * Authenticates that token is passed in and is valid.
+ * Will open the socket on success and return an error on failure.
+ */
 function socket_middleware(socket, next){
     //console.log(socket.request);
     var token = socket.request._query.token;
