@@ -146,27 +146,7 @@ function socket_middleware(socket, next){
 
 
 /**************** These functions should be removed in the future for a more elegant solution *****************/
-/** */
-function admin_authenticate(req, res, next){
-	var username = req.body.username,
-		password = req.body.password;
-	
-	function fail(msg){
-		res.status(400).json({"success": false, "message": msg});
-	};
-	
-	if(!(username && password)){
-		fail("username or password missing");
-	}else if(username !== "admin"){
-		fail("invalid username or password");
-	}else{		
-		// Authenticate and get userId
-		function pass(){
-			next();
-		};
-		db.authenticateUser(pass, fail, username, password);
-	}
-}
+
 /** */
 function admin_token(req, res, next){
 	var	token = req.query.token || req.body.token;
@@ -201,7 +181,6 @@ function admin_token(req, res, next){
  * @namespace auth
  *
  * @borrows module:auth~admin_token as admin_token
- * @borrows module:auth~admin_authenticate as admin_authenticate
  * @borrows module:auth~authenticate as authenticate
  * @borrows module:auth~express_middleware as express_middleware
  * @borrows module:auth~socket_middleware as socket_middleware
@@ -210,7 +189,6 @@ function admin_token(req, res, next){
  */
 var exportFunctions = {
     admin_token : admin_token,
-    admin_authenticate : admin_authenticate,
     authenticate : authenticate,
     express_middleware : express_middleware,
     socket_middleware : socket_middleware,

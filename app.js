@@ -112,7 +112,7 @@ function startApp(db){
 
     // Set up the authentication middleware
     app.use([/*"/games",*/ "/p"], auth.express_middleware);
-    app.use(["/superuser.html", "/assets/js/superuser.js"], auth.admin_token);
+    app.use(["/superuser-functions.html", "/assets/js/superuser.js"], auth.admin_token);
     
     // Set the static files to be served
     app.use("/", express.static("static"));
