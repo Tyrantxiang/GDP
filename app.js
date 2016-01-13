@@ -93,7 +93,8 @@ function startApp(db){
 
     // Other libary requires
         parser = require("body-parser"),
-        morgan = require("morgan");
+        morgan = require("morgan"),
+		upload_multer = require("multer")({ dest: "uploads/" });
 
 
 
@@ -101,7 +102,7 @@ function startApp(db){
     var auth = internalRequire("auth.js")(db),
         hub = internalRequire("hub.js")(config, db),
         userapi = internalRequire("user-api.js")(config, db),
-        superuserapi = internalRequire("superuser-api.js")(config, db);
+        superuserapi = internalRequire("superuser-api.js")(config, db, __dirname);
 
 
     app.use(morgan("dev"));
@@ -137,25 +138,23 @@ function startApp(db){
     app.post("/user/sign_up", userapi.sign_up);
     
     //Superuser http API routes
-    var superuserRoutes = [     "/add_bag_item", "/remove_bag_item", "/add_status", "/remove_status", "/add_condition",
-                    "/remove_condition", "/add_store_item", "/remove_store_item", "/add_minigame", "/remove_minigame"];
-
-    db.createUser(console.log, console.log, { username : "admin", password : "changeme", dob : new Date(946684800000) });
-    
-    app.use(superuserRoutes, auth.admin_token);
-    
-    var multer = require("multer");
-    var upload = multer({ dest: "uploads/" });
-    var superuserapi = internalRequire("superuser-api.js")(config, db);
-    app.post("/superuser/add_bag_item", upload.single("sprite"), superuserapi.routes.add_bag_item);
+    var superuserRoutes = Object.keys(superuserapi.routes).map(function(curr){return "/superuser/"+curr.toString();});
+    //db.createUser(console.log, console.log, { username : "admin", password : "changeme", dob : new Date(946684800000) });
+    //app.use(superuserRoutes, auth.admin_token);
+	
+	app.post("/superuser/add_bag_item", upload_multer.single("sprite"), auth.admin_token, superuserapi.routes.add_bag_item);
     app.post("/superuser/remove_bag_item", superuserapi.routes.remove_bag_item);
-    app.post("/superuser/add_status", upload.single("sprite"), superuserapi.routes.add_status);
-    
+    app.post("/superuser/add_status", upload_multer.single("sprite"), auth.admin_token, superuserapi.routes.add_status);
+    app.post("/superuser/remove_status", auth.admin_token, superuserapi.routes.remove_status);
+    app.post("/superuser/add_condition", auth.admin_token, superuserapi.routes.add_condition);
+    app.post("/superuser/remove_condition", auth.admin_token, superuserapi.routes.remove_condition);
+    app.post("/superuser/add_store_item", auth.admin_token, superuserapi.routes.add_store_item);
+    app.post("/superuser/remove_store_item", auth.admin_token, superuserapi.routes.remove_store_item);
+    //app.post("/superuser/add_minigame", auth.admin_token, superuserapi.add_minigame);
+    //app.post("/superuser/remove_minigame", auth.admin_token, superuserapi.remove_minigame);
+	
     for(var i in superuserapi.dataRoutes){
-        if(superuserapi.dataRoutes.hasOwnProperty(i)){
-            var str = "/superuser/"+i.toString();
-            app.post(str, superuserapi.dataRoutes[i])
-        }
+        app.post(i, superuserapi.dataRoutes[i])
     }
     
     // Set up Socket.io connection
@@ -168,4 +167,3 @@ function startApp(db){
 function dbFailure(){
     console.error("DB could not be inited");
 }
-
