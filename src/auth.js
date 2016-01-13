@@ -221,7 +221,7 @@ var exportFunctions = {
 /** 
  * Init function for the module. Returns the exposed functions of the module
  * 
- * @param {Object} db  - The database object
+ * @param {module:database} db  - The database object
  * @return {module:auth~auth} - Object with the module's functions
  */
 module.exports = function(db){

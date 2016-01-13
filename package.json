@@ -4,7 +4,8 @@
   "description": "A framework to build games to aid cronically ill children to learn about how to manage their illness",
   "main": "app.js",
   "scripts": {
-    "start" : "node app.js",
+    "start": "node app.js",
+    "docs" : "node scripts/docs.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,8 +19,8 @@
     "url": "https://github.com/JoeRingham/GDP/issues"
   },
   "homepage": "https://github.com/JoeRingham/GDP#readme",
-  "engines" : {
-    "node" : ">=4.0"
+  "engines": {
+    "node": ">=4.0"
   },
   "dependencies": {
     "bcrypt": "~0.8.5",
@@ -33,5 +34,9 @@
     "rsvp": "~3.1.0",
     "socket.io": "^1.3.7",
     "validate.js": "~0.9.0"
+  },
+  "devDependencies": {
+    "ink-docstrap": "^1.1.0",
+    "jsdoc": "^3.4.0"
   }
 }

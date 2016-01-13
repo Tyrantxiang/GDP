@@ -1089,8 +1089,8 @@ var exportFunctions = {
 /** 
  * Init function for the module. Returns the exposed functions of the module
  * 
- * @param {Object} cfg - The server configoration
- * @param {Object} db  - The database object
+ * @param {module:config}   cfg - The server configoration
+ * @param {module:database} db  - The database object
  * @return {module:hub~hub} - Object with the module's functions
  */
 module.exports = function (cfg, db){
