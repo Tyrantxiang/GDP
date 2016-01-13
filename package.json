@@ -11,12 +11,16 @@
     "type": "git",
     "url": "git+ssh://git@github.com/JoeRingham/GDP.git"
   },
+  "private": true,
   "author": "Corin Chaplin, Ian Barker, Joe Ringham, Peter Fox, Trisha Khallaghi",
   "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/JoeRingham/GDP/issues"
   },
   "homepage": "https://github.com/JoeRingham/GDP#readme",
+  "engines" : {
+    "node" : ">=4.0"
+  },
   "dependencies": {
     "bcrypt": "~0.8.5",
     "body-parser": "^1.14.1",
