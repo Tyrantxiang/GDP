@@ -203,7 +203,8 @@ Hub.prototype.newAvatarImageNeeded = function(oldHealth, newHealth, cb){
  */
 Hub.prototype.generateAvatarImage = function(cb){
     var urls = [],
-        h = this;
+        h = this,
+        rootLocation = config.app.getRootDirectory();
         
     var order = ["skin", "eyes", "shirt", "head"];
 
@@ -211,23 +212,23 @@ Hub.prototype.generateAvatarImage = function(cb){
     this.get_user_equipped_items(
         {},
         function(data){
-            var trousers = __dirname + "/avatar_items/trousers_blue.png";
-            var healthImg = __dirname + "/avatar_items/health_healthy.png";
-            var mouth = __dirname + "/avatar_items/mouth_smile.png";
+            var trousers = rootLocation + "/avatar_items/trousers_blue.png";
+            var healthImg = rootLocation + "/avatar_items/health_healthy.png";
+            var mouth = rootLocation + "/avatar_items/mouth_smile.png";
             var eyes = undefined;
             
             if(h.health < 60){
                 delete data.eyes;
-                eyes = __dirname + "/avatar_items/eyes_tired.png";
-                mouth = __dirname + "/avatar_items/mouth_sad.png";
+                eyes = rootLocation + "/avatar_items/eyes_tired.png";
+                mouth = rootLocation + "/avatar_items/mouth_sad.png";
             }
             if(h.health < 40){
-                healthImg = __dirname + "/avatar_items/health_cold.png";
-                mouth = __dirname + "/avatar_items/mouth_cold.png";
+                healthImg = rootLocation + "/avatar_items/health_cold.png";
+                mouth = rootLocation + "/avatar_items/mouth_cold.png";
             }
             if(h.health < 20){
-                healthImg = __dirname + "/avatar_items/health_nauseated.png";
-                mouth = __dirname + "/avatar_items/mouth_nauseated.png";
+                healthImg = rootLocation + "/avatar_items/health_nauseated.png";
+                mouth = rootLocation + "/avatar_items/mouth_nauseated.png";
             }
 
             for(var i in order){

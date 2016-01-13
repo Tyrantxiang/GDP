@@ -4,13 +4,14 @@
   "description": "A framework to build games to aid cronically ill children to learn about how to manage their illness",
   "main": "app.js",
   "scripts": {
+    "start" : "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/JoeRingham/GDP.git"
   },
-  "author": "",
+  "author": "Corin Chaplin, Ian Barker, Joe Ringham, Peter Fox, Trisha Khallaghi",
   "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/JoeRingham/GDP/issues"

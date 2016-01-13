@@ -5,7 +5,7 @@
  * Deals with system properties (port, pg database info, etc)
  * Scans the filesystem for new games and returns the file paths and assets when a game is requested
  *
- * @module
+ * @module config
  */
 
 
@@ -14,7 +14,8 @@
 var fs = require("fs"),
     path = require("path"),
 
-    configFileLocation = __dirname + "/config.json",
+    rootLocation = path.join(__dirname,  "../"),
+    configFileLocation = path.join(rootLocation, "/config.json"),
     config = JSON.parse(fs.readFileSync(configFileLocation)); // Sync as it is run only once on startup
 
     // Fill in things for empty config file
@@ -65,7 +66,17 @@ exporter.app = {
      */
     getServerVersion : function(){
         return config.app.serverVersion;
-    }
+    },
+
+    /**
+     * Gets the location of the application root (the location of app.js and config.json)
+     *
+     * @memberof module:config.app
+     * @return {string} The directory of the app root
+     */
+     getRootDirectory : function(){
+        return rootLocation;
+     }
 };
 
 
@@ -429,7 +440,7 @@ exporter.games = (function(){
     console.log("Loading configs for games");
     // Variables
     var gamesRelativeDir = config.app.gamesDir || "games",
-        gamesDir = path.join(__dirname, gamesRelativeDir),
+        gamesDir = path.join(rootLocation, gamesRelativeDir),
 
         configReader = configReaderFactory(gamesDir),
         gameConfigs = configReader.configs,
@@ -497,7 +508,7 @@ exporter.items = (function(){
     console.log("Loading configs for items");
 
     var itemsRelativeDir = config.app.itemsDir || "items",
-        itemsDir = path.join(__dirname, itemsRelativeDir),
+        itemsDir = path.join(rootLocation, itemsRelativeDir),
         spritesExt = ".png",
    
         slots = exporter.hub.getItemSlots(),
@@ -574,7 +585,7 @@ exporter.carriables = (function(){
     console.log("Loading configs for carriables");
 
     var carriablesRelativeDir = config.app.carriablesDir || "carriables",
-        carriablesDir = path.join(__dirname, carriablesRelativeDir),
+        carriablesDir = path.join(rootLocation, carriablesRelativeDir),
         carriablesSpritesExt = ".png",
 
 
@@ -617,7 +628,7 @@ exporter.conditions = (function(){
     console.log("Loading configs for conditions");
 
     var conditionsRelativeDir = config.app.conditionsDir || "conditions",
-        conditionsDir = path.join(__dirname, conditionsRelativeDir),
+        conditionsDir = path.join(rootLocation, conditionsRelativeDir),
 
         // Generate the config readers and extract generated functions
         configReader = configReaderFactory(conditionsDir),
@@ -633,7 +644,7 @@ exporter.statuses = (function(){
     console.log("Loading configs for statuses");
 
     var statusesRelativeDir = config.app.statusesDir || "statuses",
-        statusesDir = path.join(__dirname, statusesRelativeDir),
+        statusesDir = path.join(rootLocation, statusesRelativeDir),
 
         // Generate the config readers and extract generated functions
         configReader = configReaderFactory(statusesDir),
