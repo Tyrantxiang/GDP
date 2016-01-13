@@ -22,10 +22,6 @@ function getDatabase(){
     return db;
 }
 
-var adminId = -1;
-function setAdminId(){
-	db.readUserByName(function(user){adminId = user.id;}, function(){adminId = -1;}, 'admin');
-}
 
 /**
  * Generate a JSON Web Token (jwt)
@@ -82,37 +78,53 @@ function authenticate(req, res){
  * Express middleware that verifies a token before possing on to the next function for the route
  * Will send a response early if the token isn't present or invalid
  *
- * @var
- *
+ * @param {string|undefined} name - The name to set up authentication for. Undefined will check against all namespace
+ * @return {Function} - the authentication route set up to only allow through the person defined
  * @type {express_middleware}
  */
-function express_middleware(req, res, next){
-    // Try and get the token from the query string first
-    var token = req.query.token || req.query.t;
-    
-    // See if that worked
-    if(!token){
-        // Try and get it from the body
-        token = req.body.token || req.body.t;
+function express_middleware(name){
+	return function(req, res, next){
+		// Try and get the token from the query string first
+		var token = req.query.token || req.query.t;
+		
+		// See if that worked
+		if(!token){
+			// Try and get it from the body
+			token = req.body.token || req.body.t;
 
-        if(!token){
-            // Fail here
-            res.status(403).json({ error : true, message : "unauthorised" });
-            return;
-        }
-    }
+			if(!token){
+				// Fail here
+				res.status(403).json({ error : true, message : "unauthorised" });
+				return;
+			}
+		}
 
+		// Attempt to verify token
+		jwt.verify(token, secret, function(err, decoded){
+			if(err){
+				res.status(403).json({ error : true, message : "unauthorised" });
+				return;
+			}
 
-    // Attempt to verify token
-    jwt.verify(token, secret, function(err, decoded){
-        if(err){
-            res.status(403).json({ error : true, message : "unauthorised" });
-            return;
-        }
-
-        req.userId = decoded.userId;
-        next();
-    });
+			req.userId = decoded.userId;
+			
+			if(!name){
+				next();
+			}else{
+				db.readUserByName(function(user){
+					console.log("here");
+					console.log(user.id===decoded.userId);
+					if(user.id===decoded.userId){
+						next();
+					}else{
+						res.status(403).json({ error : true, message : "Unauthorized" });
+					}
+				}, function(err){
+					res.status(403).json({ error : true, message : err });
+				}, name);
+			}
+		});
+	}
 }
 
 /**
@@ -144,37 +156,6 @@ function socket_middleware(socket, next){
     });
 }
 
-
-/**************** These functions should be removed in the future for a more elegant solution *****************/
-
-/** */
-function admin_token(req, res, next){
-	var	token = req.query.token || req.body.token;
-	
-	function fail(msg){
-		res.status(400).json({"success": false, "message": msg});
-	};
-	
-	if(token){
-		jwt.verify(token, secret, function(err, decoded){
-			if(err){
-				fail('Not authorized');
-				return;
-			}
-			
-			if(decoded.userId === adminId){
-				next();
-			}else{
-				next(new Error('Invalid token'));
-			}
-			
-		});
-	}else{
-		fail('Token not supplied');
-	}
-}
-
-
 /**
  * Functions exposed by the auth module
  *
@@ -188,9 +169,9 @@ function admin_token(req, res, next){
  * @borrows module:auth~setDatabase as setDatabase
  */
 var exportFunctions = {
-    admin_token : admin_token,
+	admin_token : express_middleware('admin'),
     authenticate : authenticate,
-    express_middleware : express_middleware,
+    express_middleware : express_middleware(),
     socket_middleware : socket_middleware,
     setDatabase : setDatabase,
     getDatabase : getDatabase
@@ -204,8 +185,7 @@ var exportFunctions = {
  */
 module.exports = function(db){
     setDatabase(db);
-	setAdminId();
-
+	
     return exportFunctions;
 };
 

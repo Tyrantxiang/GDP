@@ -102,7 +102,7 @@ function startApp(db){
     var auth = internalRequire("auth.js")(db),
         hub = internalRequire("hub.js")(config, db),
         userapi = internalRequire("user-api.js")(config, db),
-        superuserapi = internalRequire("superuser-api.js")(config, db, __dirname);
+        superuserapi = internalRequire("superuser-api.js")(config, db);
 
 
     app.use(morgan("dev"));
@@ -113,7 +113,7 @@ function startApp(db){
 
     // Set up the authentication middleware
     app.use([/*"/games",*/ "/p"], auth.express_middleware);
-    app.use(["/superuser-functions.html", "/assets/js/superuser.js"], auth.admin_token);
+    app.use(["/views/superuser-functions.html", "/assets/js/superuser.js"], auth.admin_token);
     
     // Set the static files to be served
     app.use("/", express.static("static"));

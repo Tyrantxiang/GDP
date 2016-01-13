@@ -6,8 +6,6 @@
 var fs = require("fs");
 var path = require("path");
 
-var rootFolder;
-
 var config;
 function setConfig(cfg){
     if(!cfg && typeof cfg !== Object){
@@ -53,7 +51,7 @@ function getRandomUnusedId(configObj){
 }
 
 function createFiles(spriteLoc, newLoc, configObj, otherFiles){
-	newLoc = rootFolder + newLoc + "/";
+	newLoc = config.app.getRootDirectory() + newLoc + "/";
 	
 	fs.mkdir(newLoc, function(err){
 		fs.readFile(spriteLoc, function (err, data) {
@@ -225,10 +223,9 @@ var dataRoutes = {
 	
 };
 
-module.exports = function (cfg, db, root){
+module.exports = function (cfg, db){
     setConfig(cfg);
     setDatabase(db);
-	rootFolder = root;
 	
     //set each route to be under /superuser
 	var newDataRoutes = {};
