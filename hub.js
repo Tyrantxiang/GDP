@@ -5,7 +5,7 @@
  * Each session has a hub object that deals with it's interaction with the application
  * and acts as a proxy for loading the minigames
  *
- * @file
+ * @module hub
  */
 
 var config;
@@ -60,9 +60,9 @@ function latch(num, complete){
  * They are created by client comms when a socket opens
  * 
  * @constructor
- * @mixes commsEventListeners
+ * @mixes module:hub~commsEventListeners
  * @param {int} userId  - The ID for the user this hub is associated with (see {@link Hub#userId})
- * @param {Comms} comms - The {@link Comms} object that created the Hub
+ * @param {module:comms~Comms} comms - The {@link module:comms~Comms|Comms} object that created the Hub
  */
 function Hub(userId, comms){
     if(!userId || !comms){
@@ -75,11 +75,11 @@ function Hub(userId, comms){
     this.user = null;
 
     /** The user's bag
-     @type {Bag} */
+     @type {module:hub~Bag} */
     this.bag = new Bag();
 
     /** Where the player currently resides, always starts in the hub
-     @type {Hub.locations} */
+     @type {module:hub~Hub.locations} */
     this.currentlocation = Hub.locations.IN_HUB;
 
     /** The minigame ID that the player is currently in */
@@ -96,7 +96,7 @@ function Hub(userId, comms){
     this.connectedTime = new Date();
 
     /** The statuses of a user
-     @type Object.<int, Status> */
+     @type Object.<int, module:hub~Status> */
     this.statuses = {};
     /** The user's current health */
     this.health = 100;
@@ -253,7 +253,7 @@ Hub.prototype.generateAvatarImage = function(cb){
 /**
  * Callback for the server comms functions, normally implimented in Socket.io and returns data to the client
  *
- * @callback commsEventListeners~commsCallback
+ * @callback module:hub~commsEventListeners~commsCallback
  * @param {Object} data - The data to be JSONified and returned to the client
  */
 
@@ -289,7 +289,7 @@ var commsEventListeners = {
      * Gets information on all items
      *
      * @param {Object|null} data - The data passed from the client to the server
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_all_item_info : function(data, fn){
         fn(config.items.listAll());
@@ -300,7 +300,7 @@ var commsEventListeners = {
      *
      * @param {Object} data    - The data passed from the client to the server
      * @param {int}    data.id - The item ID
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_single_item_info : function(data, fn){
         var obj = config.items.getConfig(data.id, undefined);
@@ -318,7 +318,7 @@ var commsEventListeners = {
      *
      * @param {Object} data      - The data passed from the client to the server
      * @param {string} data.slot - The slot to get the items for
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_items_for_slot : function(data, fn){
         var slot = config.items.listItemsForSlot(data.slot);
@@ -340,7 +340,7 @@ var commsEventListeners = {
      * Gets the background image for the Hub
      *
      * @param {Object|null} data - The data passed from the client to the server
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_hub_backgroud_image : function(data, fn){
         fn(config.hub.getBackgroundImages());
@@ -350,7 +350,7 @@ var commsEventListeners = {
      * Gets the items this user has unlocked
      *
      * @param {Object|null} data - The data passed from the client to the server
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_user_unlocked_items : function(data, fn){
         db.getInventoryForUser(
@@ -368,7 +368,7 @@ var commsEventListeners = {
      *
      * @param {Object} data      - The data passed from the client to the server
      * @param {string} data.slot - The slot to get the items for
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_user_unlocked_items_by_slot : function(data, fn){
         var h = this;
@@ -396,7 +396,7 @@ var commsEventListeners = {
      * Gets the items this user currently has equipped
      *
      * @param {Object|null} data - The data passed from the client to the server
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_user_equipped_items : function(data, fn){
         db.getEquippedForUser(
@@ -445,7 +445,7 @@ var commsEventListeners = {
      * Updates the items this user has equipped
      *
      * @param {Object<string, int>} data - The data passed from the client to the server, mapping from the slot name to the item's ID
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     update_equipped_items : function(data, fn){
         var invObj = {
@@ -474,7 +474,7 @@ var commsEventListeners = {
      * Gets all the carriables in the users bag
      *
      * @param {Object|null} data - The data passed from the client to the server
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_bag : function(data, fn){
         fn(this.bag.getCarriables());
@@ -485,7 +485,7 @@ var commsEventListeners = {
      *
      * @param {Object}     data            - The data passed from the client to the server
      * @param {Array<int>} data.carriables - Array of carriable IDs to update the bag to
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     set_bag : function(data, fn){
         this.bag.setCarriables(data.carriables);
@@ -497,7 +497,7 @@ var commsEventListeners = {
      * Gets all available carriables
      *
      * @param {Object|null} data - The data passed from the client to the server
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_all_carriables : function(data, fn){
         fn(config.carriables.listAll().map(function(l){
@@ -511,7 +511,7 @@ var commsEventListeners = {
      *
      * @param {Object} data    - The data passed from the client to the server
      * @param {int}    data.id - The ID of the carriable to get information on
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_single_carriable : function(data, fn){
         fn(config.carriables.getConfig(data.id));
@@ -522,7 +522,7 @@ var commsEventListeners = {
      *
      * @param {Object} data              - The data passed from the client to the server
      * @param {int}    data.carriable_id - The ID of the carriable to "use"
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     use_carriable : function(data, fn){
         try{
@@ -579,7 +579,7 @@ var commsEventListeners = {
      * Gets all available minigames
      *
      * @param {Object|null} data - The data passed from the client to the server
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     list_minigames : function(data, fn){
         fn(config.games.listAll());
@@ -590,7 +590,7 @@ var commsEventListeners = {
      *
      * @param {Object} data    - The data passed from the client to the server
      * @param {int}    data.id - The ID of the game to launch
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     launch_minigame : function(data, fn){
         // Get all of the items required for the game and send them to the client
@@ -635,7 +635,7 @@ var commsEventListeners = {
      * @param {int}    data.id       - The ID of the game to finish
      * @param {int}    data.score    - The score the user attained for this run
      * @param {int}    data.currency - The currency the user attained for this run
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     finish_minigame : function(data, fn){
         var id = data.gameId,
@@ -678,7 +678,7 @@ var commsEventListeners = {
      * Finishes the current minigame and saves the results to the database
      *
      * @param {Object} data          - The data passed from the client to the server
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      * @todo Document
      */
     get_scores : function(data, fn){
@@ -739,7 +739,7 @@ var commsEventListeners = {
      *
      * @param {Object} data       - The data passed from the client to the server
      * @param {int}    data.value - The amount to modify the user's health by
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     modify_hp_value : function(data, fn){
         
@@ -784,7 +784,7 @@ var commsEventListeners = {
      * @param {Object} data       - The data passed from the client to the server
      * @param {int}    data.id    - The ID of the status to modify
      * @param {int}    data.value - The amount to modify the user's health by
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     modify_status_value : function(data, fn){
         var status = this.statuses[data.id];
@@ -803,7 +803,7 @@ var commsEventListeners = {
      * Gets the health of the user
      *
      * @param {Object|null} data - The data passed from the client to the server
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_hp_value : function(data, fn){
         fn({
@@ -816,7 +816,7 @@ var commsEventListeners = {
      *
      * @param {Object} data    - The data passed from the client to the server
      * @param {int}    data.id - The ID of the status to get the information for
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_status_value : function(data, fn){
         var status = this.statuses[data.id];
@@ -833,7 +833,7 @@ var commsEventListeners = {
      * Gets the information for all statuses
      *
      * @param {Object|null} data - The data passed from the client to the server
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_all_status_values : function(data, fn){
         var statuses = {};
@@ -849,7 +849,7 @@ var commsEventListeners = {
      * Get the avatar image for the user
      *
      * @param {Object|null} data - The data passed from the client to the server
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_avatar : function(data, fn){
         var h = this;
@@ -863,7 +863,7 @@ var commsEventListeners = {
      *
      * @param {Object} data       - The data passed from the client to the server
      * @param {int}    data.value - The amount to set the user's health to
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     set_hp_value : function(data, fn){
         this.health = data.newhp;
@@ -886,7 +886,7 @@ var commsEventListeners = {
      * Get the symtoms the user currently has
      *
      * @param {Object|null} data - The data passed from the client to the server
-     * @param {commsEventListeners~commsCallback} fn
+     * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_symptoms : function(data, fn){
         this.generateSymptoms(this.health, fn);
@@ -1028,31 +1028,74 @@ Status.prototype.getClientObject = function(){
 
 
 
-/** Init function for the module
+/**
+ * Functions exposed by the hub module
+ *
+ * @namespace hub
+ */
+var exportFunctions = {
+    /**
+     * Sets the hub config object
+     *
+     * @memberof module:hub~hub
+     * @function
+     * @param {module:config} cfg - The new config
+     */
+    setConfig : setConfig,
+    /**
+     * Creates a new hub object and assigns the event listeners to the given comms object
+     *
+     * @memberof module:hub~hub
+     * @function
+     * @return {module:config} The current config object
+     */
+    getConfig : getConfig,
+    /**
+     * Sets the hub config object
+     *
+     * @memberof module:hub~hub
+     * @function
+     * @param {module:database} db - The new database object
+     */
+    setDatabase : setDatabase,
+    /**
+     * Creates a new hub object and assigns the event listeners to the given comms object
+     *
+     * @memberof module:hub~hub
+     * @function
+     * @return {module:database} The current database object 
+     */
+    getDatabase : getDatabase,
+
+    /**
+     * Creates a new hub object and assigns the event listeners to the given comms object
+     *
+     * @memberof module:hub~hub
+     * @param {int}                userId - The userId to assign the hub to
+     * @param {module:comms~Comms} comms  - The comms object for this user
+     * @return {module:hub~Hub} The created hub instance 
+     */
+    create : function (userId, comms){
+        var h = new Hub(userId, comms);
+
+        // Set up the hub event listeners for the comms module, bind them to the hub
+        comms.setEventListeners(commsEventListeners, h);
+
+        return h;
+    }
+};
+
+/** 
+ * Init function for the module. Returns the exposed functions of the module
  * 
  * @param {Object} cfg - The server configoration
  * @param {Object} db  - The database object
- *
- * @return {Object.<string, function>} - Object with the module's functions
+ * @return {module:hub~hub} - Object with the module's functions
  */
 module.exports = function (cfg, db){
     setConfig(cfg);
     setDatabase(db);
 
-    return {
-        setConfig : setConfig,
-        getConfig : getConfig,
-        setDatabase : setDatabase,
-        getDatabase : getDatabase,
 
-        // Creates a new hub object and assigns the event listeners to the given comms object
-        create : function (userId, comms){
-            var h = new Hub(userId, comms);
-
-            // Set up the hub event listeners for the comms module, bind them to the hub
-            comms.setEventListeners(commsEventListeners, h);
-
-            return h;
-        }
-    };
+    return exportFunctions;
 };

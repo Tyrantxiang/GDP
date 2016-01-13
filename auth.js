@@ -3,7 +3,7 @@
 /**
  * Authentication module contains the methods to handle login, auth and user handling
  *
- * @file
+ * @module auth
  */
 
 var jwt = require("jsonwebtoken"),
@@ -27,7 +27,7 @@ function setAdminId(){
 	db.readUserByName(function(user){adminId = user.id;}, function(){adminId = -1;}, 'admin');
 }
 
-/*
+/**
  * Generate a JSON Web Token (jwt)
  *
  * @param {int} userId - The ID of the user to generate the token for
@@ -40,9 +40,13 @@ function generateToken(userId){
     return jwt.sign({ userId : userId }, secret, { expiresIn : 60 * 60 * 24 });
 }
 
-/*
+/**
  * An express route function that authenticates a username and password against the database.
  * Returns a jwt to the client for the session on success and an error on failure
+ *
+ * @var
+ *
+ * @type {express_route}
  */
 function authenticate(req, res){
     var username, password,
@@ -74,9 +78,13 @@ function authenticate(req, res){
     }
 }
 
-/*
+/**
  * Express middleware that verifies a token before possing on to the next function for the route
  * Will send a response early if the token isn't present or invalid
+ *
+ * @var
+ *
+ * @type {express_middleware}
  */
 function express_middleware(req, res, next){
     // Try and get the token from the query string first
@@ -107,10 +115,14 @@ function express_middleware(req, res, next){
     });
 }
 
-/*
+/**
  * Socket.io middleware that is run when a socket is opened.
  * Authenticates that token is passed in and is valid.
  * Will open the socket on success and return an error on failure.
+ *
+ * @var
+ *
+ * @type {socket_middleware}
  */
 function socket_middleware(socket, next){
     //console.log(socket.request);
@@ -132,6 +144,9 @@ function socket_middleware(socket, next){
     });
 }
 
+
+/**************** These functions should be removed in the future for a more elegant solution *****************/
+/** */
 function admin_authenticate(req, res, next){
 	var username = req.body.username,
 		password = req.body.password;
@@ -152,7 +167,7 @@ function admin_authenticate(req, res, next){
 		db.authenticateUser(pass, fail, username, password);
 	}
 }
-
+/** */
 function admin_token(req, res, next){
 	var	token = req.query.token || req.body.token;
 	
@@ -179,18 +194,40 @@ function admin_token(req, res, next){
 	}
 }
 
+
+/**
+ * Functions exposed by the auth module
+ *
+ * @namespace auth
+ *
+ * @borrows module:auth~admin_token as admin_token
+ * @borrows module:auth~admin_authenticate as admin_authenticate
+ * @borrows module:auth~authenticate as authenticate
+ * @borrows module:auth~express_middleware as express_middleware
+ * @borrows module:auth~socket_middleware as socket_middleware
+ * @borrows module:auth~getDatabase as getDatabase
+ * @borrows module:auth~setDatabase as setDatabase
+ */
+var exportFunctions = {
+    admin_token : admin_token,
+    admin_authenticate : admin_authenticate,
+    authenticate : authenticate,
+    express_middleware : express_middleware,
+    socket_middleware : socket_middleware,
+    setDatabase : setDatabase,
+    getDatabase : getDatabase
+};
+
+/** 
+ * Init function for the module. Returns the exposed functions of the module
+ * 
+ * @param {Object} db  - The database object
+ * @return {module:auth~auth} - Object with the module's functions
+ */
 module.exports = function(db){
     setDatabase(db);
 	setAdminId();
 
-    return {
-		admin_token : admin_token,
-		admin_authenticate : admin_authenticate,
-        authenticate : authenticate,
-        express_middleware : express_middleware,
-        socket_middleware : socket_middleware,
-        setDatabase : setDatabase,
-        getDatabase : getDatabase
-    };
+    return exportFunctions;
 };
 

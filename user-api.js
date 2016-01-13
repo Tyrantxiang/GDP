@@ -31,17 +31,35 @@ function getDatabase(){
 
 /*
  * TODO:
- * Callback 
+ * All of the validation is to be replaced by the validate.js module 
  *
  */
 
-
-// Is this call to a validation function successful?
+/**
+ * A callback to a validator function
+ *
+ * @callback validatorCallback
+ * @param {Object}            result         
+ * @param {boolean}           result.valid   - Whether the result is valid
+ * @param {string|undefined}  result.message - Additional information
+ */
+/**
+ * Is this call to a validation function successful?
+ *
+ * @param {Object} o - The object to check
+ * @return {boolean} - Whether the object is a valid result
+ */
 function resultIsValid(o){
     return o.valid;
 }
 
 
+/**
+ * Checks if a given username is valid (for signup, not login)
+ *
+ * @param {string}                            username - The username to check
+ * @param {module:user-api~validatorCallback} cb       - The callback
+ */
 function isUsernameValid(username, cb){
     if(username && username !== ""){
         // More validation here
@@ -71,6 +89,12 @@ function isUsernameValid(username, cb){
     }
 }
 
+/**
+ * Checks if a given date of birth is valid
+ *
+ * @param {Date}                              dob - The dob to check
+ * @param {module:user-api~validatorCallback} cb  - The callback
+ */
 function isDobValid(dob, cb){
     // Must be at least x years old?
     if(!dob || isNaN(dob.getTime())){
@@ -93,6 +117,12 @@ function isDobValid(dob, cb){
     });
 }
 
+/**
+ * Checks if a given password is valid
+ *
+ * @param {string}                            pw - The password to check
+ * @param {module:user-api~validatorCallback} cb - The callback
+ */
 function isPasswordValid(pw, cb){
     cb({
         valid : (pw && pw.length >= 6)
@@ -103,20 +133,27 @@ function isPasswordValid(pw, cb){
 
 
 /**
- * The user api express route functions
+ * The user api express route functions, these are run by express the defined route is run in app.js
+ * 
  * @namespace routes
- *
  */
 var routes = {
     /** 
-     *  aa
-     * @param a
+     * Lists all available conditions 
+     *
+     * @var
+     * @type {express_route}
      */
     get_conditions_list : function (req, res){
         res.json(config.conditions.listAll());
     },
 
-
+    /** 
+     * Validates a username is avalible to sign up
+     *
+     * @var
+     * @type {express_route}
+     */
     validate_username : function(req, res){
         var username = req.body.username && req.body.username.trim();
         isUsernameValid(username, function(o){
@@ -125,7 +162,12 @@ var routes = {
     },
 
 
-
+    /** 
+     * Validates a date of birth
+     *
+     * @var
+     * @type {express_route}
+     */
     validate_dob : function(req, res){
         var dob = req.body.dob && new Date(req.body.dob);
         isDobValid(dob, function(o){
@@ -137,7 +179,12 @@ var routes = {
 
 
 
-
+    /** 
+     * Sign up a user to the system, also validates
+     *
+     * @var
+     * @type {express_route}
+     */
     sign_up : function(req, res){
         var b = req.body,
             username = b.username && b.username.trim(),
@@ -217,10 +264,10 @@ function setUpDefaultItems(userid){
 
 
 /**
+ * Generates a set of user-api routes using the given config and database objects
  *
- * Returns things
  * @param {module:config} cfg - A config object
- * @param {Object} db - A database object
+ * @param {module:database} db - A database object
 
  * @return {module:user-api~routes} The user-api routes
  */

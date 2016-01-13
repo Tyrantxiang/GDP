@@ -3,7 +3,7 @@
 /**
  * Module to set up the socket communication and expose and API to send data to and from the server
  *
- * @file
+ * @module comms
  */
 
 
@@ -11,7 +11,7 @@
  * Class to communicate with a specific user, exposes functions to do this.
  *
  * @constructor
- * @param {Socket} socket - The {@link http://socket.io/docs/server-api/#socket|Socket.io} Socket object for the connection
+ * @param {external:"socket.io"~socket} socket - The socket.io Socket object for the connection
  */
 function Comms(socket){
     var userId = socket.userId;
@@ -62,7 +62,15 @@ Comms.prototype.send = {
 
 
 
-
+/**
+ * Initialises the Socket.io module and begins listening for socket requests
+ *
+ * @param {external:"http.Server"} server - The web server to listen for requests on
+ * @param {module:auth~auth}       auth   - The authentication object
+ * @param {module:config}          config - The config.js object
+ * @param {module:hub~hub}         hub    - The hub object
+ * @return {external:"socket.io"~socket} The initialised socket.io socket object 
+ */
 module.exports = function (server, auth, config, hub){
     var io = require("socket.io")(server);
 

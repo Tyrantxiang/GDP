@@ -6,6 +6,66 @@
  * @file
  */
 
+ /**
+  * Node HTTP server object
+  *
+  * @external "http.Server"
+  * @see {@link https://nodejs.org/api/http.html#http_class_http_server}
+ */
+ /** 
+  *
+  * @external express
+  * @see {@link http://expressjs.com/en/4x/api.html}
+  */
+ /**
+  * Express request object
+  * @name external:express~req
+  *
+  * @see {@link http://expressjs.com/en/4x/api.html#req}
+  */
+  /**
+  * Express response object
+  * @name external:express~res
+  *
+  * @see {@link http://expressjs.com/en/4x/api.html#res}
+  */
+  /**
+   * Express route function, a function that is used in an express route to serve content to the client
+   *
+   * @typedef {function} express_route
+   * @param {external:express~req} req
+   * @param {external:express~res} res
+   */
+   /**
+   * Express middleware function, a function that can be called in the routing stack to augment the result
+   *
+   * @typedef {function} express_middleware
+   * @param {external:express~req} req
+   * @param {external:express~res} res
+   * @param {function} next - The next middleware in the sequence
+   */
+
+   /**
+    * Socket.io library
+    * @external "socket.io"
+    *
+    * @see {@link http://socket.io/docs/server-api/}
+    */
+    /** 
+     * A {@link external:"socket.io"|socket.io} socket object
+     *
+     * @name external:"socket.io"~socket
+     *
+     * @see {@link http://socket.io/docs/server-api/#socket}
+     */
+   /**
+   * Socket.io middleware function, a function that is called before a socket is opened
+   *
+   * @typedef {function} socket_middleware
+   * @param {external:"socket.io"~socket} socket
+   * @param {function} next - The next middleware in the sequence
+   */
+
 
 var config = require("./config.js");
 

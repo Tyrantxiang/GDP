@@ -145,8 +145,6 @@ exporter.hub = {
  * Function takes a directory and sets up watchers on the config files within the subdirectories
  * Also watches the directory itself for new subdirectories
  *
- * @private
- * @constructor
  * @param {string} directory - The directory to set a config reader up for
  * @return {module:config~configReader} - The config reader object using the given directory
  */
@@ -333,13 +331,20 @@ function configReaderFactory(directory){
 
 
 
-
+    /**
+     * The configs objects and generic functions for a config directory
+     *
+     * @typedef {Object} configReader
+     *
+     * @property {Object}                              configs   - A map of the config objects for this directory
+     * @property {module:config~configReaderFunctions} functions - The generic functions generated for this directory
+     */
     var rObject = {
         configs : configs,
 
-        // Functions wrapped in their own object
+
         /** 
-         * Config reader functions
+         * Config reader generic functions
          * 
          * @mixin configReaderFunctions
          */
@@ -358,6 +363,7 @@ function configReaderFactory(directory){
             /**
              * Return an array of objects representing all the config files
              *
+             * @memberof module:config~configReaderFunctions
              * @return {Object[]} - Array of objects each representing a config file
              */
             listAll : function(){
@@ -371,6 +377,7 @@ function configReaderFactory(directory){
             /**
              * Gets the name of the config for the given ID
              *
+             * @memberof module:config~configReaderFunctions
              * @param {int} id - The config ID
              * @return {string} - The config's name
              */
@@ -381,6 +388,7 @@ function configReaderFactory(directory){
             /**
              * Get a specific config from the game ID or all configs is 'configName' is falsy
              * 
+             * @memberof module:config~configReaderFunctions
              * @param {int} id - The config ID
              * @param {string} [configName] - The config value requested
              * @return {Object} - The request config value or the entire config file as an object
@@ -637,9 +645,6 @@ exporter.statuses = (function(){
 
 })();
 
-/*
- * Returns a {@link module:config~config} object
- *
- * @returns {module:config~config} - Config object
- */
+
+
 module.exports = exporter;
