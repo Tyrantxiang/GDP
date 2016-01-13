@@ -10,11 +10,12 @@
 var os = process.platform,
     fs = require("fs"),
     path = require("path"),
-    root = fs.realpathSync("../"),
+    root = path.resolve(__dirname, "../"),
     configFile = path.join(root, "config.json"),
     config = JSON.parse(fs.readFileSync(configFile));
 
 console.log();
+console.log("==================== Preinstall script ====================");
 console.log();
 
 
@@ -29,3 +30,8 @@ console.log("Cairo for the canvas package: https://www.npmjs.com/package/canvas#
 
 console.log("Will attempt to continue, but running or installing may fail if these are not installed");
 
+
+
+console.log();
+console.log("===========================================================");
+console.log();

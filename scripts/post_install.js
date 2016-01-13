@@ -16,6 +16,7 @@ var os = process.platform,
     config = JSON.parse(fs.readFileSync(configFile));
 
 console.log();
+console.log("==================== Preinstall script ====================");
 console.log();
 
 /**** Create directories (config.js will throw errors if these do not exist) ****/
@@ -62,3 +63,23 @@ slots.forEach(function(slot){
 
 
 /********* Set up database tables ***********/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+console.log();
+console.log("===========================================================");
+console.log();
+
+
