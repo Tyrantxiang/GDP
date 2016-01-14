@@ -152,15 +152,12 @@ function createRoute(properties, cb){
  * Contains functions that server as endpoints for form submissions
  *
  * @namespace routes
- * @memberof module:superuser-api
  */
 var routes = {
 	
 	/**
      * Add a carriable configuration for use in game
      * 
-     * @memberof module:superuser-api.routes
-	 *
 	 * @var
      * @type {express_route}
      */
@@ -194,8 +191,6 @@ var routes = {
 	
 	/**
      * Remove a carriable configuration from use in game
-     * 
-     * @memberof module:superuser-api.routes
 	 *
 	 * @var
      * @type {express_route}
@@ -210,8 +205,6 @@ var routes = {
 
 	/**
      * Add a new status configuration for use in game (bloodsugar, etc)
-     * 
-     * @memberof module:superuser-api.routes
 	 *
 	 * @var
      * @type {express_route}
@@ -230,8 +223,6 @@ var routes = {
 
 	/**
      * Remove a status configuration from use in game
-     * 
-     * @memberof module:superuser-api.routes
 	 *
 	 * @var
      * @type {express_route}
@@ -246,8 +237,6 @@ var routes = {
 
 	/**
      * Add a condition configuration for use in game (diabetes, renal failure, etc)
-     * 
-     * @memberof module:superuser-api.routes
 	 *
 	 * @var
      * @type {express_route}
@@ -258,8 +247,6 @@ var routes = {
 
 	/**
      * Remove a condition configuration for use in game
-     * 
-     * @memberof module:superuser-api.routes
 	 *
 	 * @var
      * @type {express_route}
@@ -274,8 +261,6 @@ var routes = {
 
 	/**
      * Add a store item (non-carriable) configuration for use in game
-     * 
-     * @memberof module:superuser-api.routes
 	 *
 	 * @var
      * @type {express_route}
@@ -286,8 +271,6 @@ var routes = {
 
 	/**
      * Remove a store item (non-carriable) configuration for use in game
-     * 
-     * @memberof module:superuser-api.routes
 	 *
 	 * @var
      * @type {express_route}
@@ -302,8 +285,6 @@ var routes = {
 	
 	/**
      * Add a minigame configuration for use in game
-     * 
-     * @memberof module:superuser-api.routes
 	 *
 	 * @var
      * @type {express_route}
@@ -314,8 +295,6 @@ var routes = {
 
 	/**
      * Remove a minigame configuration for use in game
-     * 
-     * @memberof module:superuser-api.routes
 	 *
 	 * @var
      * @type {express_route}
@@ -329,13 +308,10 @@ var routes = {
  * Contains functions that serve as endpoints for data generation to embed on in the client
  *
  * @namespace dataRoutes
- * @memberof module:superuser-api
  */
 var dataRoutes = {
 	/**
      * Returns all status config objects
-     * 
-     * @memberof module:superuser-api.dataRoutes
 	 *
 	 * @var
      * @type {express_route}
@@ -346,8 +322,6 @@ var dataRoutes = {
 	
 	/**
      * Returns all carriable config objects
-     * 
-     * @memberof module:superuser-api.dataRoutes
 	 *
 	 * @var
      * @type {express_route}
@@ -364,8 +338,6 @@ var dataRoutes = {
 	
 	/**
      * Returns all condition config objects
-     * 
-     * @memberof module:superuser-api.dataRoutes
 	 *
 	 * @var
      * @type {express_route}
@@ -376,8 +348,6 @@ var dataRoutes = {
 	
 	/**
      * Returns a list of all item slots
-     * 
-     * @memberof module:superuser-api.dataRoutes
 	 *
 	 * @var
      * @type {express_route}
@@ -388,8 +358,6 @@ var dataRoutes = {
 	
 	/**
      * Returns all items config objects for a given slot
-     * 
-     * @memberof module:superuser-api.dataRoutes
 	 *
 	 * @var
      * @type {express_route}
@@ -403,6 +371,15 @@ var dataRoutes = {
 	
 };
 
+
+/**
+ * Generates a set of user-api routes using the given config and database objects
+ *
+ * @param {module:config} cfg - A config object
+ * @param {module:database} db - A database object
+
+ * @return {{routes : module:superuser-api~routes, dataRoutes : module:superuser-api~dataDoutes}} The user-api routes
+ */
 module.exports = function (cfg, db){
     setConfig(cfg);
     setDatabase(db);
