@@ -58,13 +58,13 @@
      *
      * @see {@link http://socket.io/docs/server-api/#socket}
      */
-   /**
-   * Socket.io middleware function, a function that is called before a socket is opened
-   *
-   * @typedef {function} socket_middleware
-   * @param {external:"socket.io"~socket} socket
-   * @param {function} next - The next middleware in the sequence
-   */
+    /**
+    * Socket.io middleware function, a function that is called before a socket is opened
+    *
+    * @typedef {function} socket_middleware
+    * @param {external:"socket.io"~socket} socket
+    * @param {function} next - The next middleware in the sequence
+    */
 
 var srcLoc = "src",
     path = require("path"),
