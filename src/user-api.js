@@ -205,24 +205,12 @@ var routes = {
                     if(valid){
                         db.createUser(
                             // Pass
-                            function(id){
-								db.readUserByName(function(results){
-									var dbres = setUpDefaultItems(results.id);
-									console.log(dbres);
-									if(dbres[0]){
-										res.json({
-											error : false    
-										});
-									}else{
-										res.status(400).json({
-											error : dbres[1]
-										});
-									}
-								}, function(error){
-									res.status(400).json({
-										error : error
-									});
-								}, username);
+                            function(result){
+								res.json({
+									error : false,
+                                    username : username,
+                                    dob : dob
+								});
                             },
                             // Fail
                             function(error){
@@ -247,18 +235,6 @@ var routes = {
     }
 
 };
-
-function setUpDefaultItems(userid){
-	var okay = true, error;
-	var default_items = [200, 201, 300, 301, 400, 401, 500, 501];
-	for(var i=0; i<default_items.length; i++){
-		var iid = default_items[i];
-		db.createUserInventory(function(){}, function(err){error = err;}, {"user_id": userid, "item_id": iid.toString(), "active": true});
-	}
-	return [okay, error];
-}
-
-
 
 
 

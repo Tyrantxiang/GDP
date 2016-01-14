@@ -29,6 +29,9 @@
       canvas.height / 2 - img.width / 2);
   }
 
+
+
+
   window.hub.avatarCreationLoader = function(){
     $.get("/views/createavatar.html", function(data){
       $("#avatar-creation-overlay").html(data);
@@ -53,59 +56,35 @@
       };
 
 
-      hub.getUserUnlockedItems(function (items) {
-        var latch = (function(num, complete){
-          return function(){
-            num--;
-            if(num === 0){
-                complete();
+      hub.getUserUnlockedItemsForSlot(Object.keys(menus), function (slots) {
+        window.comms.get_user_equipped_items(function(equipped) {
+
+          // Add the slots to the menu
+          var slot, menu, elements, curr;
+          for (slot in slots) {
+
+            curr = equipped[slot];
+
+            elements = slots[slot].map(function(item){
+              var imgEl = $(document.createElement("img")).attr("src", item.url).data("itemId", item.id).addClass("width-22 white-img-box");
+              // Set as active if it is equipped
+              if(curr.id = item.id){
+                imgEl.addClass("active");
+              }
+
+              return imgEl;
+            });
+
+
+            menu = menus[slot];
+            if(menu){
+              // Append to the menu
+              menu.append(elements);
             }
           }
-        })(Object.keys(items).length, function(){
-          window.comms.get_user_equipped_items(function(data) {
-            var curHeadId = data.head.id;
-            var curEyesId = data.eyes.id;
-            var curShirtId = data.shirt.id;
-            var curSkinId = data.skin.id;
 
-            menus.head.find('img').map(function() {
-              setEquippedItemAsActive(data.head.id, this);
-            });
-
-            menus.eyes.find('img').map(function() {
-              setEquippedItemAsActive(data.eyes.id, this);
-            });
-
-            menus.shirt.find('img').map(function() {
-              setEquippedItemAsActive(data.shirt.id, this);
-            });
-
-            menus.skin.find('img').map(function() {
-              setEquippedItemAsActive(data.skin.id, this);
-            });
-
-            function setEquippedItemAsActive(itemId, item) {
-              if (itemId == $(item).data("itemId")) {
-                $(item).addClass('active');
-              }
-            }
-
-            equipItemsOnSelect();
-          });
+          equipItemsOnSelect();
         });
-
-        for (var i in items) {       
-          hub.getItemInfo(items[i], function (item) {    
-            var imgEl = $(document.createElement("img")).attr("src", item.url).data("itemId", item.id).addClass("width-22 white-img-box"),
-              menu = menus[item.slot];
-
-              if(menu){
-                menu.append(imgEl);
-              }
-
-              latch();
-          });
-        }
       });
       
       $(document).on("click", '.white-img-box', function(e) {
@@ -118,6 +97,14 @@
       $("#avatar-creation-close").click(function(){
         hub.closeAvatarCreation();
       });
+
+
+      function setEquippedItemAsActive(itemId, item) {
+        if (itemId == $(item).data("itemId")) {
+          $(item).addClass('active');
+        }
+      }
+
 
       function equipItemsOnSelect() {
         var userObj = {

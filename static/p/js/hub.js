@@ -455,6 +455,12 @@
         }else{
             var obj = {},
                 l = latch(slot.length, function(){
+                    // Only return the arrays, as objects are errors
+                    for(var s in obj){
+                        if(!Array.isArray(obj[s])){
+                            delete obj[s];
+                        }
+                    }
                     cb(obj);
                 });
 
