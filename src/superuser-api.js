@@ -373,12 +373,14 @@ var dataRoutes = {
 
 
 /**
- * Generates a set of user-api routes using the given config and database objects
+ * Generates a set of superuser-api routes and dataRoutes using the given config and database objects
  *
  * @param {module:config} cfg - A config object
  * @param {module:database} db - A database object
-
- * @return {{routes : module:superuser-api~routes, dataRoutes : module:superuser-api~dataDoutes}} The user-api routes
+ *
+ * @return {Object.<{
+ *    routes: module:superuser-api~routes, dataRoutes: module:superuser-api~dataRoutes
+ * }>} Object both routes and dataRoutes
  */
 module.exports = function (cfg, db){
     setConfig(cfg);

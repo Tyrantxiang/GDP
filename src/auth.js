@@ -75,15 +75,22 @@ function authenticate(req, res){
 }
 
 /**
- * Express middleware that verifies a token before possing on to the next function for the route
- * Will send a response early if the token isn't present or invalid
+ * Function to generate express authentication middleware, which only will pass with a given user.
+ * If undefined is used all users will pass
  *
- * @param {string|undefined} name - The name to set up authentication for. Undefined will check against all namespace
- * @return {Function} - the authentication route set up to only allow through the person defined
- * @type {express_middleware}
+ * @param {string|undefined} name - The name to set up authentication for. Undefined will check against all namespaces
+ * @return {module:auth~express_middleware} - The authentication route set up to only allow through the person defined
  */
-function express_middleware(name){
-	return function(req, res, next){
+function generateExpressMiddleware(name){
+    /**
+     * Express middleware that verifies a token before passing on to the next function for the route
+     * Will send a response early if the token isn't present or invalid
+     *
+     * @var
+     * @alias module:auth~express_middleware
+     * @type {express_middleware}
+     */
+	function express_middleware(req, res, next){
 		// Try and get the token from the query string first
 		var token = req.query.token || req.query.t;
 		
@@ -125,6 +132,7 @@ function express_middleware(name){
 			}
 		});
 	}
+    return express_middleware;
 }
 
 /**
@@ -161,7 +169,7 @@ function socket_middleware(socket, next){
  *
  * @namespace auth
  *
- * @borrows module:auth~admin_token as admin_token
+ * @borrows module:auth~express_middleware as admin_token
  * @borrows module:auth~authenticate as authenticate
  * @borrows module:auth~express_middleware as express_middleware
  * @borrows module:auth~socket_middleware as socket_middleware

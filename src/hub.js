@@ -348,8 +348,9 @@ var commsEventListeners = {
     },
 
     /**
-     * Gets the items this user has unlocked
+     * Gets the items this user has unlocked. Does NOT include items with a cost of zero
      *
+     * @todo Should include items with a cost of zero
      * @param {Object|null} data - The data passed from the client to the server
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
