@@ -94,7 +94,7 @@ function startApp(db){
     // Other libary requires
         parser = require("body-parser"),
         morgan = require("morgan"),
-		upload_multer = require("multer")({ dest: "uploads/" });
+        upload_multer = require("multer")({ dest: "uploads/" });
 
 
 
@@ -113,7 +113,6 @@ function startApp(db){
 
     // Set up the authentication middleware
     app.use([/*"/games",*/ "/p"], auth.express_middleware);
-    app.use(["/views/superuser-functions.html", "/assets/js/superuser.js"], auth.admin_token);
     
     // Set the static files to be served
     app.use("/", express.static("static"));
@@ -141,18 +140,29 @@ function startApp(db){
     var superuserRoutes = Object.keys(superuserapi.routes).map(function(curr){return "/superuser/"+curr.toString();});
     //db.createUser(console.log, console.log, { username : "admin", password : "changeme", dob : new Date(946684800000) });
     //app.use(superuserRoutes, auth.admin_token);
-	
-	app.post("/superuser/add_bag_item", upload_multer.single("sprite"), auth.admin_token, superuserapi.routes.add_bag_item);
+
+    // These require uploads, which needs to be the first middleware
+    app.use(["/superuser/add_bag_item", "/superuser/add_status"], upload_multer.single("sprite"));
+
+    // Add auth to the routes
+    app.use("/superuser", auth.express_middleware, auth.admin_check);
+    app.use(["/views/superuser-functions.html", "/assets/js/superuser.js"], auth.express_middleware, auth.admin_check);
+
+    app.post("/superuser/add_bag_item", superuserapi.routes.add_bag_item);
     app.post("/superuser/remove_bag_item", superuserapi.routes.remove_bag_item);
-    app.post("/superuser/add_status", upload_multer.single("sprite"), auth.admin_token, superuserapi.routes.add_status);
-    app.post("/superuser/remove_status", auth.admin_token, superuserapi.routes.remove_status);
-    app.post("/superuser/add_condition", auth.admin_token, superuserapi.routes.add_condition);
-    app.post("/superuser/remove_condition", auth.admin_token, superuserapi.routes.remove_condition);
-    app.post("/superuser/add_store_item", auth.admin_token, superuserapi.routes.add_store_item);
-    app.post("/superuser/remove_store_item", auth.admin_token, superuserapi.routes.remove_store_item);
+
+    app.post("/superuser/add_status", superuserapi.routes.add_status);
+    app.post("/superuser/remove_status", superuserapi.routes.remove_status);
+
+    app.post("/superuser/add_condition", superuserapi.routes.add_condition);
+    app.post("/superuser/remove_condition", superuserapi.routes.remove_condition);
+
+    app.post("/superuser/add_store_item", superuserapi.routes.add_store_item);
+    app.post("/superuser/remove_store_item", superuserapi.routes.remove_store_item);
     //app.post("/superuser/add_minigame", auth.admin_token, superuserapi.add_minigame);
     //app.post("/superuser/remove_minigame", auth.admin_token, superuserapi.remove_minigame);
-	
+
+
     for(var i in superuserapi.dataRoutes){
         app.post(i, superuserapi.dataRoutes[i])
     }
