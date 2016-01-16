@@ -724,6 +724,38 @@
         });
     };
 
+
+    // Finish a game
+    hub.finishGame = function(api, score, currency){
+        // Clear listeners, timeouts, etc
+        api.clearAllGameSideEffects();
+
+        //return to hub here!
+        container.removeChild(api.getCanvasContainer());
+        container.appendChild(hubCanvasContainer);
+
+        // Recover the internal and controlled functions
+        recoverInternalWindowFunctions();
+        recoverControlledFunctions();
+
+        draw.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
+        draw.healthbar.updateStatuses(hub.statuses);
+
+        draw.update_avatar();
+
+        // Send game data to the server
+        comms.finish_minigame(api.getGameId(), score, currency, function(data){
+            if(data && data.err){
+                utils.addError(JSON.stringify(data.err));
+            }else{
+                // Print score here?
+                utils.addSuccess("Congratulations!");
+                utils.addSuccess("Score: " + score);
+                utils.addSuccess("Currency earnt: " + currency);
+            }
+        });
+    }
+
     hub.getAssetsByType = getAssetsByType;
 
 
@@ -867,25 +899,7 @@
     // Add to the prototype
     (function(proto){
         proto.finishGame = function(score, currency){
-            comms.finish_minigame(this.getGameId(), score, currency, function(data){
-                if(data && data.err){
-                    utils.addError(JSON.stringify(data.err));
-                }
-
-                this.removeAllListeners();
-
-                //return to hub here!
-                container.removeChild(this.getCanvasContainer());
-                container.appendChild(hubCanvasContainer);
-
-                // Recover the window functions
-                recoverWindowFunctions();
-
-                draw.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
-                draw.healthbar.updateStatuses(hub.statuses);
-
-                draw.update_avatar();
-            }.bind(this));
+            hub.finishGame(this, score, currency);
         };
 
         proto.useCarriable = function(carriableId, cb){
