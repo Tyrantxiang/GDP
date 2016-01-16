@@ -35,20 +35,57 @@
     utils.latch = latch;
 
     // Clear the window functions so games cannot use them
-    function clearWindowFunctions(){
+    function clearInternalWindowFunctions(){
         delete window.comms;
         delete window.draw;
         delete window.hub;
         delete window.menu;
     }
 
-    function recoverWindowFunctions(){
+    // Recover the above window functioInternalns
+    function recoverInternalWindowFunctions(){
         window.comms = comms;
         window.draw = draw;
         window.hub = hub;
         window.menu = menu;
     }
 
+
+    // Classes that are to be removed and/or pollyfilled during a game running
+    var controlledFunctions = {
+        setTimeout : { obj : window, func : window.setTimeout },
+        clearTimeout : { obj : window, func : window.clearTimeout },
+        setInterval : { obj : window, func : window.setInterval },
+        clearInterval : { obj : window, func : window.clearInterval },
+
+        requestAnimationFrame: { obj : window, func : window.requestAnimationFrame },
+        cancelAnimationFrame : { obj : window, func : window.cancelAnimationFrame }
+    };
+
+    function clearControlledFunctions(){
+        for(var a in controlledFunctions){
+            var f  = controlledFunctions[a];
+            delete f.obj[a];
+        }
+    }
+
+    // Replaces the functions with those given in the object passed in
+    function replaceControlledFunctions(other){
+        for(var a in controlledFunctions){
+            var f  = controlledFunctions[a],
+                o = other[a];
+            if(other[a]){
+                f.obj[a] = o;
+            }
+        }
+    }
+
+    function recoverControlledFunctions(){
+        for(var a in controlledFunctions){
+            var f  = controlledFunctions[a];
+            f.obj[a] = f.func;
+        }
+    }
 
     // Clones an arbitrary object
     function cloneObject(obj){
@@ -153,6 +190,7 @@
         // Scripts to load
         var scripts = [
             ['//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js', false],
+            ['/assets/js/rAF.js', false],
             ['/p/js/draw_canvas.js', true],
             ['/p/js/avatar.js', true],
             ['/p/js/menus.js', true]
@@ -638,6 +676,7 @@
                 var canvas = document.createElement("canvas"),
                     canvasContainer = document.createElement("div"),
 
+
                     // Create the API object
                     api = new GameAPI(
                         data.gameId,
@@ -649,9 +688,13 @@
                         data.version
                     );
 
+                // Remove internal and controlled functions
+                clearInternalWindowFunctions();
+                clearControlledFunctions();
 
-                // Remove window functions
-                clearWindowFunctions();
+                // Replace the window functions with the API ones
+                replaceControlledFunctions(api);
+
 
                 var newBag = [];
 
@@ -696,6 +739,10 @@
         this.version = version;
         this.canvas = canvas;
 
+
+
+
+        /* Event listeners for games to bind to */
         var listeners = [];
 
         this.addKeyListener = function(eventType, func){
@@ -729,6 +776,83 @@
                 }
             });
         };
+
+
+        /* setTimeout/setInterval implementations that allow cleanup of events on game finish */
+        var timeouts = [], intervals = [];
+        this.setTimeout = function setTimeout(){
+            // Pass the arguments directly into the new function
+            var id = controlledFunctions.setTimeout.func.apply(window, arguments);
+            timeouts.push(id);
+            return id;
+        };
+        this.clearTimeout = function clearTimeout(id){
+            // Pass the arguments directly into the new function
+            controlledFunctions.clearTimeout.func.apply(window, arguments);
+            var index = timeouts.indexOf(id);
+            if(index >= 0){
+                timeouts.splice(index, 1);
+            }
+        };
+        this.removeAllTimeouts = function(){
+            timeouts.splice(0).forEach(function(id){
+                controlledFunctions.clearTimeout.func.call(window, id);
+            });
+        };
+
+        this.setInterval = function setInterval(){
+            // Pass the arguments directly into the new function
+            var id = controlledFunctions.setInterval.func.apply(window, arguments);
+            timeouts.push(id);
+            return id;
+        };
+        this.clearInterval = function clearInterval(id){
+            // Pass the arguments directly into the new function
+            controlledFunctions.clearInterval.func.apply(window, arguments);
+            var index = timeouts.indexOf(id);
+            if(index >= 0){
+                timeouts.splice(index, 1);
+            }
+        };
+        this.removeAllIntervals = function(){
+            intervals.splice(0).forEach(function(id){
+                controlledFunctions.clearinterval.func.call(window, id);
+            });
+        };
+
+        /* Implementations for requestAnimationFrame (already includes a shiv) */
+        var aniFrames = [];
+        function removeFromAinFramesArray(id){
+            var index = aniFrames.indexOf(id);
+            if(index >= 0){
+                aniFrames.splice(index, 1);
+            }
+        }
+        this.requestAnimationFrame = function requestAnimationFrame(cb){
+            var id = controlledFunctions.requestAnimationFrame.func.call(window, function(){
+                removeFromAinFramesArray(id);
+                cb.apply(this, arguments);
+            });
+        };
+        this.cancelAnimationFrame = function cancelAnimationFrame(id){
+            controlledFunctions.cancelAnimationFrame.func.apply(window, arguments);
+            removeFromAinFramesArray(id);
+        };
+        this.removeAllAnims = function(){
+            aniFrames.splice(0).forEach(function(id){
+                controlledFunctions.cancelAnimationFrame.func.call(window, id);
+            });
+        };
+
+
+
+        this.clearAllGameSideEffects = function(){
+            this.removeAllListeners();
+            this.removeAllTimeouts();
+            this.removeAllIntervals();
+            this.removeAllAnims();
+        };
+
 
         this.getGameId = function(){
             return gameId;
