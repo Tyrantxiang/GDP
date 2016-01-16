@@ -128,7 +128,12 @@ var active = false;
       var username = $("#login_username").val(),
       password = $("#login_password").val();
 
-      login(username, password);
+      login(username, password, function(a){
+        // Reset as the hub was not launched
+        if(a && a.err){
+          active = false;
+        }
+      });
     }
   });
 
