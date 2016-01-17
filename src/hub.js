@@ -212,31 +212,31 @@ Hub.prototype.generateAvatarImage = function(items, cb){
 
 
         // Default avatar items that cannot be customised
-        trousers = rootLocation + "/avatar_items/trousers_blue.png",
-        healthImg = rootLocation + "/avatar_items/health_healthy.png",
-        mouth = rootLocation + "/avatar_items/mouth_smile.png",
+        trousers = rootLocation + "avatar_items/trousers_blue.png",
+        healthImg = rootLocation + "avatar_items/health_healthy.png",
+        mouth = rootLocation + "avatar_items/mouth_smile.png",
         eyes;
 
 
         // Adjust them to the health specific items
         if(this.health < 60){
             delete items.eyes;
-            eyes = rootLocation + "/avatar_items/eyes_tired.png";
-            mouth = rootLocation + "/avatar_items/mouth_sad.png";
+            eyes = rootLocation + "avatar_items/eyes_tired.png";
+            mouth = rootLocation + "avatar_items/mouth_sad.png";
         }
         if(this.health < 40){
-            healthImg = rootLocation + "/avatar_items/health_cold.png";
-            mouth = rootLocation + "/avatar_items/mouth_cold.png";
+            healthImg = rootLocation + "avatar_items/health_cold.png";
+            mouth = rootLocation + "avatar_items/mouth_cold.png";
         }
         if(this.health < 20){
-            healthImg = rootLocation + "/avatar_items/health_nauseated.png";
-            mouth = rootLocation + "/avatar_items/mouth_nauseated.png";
+            healthImg = rootLocation + "avatar_items/health_nauseated.png";
+            mouth = rootLocation + "avatar_items/mouth_nauseated.png";
         }
 
 
         for(var i in order){
             if(items[order[i]]){
-                var direc = config.items.getConfig(items[order[i]].id, "directory");
+                var direc = config.items.getConfig(items[order[i]], "directory");
                 direc += "/sprite.png";
                 urls.push(direc);
             }
@@ -247,7 +247,6 @@ Hub.prototype.generateAvatarImage = function(items, cb){
         urls.splice(1, 0, trousers);
         if(eyes) urls.splice(1, 0, eyes);
         urls.splice(1, 0, healthImg);
-
 
         cb(this.imgMaker(urls));
 };
@@ -262,8 +261,11 @@ Hub.prototype.generateAvatarImageFromEquippedItems = function(cb){
     var h = this;
     // Equipped items could possibly be saved locally?
     this.get_user_equipped_items({}, function(data){
-
-        h.generateAvatarImage(data, function(img){
+        var d = {};
+        for(var i in data){
+            d[i] = data[i].id;
+        }
+        h.generateAvatarImage(d, function(img){
             h.avatarImage = img;
             cb(img);
         });
