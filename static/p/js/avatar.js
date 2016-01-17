@@ -68,7 +68,7 @@
             elements = slots[slot].map(function(item){
               var imgEl = $(document.createElement("img")).attr("src", item.url).data("itemId", item.id).addClass("width-22 white-img-box");
               // Set as active if it is equipped
-              if(curr.id = item.id){
+              if(curr.id === item.id){
                 imgEl.addClass("active");
               }
 
@@ -95,7 +95,10 @@
 
 
       $("#avatar-creation-close").click(function(){
-        hub.closeAvatarCreation();
+        var userObj = getUserObject();
+        hub.updateEquiptItems(userObj, function(image) {
+          hub.closeAvatarCreation();
+        });
       });
 
 
@@ -105,18 +108,24 @@
         }
       }
 
+      function getUserObject(){
+        var userObj = {};
+        for(var i in menus){
+          userObj[i] = menus[i].find('.active').data("itemId");
+        }
+        return userObj;
+      }
 
-      function equipItemsOnSelect() {
-        var userObj = {
-          head : menus.head.find('.active').data("itemId"),
-          eyes : menus.eyes.find('.active').data("itemId"),
-          skin : menus.skin.find('.active').data("itemId"),
-          shirt : menus.shirt.find('.active').data("itemId")
-        };
-        hub.updateEquiptItems(userObj, function(image) {
+      function updateAvatarDisplay(userObj){
+        hub.getAvatarImageFromItems(userObj, function(image){
           img = image;
           drawAvatar(canvas, image, "#ffffff");
         });
+      }
+
+      function equipItemsOnSelect() {
+        var userObj = getUserObject();
+        updateAvatarDisplay(userObj);
       }
     });
   } 
