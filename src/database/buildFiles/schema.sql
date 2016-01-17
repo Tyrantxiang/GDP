@@ -84,5 +84,19 @@ CREATE TABLE "{schema}".user_equipped
 , eyes				text		NULL
 , skin				text		NULL
 , shirt				text		NULL
+, tree              text        NULL
+, swing             text        NULL
+, house             text        NULL
+, garden            text        NULL
+, stairs            text        NULL
+, trophy            text        NULL
+, mirror            text        NULL
+, tv                text        NULL
+, table             text        NULL
+, laptop            text        NULL
+, sofa              text        NULL
+, backpack          text        NULL
+, paint             text        NULL
+, path              text        NULL
 , PRIMARY KEY(id)
 );
