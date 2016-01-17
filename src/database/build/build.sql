@@ -1,8 +1,8 @@
-DROP SCHEMA IF EXISTS "{schema}" CASCADE;
+DROP SCHEMA IF EXISTS "sschema" CASCADE;
 
-CREATE SCHEMA "{schema}";
+CREATE SCHEMA "sschema";
 
-CREATE OR REPLACE FUNCTION "{schema}".update_modified_column()	
+CREATE OR REPLACE FUNCTION "sschema".update_modified_column()	
 RETURNS TRIGGER AS $$
 BEGIN
     NEW.modified = now();
@@ -11,7 +11,7 @@ END;
 $$ language 'plpgsql';
 
 -- users
-CREATE TABLE "{schema}".users
+CREATE TABLE "sschema".users
 ( id 				serial		NOT NULL
 , username		  	text    	NOT NULL UNIQUE
 , saltedpw		 	text    	NOT NULL
@@ -23,14 +23,14 @@ CREATE TABLE "{schema}".users
 );
 
 CREATE TRIGGER update_user_modified_ts 
-	BEFORE UPDATE ON "{schema}".users
+	BEFORE UPDATE ON "sschema".users
 	FOR EACH ROW 
-EXECUTE PROCEDURE "{schema}".update_modified_column();
+EXECUTE PROCEDURE "sschema".update_modified_column();
 
 -- sessions
-CREATE TABLE "{schema}".sessions
+CREATE TABLE "sschema".sessions
 ( id				serial		NOT NULL
-, user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
+, user_id			integer 	NOT NULL REFERENCES "sschema".users(id)
 , start_time		timestamp	NOT NULL
 , end_time			timestamp	NULL
 , created 			timestamp   NOT NULL DEFAULT current_timestamp
@@ -39,14 +39,14 @@ CREATE TABLE "{schema}".sessions
 );
 
 CREATE TRIGGER update_session_modified_ts 
-	BEFORE UPDATE ON "{schema}".sessions
+	BEFORE UPDATE ON "sschema".sessions
 	FOR EACH ROW 
-EXECUTE PROCEDURE "{schema}".update_modified_column();
+EXECUTE PROCEDURE "sschema".update_modified_column();
 
 -- plays
-CREATE TABLE "{schema}".plays
+CREATE TABLE "sschema".plays
 ( id 				serial		NOT NULL
-, user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
+, user_id			integer 	NOT NULL REFERENCES "sschema".users(id)
 , game_id		  	text    	NOT NULL
 , start_time		timestamp	NOT NULL
 , end_time			timestamp	NOT NULL
@@ -56,9 +56,9 @@ CREATE TABLE "{schema}".plays
 );
 
 -- conditions
-CREATE TABLE "{schema}".user_conditions
+CREATE TABLE "sschema".user_conditions
 ( id				serial		NOT NULL
-, user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
+, user_id			integer 	NOT NULL REFERENCES "sschema".users(id)
 , condition_id 		text 		NOT NULL
 , active			boolean		NOT NULL
 , created			timestamp   NOT NULL DEFAULT current_timestamp
@@ -66,9 +66,9 @@ CREATE TABLE "{schema}".user_conditions
 );
 
 -- inventory
-CREATE TABLE "{schema}".user_inventory
+CREATE TABLE "sschema".user_inventory
 ( id				serial		NOT NULL
-, user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
+, user_id			integer 	NOT NULL REFERENCES "sschema".users(id)
 , item_id	 		text 		NOT NULL
 , active			boolean		NOT NULL
 , created			timestamp   NOT NULL DEFAULT current_timestamp
@@ -76,9 +76,9 @@ CREATE TABLE "{schema}".user_inventory
 );
 
 -- equipped
-CREATE TABLE "{schema}".user_equipped
+CREATE TABLE "sschema".user_equipped
 ( id 				serial 		NOT NULL
-, user_id			integer 	NOT NULL REFERENCES "{schema}".users(id)
+, user_id			integer 	NOT NULL REFERENCES "sschema".users(id)
 , created			timestamp   NOT NULL DEFAULT current_timestamp
 , head 				text		NULL
 , eyes				text		NULL
@@ -92,7 +92,7 @@ CREATE TABLE "{schema}".user_equipped
 , trophy            text        NULL
 , mirror            text        NULL
 , tv                text        NULL
-, table             text        NULL
+, desk              text        NULL
 , laptop            text        NULL
 , sofa              text        NULL
 , backpack          text        NULL

@@ -28,8 +28,7 @@ build/Release
 node_modules
 
 # Temporary database folder ignores
-database/buildFiles/build.sql
-database/old/.server_settings
+src/database/build/build.sql
 
 # Temporary hub folder ignores.
 hub_skeleton/images
