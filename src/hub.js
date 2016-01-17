@@ -877,9 +877,7 @@ var commsEventListeners = {
      */
     get_avatar : function(data, fn){
         if(data && data.items){
-            console.log("here");
             this.generateAvatarImage(data.items, function(img){
-                console.log("here");
                 fn(img);
             });
         }else{
