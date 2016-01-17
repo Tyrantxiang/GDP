@@ -869,16 +869,24 @@ var commsEventListeners = {
     },
 
     /**
-     * Get the avatar image for the user
+     * Get the avatar image for the user OR an image from the given items (array of items)
      *
-     * @param {Object|null} data - The data passed from the client to the server
+     * @param {Object|null}          data         - The data passed from the client to the server
+     * @param {Object<string, int>}  [data.items] - Map of slot name to item ID to generate the avatar for
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_avatar : function(data, fn){
-        var h = this;
-        this.generateAvatarImageFromEquippedItems(function(){
-            fn(h.avatarImage);
-        });
+        if(data && data.items){
+            console.log("here");
+            this.generateAvatarImage(data.items, function(img){
+                console.log("here");
+                fn(img);
+            });
+        }else{
+            this.generateAvatarImageFromEquippedItems(function(img){
+                fn(img);
+            });
+        }
     },
 
     /**

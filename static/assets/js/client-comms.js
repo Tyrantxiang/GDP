@@ -332,9 +332,9 @@ window.comms = {
 						);
 	},
 	
-	get_avatar : function(cb){
+	get_avatar : function(cb, items){
 		client_socket_call( 'get_avatar',
-							{},
+							{items: items},
 							cb
 						);
 	},

@@ -321,6 +321,11 @@
     };
 
 
+    // Get a avatar image from the given array
+    hub.getAvatarImageFromItems = function(items, cb){
+        comms.get_avatar(cb, items);
+    };
+
 
     // Getting carriables and those in the bag
     hub.getAllCarriables = function(cb){
