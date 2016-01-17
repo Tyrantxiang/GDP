@@ -50,7 +50,7 @@ function latch(num, complete){
 
 
 
-/** 
+/**
  * Represents a user's session while in the Hub.
  *
  * This is the central object, containing all
@@ -58,7 +58,7 @@ function latch(num, complete){
  * Also keeps track of the session variables, such as
  * health, status values and bag contents.
  * They are created by client comms when a socket opens
- * 
+ *
  * @constructor
  * @mixes module:hub~commsEventListeners
  * @param {int} userId  - The ID for the user this hub is associated with (see {@link Hub#userId})
@@ -100,7 +100,7 @@ function Hub(userId, comms){
     this.statuses = {};
     /** The user's current health */
     this.health = 100;
-    
+
     this.avatarImage = undefined;
 
     // Get the user data from the db
@@ -163,12 +163,12 @@ Hub.prototype.generateSymptoms = function(health, cb){
         20 : "nauseated"
     };
     var retValue = [];
-    
+
     for(var i in words){
-        if(health < i) 
+        if(health < i)
             retValue.push(words[i]);
     }
-    
+
     cb(retValue);
 };
 
@@ -196,59 +196,80 @@ Hub.prototype.newAvatarImageNeeded = function(oldHealth, newHealth, cb){
 };
 
 /**
+ * Generates an avatar image using the given items.
+ * Will not fill in item gaps with defaults
+ *
+ * @todo Fill in item gaps with defaults
+ * @param {Object.<string, int>}    items - Map of the item type to it's item ID
+ * @param {function}                cb    - Called when the image has been generated
+ */
+Hub.prototype.generateAvatarImage = function(items, cb){
+    var urls = [],
+        rootLocation = config.app.getRootDirectory(),
+
+        // The order to overlay the images
+        order = ["skin", "eyes", "shirt", "head"],
+
+
+        // Default avatar items that cannot be customised
+        trousers = rootLocation + "/avatar_items/trousers_blue.png",
+        healthImg = rootLocation + "/avatar_items/health_healthy.png",
+        mouth = rootLocation + "/avatar_items/mouth_smile.png",
+        eyes;
+
+
+        // Adjust them to the health specific items
+        if(this.health < 60){
+            delete items.eyes;
+            eyes = rootLocation + "/avatar_items/eyes_tired.png";
+            mouth = rootLocation + "/avatar_items/mouth_sad.png";
+        }
+        if(this.health < 40){
+            healthImg = rootLocation + "/avatar_items/health_cold.png";
+            mouth = rootLocation + "/avatar_items/mouth_cold.png";
+        }
+        if(this.health < 20){
+            healthImg = rootLocation + "/avatar_items/health_nauseated.png";
+            mouth = rootLocation + "/avatar_items/mouth_nauseated.png";
+        }
+
+
+        for(var i in order){
+            if(items[order[i]]){
+                var direc = config.items.getConfig(items[order[i]].id, "directory");
+                direc += "/sprite.png";
+                urls.push(direc);
+            }
+        }
+
+        // Generate
+        urls.splice(1, 0, mouth);
+        urls.splice(1, 0, trousers);
+        if(eyes) urls.splice(1, 0, eyes);
+        urls.splice(1, 0, healthImg);
+
+
+        cb(this.imgMaker(urls));
+};
+
+/**
  * Generates an avatar image using the user's equipt items and status.
  * Updates Hub#avatarImage with the new image as well as returning it
  *
  * @param {function} cb - Called when the image has been generated
  */
-Hub.prototype.generateAvatarImage = function(cb){
-    var urls = [],
-        h = this,
-        rootLocation = config.app.getRootDirectory();
-        
-    var order = ["skin", "eyes", "shirt", "head"];
-
+Hub.prototype.generateAvatarImageFromEquippedItems = function(cb){
+    var h = this;
     // Equipped items could possibly be saved locally?
-    this.get_user_equipped_items(
-        {},
-        function(data){
-            var trousers = rootLocation + "/avatar_items/trousers_blue.png";
-            var healthImg = rootLocation + "/avatar_items/health_healthy.png";
-            var mouth = rootLocation + "/avatar_items/mouth_smile.png";
-            var eyes = undefined;
-            
-            if(h.health < 60){
-                delete data.eyes;
-                eyes = rootLocation + "/avatar_items/eyes_tired.png";
-                mouth = rootLocation + "/avatar_items/mouth_sad.png";
-            }
-            if(h.health < 40){
-                healthImg = rootLocation + "/avatar_items/health_cold.png";
-                mouth = rootLocation + "/avatar_items/mouth_cold.png";
-            }
-            if(h.health < 20){
-                healthImg = rootLocation + "/avatar_items/health_nauseated.png";
-                mouth = rootLocation + "/avatar_items/mouth_nauseated.png";
-            }
+    this.get_user_equipped_items({}, function(data){
 
-            for(var i in order){
-                if(data[order[i]]){
-                    var direc = config.items.getConfig(data[order[i]].id, "directory");
-                    direc += "/sprite.png";
-                    urls.push(direc);
-                }
-            }
-            
-            urls.splice(1, 0, mouth);
-            urls.splice(1, 0, trousers);
-            if(eyes) urls.splice(1, 0, eyes);
-            urls.splice(1, 0, healthImg);
-            
-            h.avatarImage = h.imgMaker(urls);
-            cb(h.avatarImage);
+        h.generateAvatarImage(data, function(img){
+            h.avatarImage = img;
+            cb(img);
         });
-};
 
+    });
+};
 
 
 /**
@@ -269,18 +290,18 @@ Hub.prototype.generateAvatarImage = function(cb){
  */
 var commsEventListeners = {
 
-    /** 
+    /**
      * @todo Options are unused, here for completions sake. Can be implemented in future for
      * options such as colour blindness etc.
-     * 
+     *
      */
     get_options : function(data, fn){
         fn({});
     },
-    /** 
+    /**
      * @todo Options are unused, here for completions sake. Can be implemented in future for
      * options such as colour blindness etc.
-     * 
+     *
      */
     set_options : function(data, fn){
         fn({});
@@ -310,7 +331,7 @@ var commsEventListeners = {
         }else{
             obj = undefined;
         }
-        
+
         fn(obj);
     },
 
@@ -407,14 +428,14 @@ var commsEventListeners = {
                 var itemMetaData = config.hub.getItemMetaData(),
                     sendBack = {},
                     slot;
-                    
+
                 for(slot in itemMetaData){
-                    
+
                     let md = itemMetaData[slot],
                         itemConfig = config.items.getConfig(results[slot] || md.default),
                         url = config.items.getSpriteURL(itemConfig.id);
 
-                        
+
                     sendBack[slot] = {
                         id : itemConfig.id,
                         name : itemConfig.name,
@@ -439,8 +460,8 @@ var commsEventListeners = {
             },
             this.userId
         );
-        
-        
+
+
     },
 
     /**
@@ -459,10 +480,10 @@ var commsEventListeners = {
         };
 
         var t = this;
-        
+
         db.createUserEquipped(
             function(results){
-                t.generateAvatarImage(function(){
+                t.generateAvatarImageFromEquippedItems(function(){
                     fn({ avatarImage : t.avatarImage });
                 });
             }, function(err){
@@ -472,7 +493,7 @@ var commsEventListeners = {
         );
     },
 
-    /** 
+    /**
      * Gets all the carriables in the users bag
      *
      * @param {Object|null} data - The data passed from the client to the server
@@ -495,7 +516,7 @@ var commsEventListeners = {
         fn();
     },
 
-    /** 
+    /**
      * Gets all available carriables
      *
      * @param {Object|null} data - The data passed from the client to the server
@@ -508,7 +529,7 @@ var commsEventListeners = {
         }));
     },
 
-    /** 
+    /**
      * Gets information on a single carriable
      *
      * @param {Object} data    - The data passed from the client to the server
@@ -519,7 +540,7 @@ var commsEventListeners = {
         fn(config.carriables.getConfig(data.id));
     },
 
-    /** 
+    /**
      * "Uses" a carriable, thus applying it's effects and removing it from the bag
      *
      * @param {Object} data              - The data passed from the client to the server
@@ -549,7 +570,7 @@ var commsEventListeners = {
             // Get all status values
             h.get_all_status_values(null, function(statuses){
                 // Generate the avatar image
-                h.generateAvatarImage(function(){
+                h.generateAvatarImageFromEquippedItems(function(){
 
                     fn({
                         bag : h.bag.getCarriables(),
@@ -577,7 +598,7 @@ var commsEventListeners = {
         });
     },
 
-    /** 
+    /**
      * Gets all available minigames
      *
      * @param {Object|null} data - The data passed from the client to the server
@@ -587,7 +608,7 @@ var commsEventListeners = {
         fn(config.games.listAll());
     },
 
-    /** 
+    /**
      * Launches a given minigame and returns the data needed to run it on the client
      *
      * @param {Object} data    - The data passed from the client to the server
@@ -630,7 +651,7 @@ var commsEventListeners = {
         }
     },
 
-    /** 
+    /**
      * Finishes the current minigame and saves the results to the database
      *
      * @param {Object} data          - The data passed from the client to the server
@@ -676,7 +697,7 @@ var commsEventListeners = {
         }
     },
 
-    /** 
+    /**
      * Finishes the current minigame and saves the results to the database
      *
      * @param {Object} data          - The data passed from the client to the server
@@ -726,7 +747,7 @@ var commsEventListeners = {
                                 }
                                 results = total;
                             }
-            
+
                             fn(results);
                         },
                         function(err){ fn({err: "Error accessing database entries" }); },
@@ -736,7 +757,7 @@ var commsEventListeners = {
                     );
     },
 
-    /** 
+    /**
      * Modify the health of the user, using the status multipliers to effect the past in value
      *
      * @param {Object} data       - The data passed from the client to the server
@@ -744,18 +765,18 @@ var commsEventListeners = {
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     modify_hp_value : function(data, fn){
-        
+
         var value = data.value;
-        
+
         var multiplier = 1;
         for(var stat in this.statuses){
             multiplier *= this.statuses[stat].getMultiplier();
         }
-        
+
         //The multiplier makes bad health changes go up, and good health changes go down
         if(value < 0) value = Math.floor(value * multiplier);
         else value = Math.floor(value / multiplier);
-        
+
         // Keep health between 100 and 0;
         var oldHealth = this.health;
         this.health = Math.max(0, Math.min(100, this.health + value));
@@ -764,7 +785,7 @@ var commsEventListeners = {
 
         this.newAvatarImageNeeded(oldHealth, this.health, function(newImageNeed){
             if(newImageNeed){
-                h.generateAvatarImage(function(){
+                h.generateAvatarImageFromEquippedItems(function(){
                     fn({
                         newhp: h.health,
                         avatarImage: h.avatarImage
@@ -780,7 +801,7 @@ var commsEventListeners = {
 
     },
 
-    /** 
+    /**
      * Modify the value of a status of the user
      *
      * @param {Object} data       - The data passed from the client to the server
@@ -801,7 +822,7 @@ var commsEventListeners = {
         }
     },
 
-    /** 
+    /**
      * Gets the health of the user
      *
      * @param {Object|null} data - The data passed from the client to the server
@@ -813,7 +834,7 @@ var commsEventListeners = {
         });
     },
 
-    /** 
+    /**
      * Gets the information for a given status
      *
      * @param {Object} data    - The data passed from the client to the server
@@ -831,7 +852,7 @@ var commsEventListeners = {
         }
     },
 
-    /** 
+    /**
      * Gets the information for all statuses
      *
      * @param {Object|null} data - The data passed from the client to the server
@@ -847,7 +868,7 @@ var commsEventListeners = {
         fn(statuses);
     },
 
-    /** 
+    /**
      * Get the avatar image for the user
      *
      * @param {Object|null} data - The data passed from the client to the server
@@ -855,12 +876,12 @@ var commsEventListeners = {
      */
     get_avatar : function(data, fn){
         var h = this;
-        this.generateAvatarImage(function(){
+        this.generateAvatarImageFromEquippedItems(function(){
             fn(h.avatarImage);
         });
     },
 
-    /** 
+    /**
      * Sets the haelth of the user to the given value, ignoring all status modifiers
      *
      * @param {Object} data       - The data passed from the client to the server
@@ -869,14 +890,14 @@ var commsEventListeners = {
      */
     set_hp_value : function(data, fn){
         this.health = data.newhp;
-        
+
         // Keep health between 100 and 0;
         this.health = Math.max(0, Math.min(100, this.health));
-        
+
         var h = this;
-        
-        this.generateAvatarImage(function(){
-            
+
+        this.generateAvatarImageFromEquippedItems(function(){
+
             fn({
                 newhp: h.health,
                 avatarImage: h.avatarImage
@@ -884,7 +905,7 @@ var commsEventListeners = {
         });
     },
 
-    /** 
+    /**
      * Get the symtoms the user currently has
      *
      * @param {Object|null} data - The data passed from the client to the server
@@ -971,7 +992,7 @@ function Status(configObj){
 Status.prototype.setValue = function(newValue){
     this.value = newValue;
 };
-/** 
+/**
  * Adds or subtracts from the current status value.
  *
  * @param {int} addValue - Amount to change the value by. May be negative, to allow subtraction
@@ -1065,7 +1086,7 @@ var exportFunctions = {
      *
      * @memberof module:hub~hub
      * @function
-     * @return {module:database} The current database object 
+     * @return {module:database} The current database object
      */
     getDatabase : getDatabase,
 
@@ -1075,7 +1096,7 @@ var exportFunctions = {
      * @memberof module:hub~hub
      * @param {int}                userId - The userId to assign the hub to
      * @param {module:comms~Comms} comms  - The comms object for this user
-     * @return {module:hub~Hub} The created hub instance 
+     * @return {module:hub~Hub} The created hub instance
      */
     create : function (userId, comms){
         var h = new Hub(userId, comms);
@@ -1087,9 +1108,9 @@ var exportFunctions = {
     }
 };
 
-/** 
+/**
  * Init function for the module. Returns the exposed functions of the module
- * 
+ *
  * @param {module:config}   cfg - The server configoration
  * @param {module:database} db  - The database object
  * @return {module:hub~hub} - Object with the module's functions
