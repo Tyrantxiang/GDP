@@ -2,12 +2,42 @@
 "use strict";
 
 
+/**
+ *  Comms module
+ * @module comms
+ */
+
 // The token used after auth
 var token = null,
 	socket = null,
 	// The event listeners for the comms
 	eventListeners = {};
 
+/**
+ * An AJAX success callback
+ *
+ * @callback ajaxSucess
+ * @this {XMLHttpRequest}
+ * @param {Object} data - The parsed JSON object
+ */
+/**
+ * An AJAX success error callback
+ *
+ * @callback ajaxError
+ * @this {XMLHttpRequest}
+ */
+/**
+ * A generic abstraction over an XMLHttpRequest (ajax) object
+ * @public
+ * @param {string}      url                            - The URL to send the request to
+ * @param {string}      verb                           - The http verb to use
+ * @param {Object}      data                           - The data to send, must be a map if verb == GET
+ * @param {ajaxSuccess} success                        - Function to call on success, will also be called on fail if error is ommitted
+ * @param {ajaxError}   [error]                        - Function to call on error
+ * @param {string}      [reponseType=json]             - The request type
+ * @param {string}      [contentType=application/json] - The response content type
+ * @return {XMLHttpRequest} The raw XMLHttpRequest object
+ */
 function ajaz(url, verb, data, success, error, responseType, contentType){
 	var xhr = new XMLHttpRequest();
 	verb = verb.toUpperCase();
@@ -59,25 +89,55 @@ function ajaz(url, verb, data, success, error, responseType, contentType){
 	return xhr;
 }
 
+/**
+ * Convinence function for making POST requests
+ *
+ * @param {string}      url  - The URL to send the request to
+ * @param {Object}      data - The data to send
+ * @param {ajaxSuccess} cb   - Function to call on when request as completed (success or fail)
+ * @return {XMLHttpRequest} The raw XMLHttpRequest object
+ */
 function postRequest(url, data, cb){
-	ajaz(url, "POST", data, cb);
+	return ajaz(url, "POST", data, cb);
 }
 
 
 
-// NOT EXPOSED
+/**
+ * Sets the authentication token for further requests. Not exposed by the module
+ *
+ * @param {string} token - The token to set
+ */
 function setToken(t){
 	token = t;
 }
 
+/**
+ * Gets the authentication token
+ *
+ * @return {string} The authentication token
+ */
 function getToken(){
 	return token;
 }
 
+/**
+ * Tokenises a GET request so it can be used for authed areas
+ *
+ * @param {string} path - The URL/path to tokenise
+ * @return {string} The new, tokenised, URL
+ */
 function tokeniseGetRequest(path){
 	return path + "?t=" + getToken();
 }
 
+/**
+ * Loads a JavaScript file and adds it to the DOM, thus running the code
+ *
+ * @param {string} url       - The URL to fetch the script file
+ * @param {function} cb      - Called when the script has loaded
+ * @param {boolean} tokenise - Whether or not to tokenise the request (required for authentcated scripts)
+ */
 function loadScriptFile(url, cb, tokenise){
 	if(tokenise !== false){
 		url = tokeniseGetRequest(url);
@@ -95,7 +155,13 @@ function loadScriptFile(url, cb, tokenise){
 }
 
 
-
+/**
+ * Add an event listener to all future sockets. NOTE: will NOT apply the listener to the current socket
+ *
+ * @todo Make it add the listener to the current socket
+ * @param {string} name   - The name of the event listener
+ * @param {function} func - The function to bind to the listener
+ */
 function setEventListener(name, func){
 	if(!eventListeners[name]){
 		eventListeners[name] = [];
@@ -104,6 +170,12 @@ function setEventListener(name, func){
 	eventListeners[name].push(func);
 }
 
+/**
+ * Clear all current socket event listeners
+ *
+ * @param {string} name   - The name of the event listener
+ * @param {function} func - The function to bind to the listener
+ */
 function clearEventListeners(name){
 	if(name){
 		delete eventListeners[name];
@@ -112,6 +184,20 @@ function clearEventListeners(name){
 	}
 }
 
+/**
+ * Authenticate callback
+ *
+ * @callback authenticateCallback
+ * @param {Object}  result
+ * @param {boolean} authenticated - Whether the user has been successfully authenticated
+ */
+/**
+ * Authenticate a user using username and password, setting the token on success
+ *
+ * @param {string} username
+ * @param {string} password
+ * @param {authenticateCallback} cb - Called once authentication has been successfully attempted
+ */
 function authenticate(username, password, cb){
 	ajaz("/authenticate", "POST",
 		{ username : username, password : password },
@@ -129,6 +215,12 @@ function authenticate(username, password, cb){
 	);
 }
 
+/**
+ * Opens a socket connection to the server
+ *
+ * @todo Fire callback on socket failing to open
+ * @param {function} [cb] - Called when the socket has been successfully opened
+ */
 function createSocket(cb){
 	var t = getToken();
 	if(!t){
@@ -159,34 +251,85 @@ function createSocket(cb){
 			});
 		}
 
-		cb();
+		cb && cb();
 	});
 }
 
-
+/**
+ * Logs the user out, disconnecting the socket and deleting the token
+ *
+ * @param {function} [cb] - Called on successful logout
+ */
 function logout(cb){
 	socket.disconnect();
 	token = null;
 	socket = null;
-	cb();
+	cb && cb();
 }
 
+/**
+ * Returns whether the user is authenticated.
+ * This function just checks if there is a token in memory, this does not mean the token is valid.
+ * For a better check use socketOpen, as this will tell you if socket functions are usable
+ *
+ * @return {boolean} Whether the user is authenticated
+ */
 function authenticated(){
 	return !!token;
 }
 
+/**
+ * Returns whether there is a socket open for this session
+ *
+ * @return {boolean} Whether a socket is open
+ */
 function socketOpen(){
 	return !!socket;
 }
 
-var emptyFunction = function(){};
+
+var emptyFunction = function(){},
+	emptyObject = {};
+/**
+ * Generic abstraction over the socket.io interface.
+ * Sends data over the socket to a specific event (server function)
+ *
+ * @param {string} name   - The name of the endpoint to call server side
+ * @param {Object} data   - The data to send with the request
+ * @param {function} [cb] - Called when the server responds, with the response data
+ */
 function client_socket_call(name, data, cb){
-	socket.emit(name, data, cb || emptyFunction);
+	socket.emit(name, data || emptyObject, cb || emptyFunction);
 }
 
 
+/**
+ * Exposed functions for the communications on the client
+ *
+ * @namespace
+ *
+ * @borrows module:comms~authenticate
+ */
 window.comms = {
 
+	// Functions from the inner members
+	authenticate : authenticate,
+	authenticated : authenticated,
+	createSocket : createSocket,
+	socketOpen : socketOpen,
+
+	logout : logout,
+
+	getToken : getToken,
+	tokeniseGetRequest : tokeniseGetRequest,
+	loadScriptFile : loadScriptFile,
+	ajaz : ajaz,
+
+	setEventListener : setEventListener,
+	clearEventListeners : clearEventListeners,
+
+
+	/** Something */
 	get_hub_backgroud_image : function(cb){
 		client_socket_call(	'get_hub_backgroud_image',
 							{},
@@ -444,26 +587,7 @@ window.comms = {
 							{},
 							cb
 						);
-	},
-
-
-	// Additional functions
-	authenticate : authenticate,
-	authenticated : authenticated,
-	createSocket : createSocket,
-	socketOpen : socketOpen,
-
-	logout : logout,
-
-	getToken : getToken,
-	tokeniseGetRequest : tokeniseGetRequest,
-	loadScriptFile : loadScriptFile,
-	ajaz : ajaz,
-
-	setEventListener : setEventListener,
-	clearEventListeners : clearEventListeners,
-
-
+	}
 };
 
 })();
