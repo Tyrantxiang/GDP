@@ -425,12 +425,54 @@ window.comms = {
 	},
 
 	//AVATAR AND HOUSE CUSTOMIZATION
-	get_all_item_info : function(cb){	
+	get_all_item_info : function(cb){
 		client_socket_call(	'get_all_item_info',
 							{},
 							cb
 						);
 		
+	},
+
+	get_items_by_type : function(type, cb){
+		client_socket_call(	'get_items_by_type',
+					{type: type},
+					cb
+				);
+	},
+
+	get_item_slot_names : function(cb){
+		client_socket_call(	'get_item_slot_names',
+					{},
+					cb
+				);
+	},
+
+	get_item_slot_names_by_type : function(type, cb){
+		client_socket_call(	'get_item_slot_names_by_type',
+					{type: type},
+					cb
+				);
+	},
+
+	get_item_meta_data : function(cb){
+		client_socket_call(	'get_item_meta_data',
+					{},
+					cb
+				);
+	},
+
+	get_item_meta_data_for_type : function(type, cb){
+		client_socket_call(	'get_item_meta_data_for_type',
+					{type: type},
+					cb
+				);
+	},
+
+	get_item_meta_data_for_slot : function(slot, cb){
+		client_socket_call(	'get_item_meta_data_for_slot',
+					{slot: slot},
+					cb
+				);
 	},
 
 	get_single_item_info : function(id, cb){

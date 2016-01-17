@@ -319,6 +319,88 @@ var commsEventListeners = {
         fn(config.items.listAll());
     },
 
+
+    /**
+     * Gets information on items of a given type
+     *
+     * @param {Object} data      - The data passed from the client to the server
+     * @param {Object} data.type - The type to get items for
+     * @param {module:hub~commsEventListeners~commsCallback} fn
+     */
+    get_items_by_type : function(data, fn){
+        var slots = config.hub.getItemSlots(data.type),
+            items = {},
+            l = latch(slots.length, function(){
+                fn(items);
+            });
+
+        slots.forEach(function(slot){
+            this.get_items_for_slot({ slot: slot }, function(is){
+                if(Array.isArray(is)){
+                    items[slot] = is;
+                    l();
+                }
+            });
+        }, this);
+    },
+
+
+    /**
+     * Gets the names of all item slots
+     *
+     * @param {Object} data - The data passed from the client to the server
+     * @param {module:hub~commsEventListeners~commsCallback} fn
+     */
+    get_item_slot_names : function(data, fn){
+        fn(config.hub.getItemSlots());
+    },
+
+
+    /**
+     * Gets the names of all item slots for a given type
+     *
+     * @param {Object} data      - The data passed from the client to the server
+     * @param {Object} data.type - The type to get items for
+     * @param {module:hub~commsEventListeners~commsCallback} fn
+     */
+    get_item_slot_names_by_type : function(data, fn){
+        fn(config.hub.getItemSlots(data.type));
+    },
+
+
+
+    /**
+     * Gets metadata for all item slots
+     *
+     * @param {Object} data - The data passed from the client to the server
+     * @param {module:hub~commsEventListeners~commsCallback} fn
+     */
+    get_item_meta_data : function(data, fn){
+        fn(config.hub.getItemMetaData());
+    },
+
+    /**
+     * Gets metadata for all item slots of a given type
+     *
+     * @param {Object} data      - The data passed from the client to the server
+     * @param {Object} data.type - The type to get metadata for it's slots
+     * @param {module:hub~commsEventListeners~commsCallback} fn
+     */
+    get_item_meta_data_for_type : function(data, fn){
+        fn(config.hub.getItemMetaData(data.type));
+    },
+
+    /**
+     * Gets metadata on a given item slot
+     *
+     * @param {Object} data      - The data passed from the client to the server
+     * @param {Object} data.slot - The slot to get metadata for
+     * @param {module:hub~commsEventListeners~commsCallback} fn
+     */
+    get_item_meta_data_for_slot : function(data, fn){
+        fn(config.hub.getSingleItemSlotMetaData(data.slot));
+    },
+
     /**
      * Gets information on a single items
      *
@@ -327,11 +409,9 @@ var commsEventListeners = {
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_single_item_info : function(data, fn){
-        var obj = config.items.getConfig(data.id, undefined);
+        var obj = config.items.getConfig(data.id);
         if(obj){
             obj.url = config.items.getSpriteURL(data.id);
-        }else{
-            obj = undefined;
         }
 
         fn(obj);

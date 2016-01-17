@@ -238,6 +238,17 @@ exporter.hub = {
     },
 
     /**
+     * Gets the metadata on a single item slot
+     *
+     * @memberof module:config.hub
+     * @param {string} slot - The slot to get the metadata for
+     * @return {Object|null} The metadata, or null if slot doesn't exist
+     */
+    getSingleItemSlotMetaData : function(slot){
+        return itemMetaData.all[slot];
+    },
+
+    /**
      * Gets the metadata on avatar item slots
      *
      * @memberof module:config.hub
