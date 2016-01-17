@@ -323,7 +323,9 @@
 
     // Get a avatar image from the given array
     hub.getAvatarImageFromItems = function(items, cb){
-        comms.get_avatar(cb, items);
+        comms.get_avatar(function(img){
+            cb(base64ToImg(img));
+        }, items);
     };
 
 
