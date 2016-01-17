@@ -30,6 +30,12 @@ node_modules
 # Temporary database folder ignores
 src/database/build/build.sql
 
+# Ignore non-example core config file
+config.json
+items.json
+database.json
+
+
 # Temporary hub folder ignores.
 hub_skeleton/images
 

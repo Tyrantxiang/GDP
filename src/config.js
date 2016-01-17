@@ -14,17 +14,100 @@
 var fs = require("fs"),
     path = require("path"),
 
+    // The root of the app (location of app.js)
     rootLocation = path.join(__dirname,  "../"),
-    configFileLocation = path.join(rootLocation, "/config.json"),
-    config = JSON.parse(fs.readFileSync(configFileLocation)); // Sync as it is run only once on startup
+    // Location of the main config file
+    configFile_location = path.join(rootLocation, "config.json"),
+    // The config object
+    config;
 
-    // Fill in things for empty config file
-    if(!config.app){
-        config.app = {};
+
+
+
+
+// Attempt to read the config, if not just replace with empty object
+try{
+    config = JSON.parse(fs.readFileSync(configFile_location)); // Sync as it is run only once on startup
+}catch(e){
+    // Take the example file instead
+    configFile_location = path.join(rootLocation, "config.example.json");
+    config = JSON.parse(fs.readFileSync(configFile_location));
+}
+console.log("Loading main config from: ", configFile_location);
+
+// Fill in things for empty config file
+if(!config.app){
+    config.app = {};
+}
+
+
+
+
+
+// The location of other config files and folders
+var configDirectory = path.join(rootLocation, config.app.configDirectory || "configs");
+
+
+
+
+
+
+// Config for item meta data
+var config_itemMeta_location = path.join(configDirectory, "items.json"),
+    config_itemMeta;
+try{
+    config_itemMeta = JSON.parse(fs.readFileSync(config_itemMeta_location));
+}catch(e){
+    // Take the example file instead
+    config_itemMeta_location = path.join(configDirectory, "items.example.json");
+    config_itemMeta = JSON.parse(fs.readFileSync(config_itemMeta_location));
+}
+console.log("Loading item meta data config from: ", config_itemMeta_location);
+
+
+
+
+// Config for database
+var config_database_location = path.join(configDirectory, "database.json"),
+    config_database;
+try{
+    config_database = JSON.parse(fs.readFileSync(config_database_location));
+}catch(e){
+    // Take the example file instead
+    config_database_location = path.join(configDirectory, "database.example.json");
+    config_database = JSON.parse(fs.readFileSync(config_database_location));
+}
+
+
+// Manipulate the itemMetaData into slot forms
+var itemMetaData = (function(cfg){
+    var i,
+        o = {
+            all : {},
+            avatar : cfg.avatar,
+            hub : cfg.hub
+        };
+
+
+    // Take the avatar ones, add the slot type and then to all
+    for(i in o.avatar){
+        o.avatar[i].type = "avatar";
+        o.all[i] = o.avatar[i];
+    }
+    // Same for hub
+    for(i in o.hub){
+        o.hub[i].type = "hub";
+        o.all[i] = o.hub[i];
     }
 
+    return o;
+})(config_itemMeta);
+
+console.log("Loading database config from: ", config_database_location);
 
 
+
+// Main objet to export
 var exporter = {};
 
 
@@ -74,9 +157,19 @@ exporter.app = {
      * @memberof module:config.app
      * @return {string} The directory of the app root
      */
-     getRootDirectory : function(){
-        return rootLocation;
-     }
+    getRootDirectory : function(){
+    return rootLocation;
+    },
+
+    /**
+     * Gets the location of the configuration files and folders
+     *
+     * @memberof module:config.app
+     * @return {string} The directory of the configuration files and folders
+     */
+    getConfigDirectory : function(){
+        return configDirectory;
+    }
 };
 
 
@@ -94,7 +187,7 @@ exporter.database = {
      * @return {string} - The name of the default database schema or "main" if not specified
      */
     getDefaultSchema : function(){
-        return config.defaultDatabase || "main";
+        return config_database.defaultDatabase || "main";
     },
 
     /**
@@ -105,7 +198,7 @@ exporter.database = {
      * @return {Object} - The settings for the given database
      */
     getSettings : function(databaseName){
-        return config.databases[databaseName];
+        return config_database.databases[databaseName];
     }
 };
 
@@ -129,25 +222,55 @@ exporter.hub = {
     },
 
     /**
-     * Gets the metadata on an item slot
+     * Gets the metadata on item slots
+     *
+     * @memberof module:config.hub
+     * @return {"avatar"|"slot"|null} [type] - The type of item data to get: avatar or hub
+     * @return {Object<string, {
+                    default: int, left: int, top: int, scale: int, select_scale: int, type : string
+                }>} - Meta data for all items
+     */
+    getItemMetaData : function(type){
+        if(type){
+            return itemMetaData[type];
+        }
+        return itemMetaData.all;
+    },
+
+    /**
+     * Gets the metadata on avatar item slots
      *
      * @memberof module:config.hub
      * @return {Object<string, {
-                    default: int, left: int, top: int, scale: int, select_scale: int
-                }>} - Config for the background image
+                    default: int, left: int, top: int, scale: int, select_scale: int, type : string
+                }>} - Meta data for avatar items
      */
-    getItemMetaData : function(){
-        return config.hub.itemMetaData;
+    getAvatarItemMetaData : function(){
+        return exporter.hub.getItemMetaData("avatar");
     },
+
+    /**
+     * Gets the metadata on hub item slots
+     *
+     * @memberof module:config.hub
+     * @return {Object<string, {
+                    default: int, left: int, top: int, scale: int, select_scale: int, type : string
+                }>} - Meta data for hub items
+     */
+    getHubItemMetaData : function(){
+        return exporter.hub.getItemMetaData("hub");
+    },
+
 
     /**
      * Gets the all the currently configured items slots
      *
      * @memberof module:config.hub
-     * @return {string[]} - Config for the background image
+     * @return {"avatar"|"slot"|null} [type] - The slot names to get: avatar or hub
+     * @return {string[]} - The list of slot names
      */
-    getItemSlots : function(){
-        return Object.keys(config.hub.itemMetaData);
+    getItemSlots : function(type){
+        return Object.keys(exporter.hub.getItemMetaData(type));
     }
 };
 
@@ -440,7 +563,7 @@ exporter.games = (function(){
     console.log("Loading configs for games");
     // Variables
     var gamesRelativeDir = config.app.gamesDir || "games",
-        gamesDir = path.join(rootLocation, gamesRelativeDir),
+        gamesDir = path.join(configDirectory, gamesRelativeDir),
 
         configReader = configReaderFactory(gamesDir),
         gameConfigs = configReader.configs,
@@ -508,7 +631,7 @@ exporter.items = (function(){
     console.log("Loading configs for items");
 
     var itemsRelativeDir = config.app.itemsDir || "items",
-        itemsDir = path.join(rootLocation, itemsRelativeDir),
+        itemsDir = path.join(configDirectory, itemsRelativeDir),
         spritesExt = ".png",
    
         slots = exporter.hub.getItemSlots(),
@@ -585,7 +708,7 @@ exporter.carriables = (function(){
     console.log("Loading configs for carriables");
 
     var carriablesRelativeDir = config.app.carriablesDir || "carriables",
-        carriablesDir = path.join(rootLocation, carriablesRelativeDir),
+        carriablesDir = path.join(configDirectory, carriablesRelativeDir),
         carriablesSpritesExt = ".png",
 
 
@@ -628,7 +751,7 @@ exporter.conditions = (function(){
     console.log("Loading configs for conditions");
 
     var conditionsRelativeDir = config.app.conditionsDir || "conditions",
-        conditionsDir = path.join(rootLocation, conditionsRelativeDir),
+        conditionsDir = path.join(configDirectory, conditionsRelativeDir),
 
         // Generate the config readers and extract generated functions
         configReader = configReaderFactory(conditionsDir),
@@ -644,7 +767,7 @@ exporter.statuses = (function(){
     console.log("Loading configs for statuses");
 
     var statusesRelativeDir = config.app.statusesDir || "statuses",
-        statusesDir = path.join(rootLocation, statusesRelativeDir),
+        statusesDir = path.join(configDirectory, statusesRelativeDir),
 
         // Generate the config readers and extract generated functions
         configReader = configReaderFactory(statusesDir),

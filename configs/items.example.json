@@ -1,0 +1,84 @@
+{
+
+	"hub" : {
+		"tree" : {
+			"default": 1000,
+			"left": 0.73, "top": 0.08, "scale": 1, "select_scale": 1
+		},
+		"swing" : {
+			"default" : 2000,
+			"left": 0.01, "top": 0.25, "scale": 1, "select_scale": 1
+		},
+		"house" : {
+			"default": 3000,
+			"left": 0.20, "top": 0.18, "scale": 1, "select_scale": 1
+		},
+		"garden" : {
+			"default" : 4000,
+			"left": 0.165, "top": 0.55, "scale": 1, "select_scale": 1
+		},
+		"stairs" : {
+			"default" : 5000,
+			"left": 0.352, "top": 0.2, "scale": 1, "select_scale": 1.25
+		},
+		"trophy" : {
+			"default" : 6000,
+			"left": 0.56, "top": 0.33, "scale": 1, "select_scale": 1.25
+		},
+		"mirror" : {
+			"default" : 7000,
+			"left": 0.725, "top": 0.4, "scale": 1, "select_scale": 1.25
+		},
+		"tv" : {
+			"default" : 8000,
+			"left": 0.25, "top": 0.32, "scale": 1, "select_scale": 1
+		},
+		"desk" : {
+			"default" : 9000,
+			"left": 0.285, "top": 0.435, "scale": 1, "select_scale": 1
+		},
+		"laptop" : {
+			"default" : 10000,
+			"left": 0.3, "top": 0.435, "scale": 1, "select_scale": 1.25
+		},
+		"sofa" : {
+			"default" : 11000,
+			"left": 0.35, "top": 0.44, "scale": 1, "select_scale": 1
+		},
+		"backpack" : {
+			"default" : 12000,
+			"left": 0.475, "top": 0.625, "scale": 1, "select_scale": 1.25
+		},
+		"paint" : {
+			"default" : 13000,
+			"left": 0.6, "top": 0.65, "scale": 1, "select_scale": 1.25
+		},
+		"path" : {
+			"default" : 14000,
+			"left": -0.025, "top": 0.615, "scale": 1, "select_scale": 1.25
+		}
+	},
+
+
+
+
+	"avatar" : {
+		"eyes" : {
+			"default" : 201,
+			"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
+		},
+		"head" : {
+			"default" : 301,
+			"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
+		},
+		"shirt" : {
+			"default" : 401,
+			"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
+		},
+		"skin" : {
+			"default" : 500,
+			"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
+		}
+	}
+
+}
