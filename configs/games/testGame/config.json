@@ -1,0 +1,10 @@
+{
+  "id": 1002,
+  "name": "Shooting",
+  "description": "Super fun shooting game",
+  "image": "",
+  "scripts": [
+    "main.js"
+  ],
+  "entryObject": "dummyGame"
+}

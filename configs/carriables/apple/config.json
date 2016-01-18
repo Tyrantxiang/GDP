@@ -1,0 +1,14 @@
+{
+  "id": 101,
+  "name": "Apple",
+  "effects": [
+    {
+      "id": 1,
+      "amount": 3
+    },
+    {
+      "id": "hp",
+      "amount": 10
+    }
+  ]
+}

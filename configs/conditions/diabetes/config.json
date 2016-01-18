@@ -1,0 +1,8 @@
+{
+  "id": 501,
+  "name" : "Diabetes Type I",
+  "statuses": [
+    1,
+    2
+  ]
+}
