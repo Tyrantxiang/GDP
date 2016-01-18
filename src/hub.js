@@ -530,6 +530,7 @@ var commsEventListeners = {
                         select_scale: md.select_scale,
 
                         slot : slot,
+                        type : md.type,
                         url : url
                     };
                 }
