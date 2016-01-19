@@ -9,13 +9,14 @@
 var cp = require("child_process"),
 	fs = require("fs"),
 	path = require("path"),
-    root = path.resolve(__dirname, "../"),
+	root = path.resolve(__dirname, "../"),
 	
-	isWindows = !!process.argv[2], //paramater can be anything that isnt falsy
+	isWindows = process.platform === "win32";
 	jsdocName = isWindows ? "jsdoc.cmd" : "jsdoc",
 
 	npm_bin = cp.execSync("npm bin").toString().trim(),
 	npm_bin_global = cp.execSync("npm bin -g").toString().trim(),
+
 	jsdoc = findFile(jsdocName, [npm_bin_global, npm_bin]);
 
 // Function finds the location of a file from a given list and returns it
