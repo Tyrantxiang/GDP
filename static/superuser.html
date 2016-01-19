@@ -71,24 +71,25 @@
 				var password = $('#inputPassword').val();
 				
 				$.post("/authenticate", {username: username, password: password}, function(data){
-					
-					$.get("/views/superuser-functions.html", {token: data.token}, function(htmldata){
-					
-						function setUpPage(){
-							$('body').css('background-color', '#4da6ff').html(htmldata);
-							$.getScript('/assets/js/superuser.js?token=' + data.token);
-							
-							$('form').each(function(){
-								$('<input>').attr({'type': 'hidden', 'name': 'token'}).val(data.token).appendTo(this);
-								
-								$(this).ajaxForm(function(datatwo){ 
-									console.log(datatwo);
-									setUpPage();
-								});
-							});
-						}
+					$.getScript('/assets/js/superuser.js?token=' + data.token).done(function(){
+						$.get("/views/superuser-functions.html", {token: data.token}, function(htmldata){
 						
-						setUpPage();
+							function setUpPage(){
+								$('body').css('background-color', '#4da6ff').html(htmldata);
+								superuserSetup(data.token);
+								
+								$('form').each(function(){
+									$('<input>').attr({'type': 'hidden', 'name': 'token'}).val(data.token).appendTo(this);
+									
+									$(this).ajaxForm(function(datatwo){ 
+										console.log(datatwo);
+										setUpPage();
+									});
+								});
+							}
+							
+							setUpPage();
+						});
 					});
 				});
 				

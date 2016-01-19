@@ -1,4 +1,4 @@
-(function(){	
+function superuserSetup(token){
 	//attaches REST data to a <SELECT> input
 	var attachOptions = function(selectForm, data){
 		$(data).each(function(){
@@ -37,7 +37,7 @@
 	
 //Add carriable	
 (function(){
-	$.post("/superuser/get_all_statuses", {}, function(data){
+	$.post("/superuser/get_all_statuses", {token : token}, function(data){
 		
 		var addNewCarriableEffect = function(){
 			var div = $('<div>').addClass("form-group").addClass("row");
@@ -77,7 +77,7 @@
 	
 //Remove carriable
 (function(){
-	$.post("/superuser/get_all_carriables", {}, function(data){		
+	$.post("/superuser/get_all_carriables", {token : token}, function(data){		
 		var selectForm = $('#remove_carriable_name');		
 		attachOptions(selectForm, data);
 
@@ -107,14 +107,14 @@
 	
 //Remove status
 (function(){
-	$.post("/superuser/get_all_statuses", {}, function(data){
+	$.post("/superuser/get_all_statuses", {token : token}, function(data){
 		attachOptions($('#remove_status_select'), data);
 	});
 })();
 
 //Add condition
 (function(){
-	$.post("/superuser/get_all_statuses", {}, function(data){
+	$.post("/superuser/get_all_statuses", {token : token}, function(data){
 		
 		var add_condition_statuses = function(){
 			var div = $('<div>').addClass("form-group");
@@ -146,14 +146,14 @@
 
 //Remove condition
 (function(){
-	$.post("/superuser/get_all_conditions", {}, function(data){	
+	$.post("/superuser/get_all_conditions", {token : token}, function(data){	
 		attachOptions($('#remove_condition_select'), data);
 	});
 })();
 
 //Add store item
 (function(){
-	$.post("/superuser/get_item_slots", {}, function(data){	
+	$.post("/superuser/get_item_slots", {token : token}, function(data){	
 		var dataArr = $(data).map(function(){
 			return {id: this, name: this};
 		});
@@ -163,14 +163,14 @@
 
 //Remove store item
 (function(){
-	$.post("/superuser/get_item_slots", {}, function(data){	
+	$.post("/superuser/get_item_slots", {token : token}, function(data){	
 		var selectForm = $('#remove_store_item_slot');
 		var dataArr = $(data).map(function(){
 			return {id: this, name: this};
 		});
 		attachOptions(selectForm, dataArr);
 		
-		var changeFunc = e => $.post("/superuser/get_items_for_slot", {"slot": $(selectForm).val()}, function(dataTwo){
+		var changeFunc = e => $.post("/superuser/get_items_for_slot", {"slot": $(selectForm).val(), token : token}, function(dataTwo){
 			$("#remove_store_item_item").empty();
 			
 			attachOptions($("#remove_store_item_item"), dataTwo, "id", "name");
@@ -181,4 +181,4 @@
 	});
 })();
 
-})();
+};

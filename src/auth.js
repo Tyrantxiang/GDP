@@ -120,7 +120,7 @@ function express_middleware(req, res, next){
  *
  * @type {express_middleware}
  */
-function admin_check(res, req, next){
+function admin_check(req, res, next){
     db.readUserByName(function(user){
         var id = req.userId;
 
