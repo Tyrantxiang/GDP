@@ -11,7 +11,7 @@ var cp = require("child_process"),
 	path = require("path"),
 	root = path.resolve(__dirname, "../"),
 	
-	isWindows = process.platform === "win32";
+	isWindows = process.platform === "win32",
 	jsdocName = isWindows ? "jsdoc.cmd" : "jsdoc",
 
 	npm_bin = cp.execSync("npm bin").toString().trim(),
