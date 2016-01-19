@@ -35,6 +35,8 @@ src/database/build/build.sql
 /configs/items.json
 /configs/database.json
 
+# Temporary folder for uploads
+/uploads
 
 # Temporary hub folder ignores.
 hub_skeleton/images
@@ -42,5 +44,7 @@ hub_skeleton/images
 ## MAC SHIT
 .DS_Store
 
+
 out
 jsdoc
+
