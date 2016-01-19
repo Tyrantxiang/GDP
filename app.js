@@ -136,11 +136,13 @@ function startApp(db){
     app.post("/user/validate_dob", userapi.validate_dob);
     app.post("/user/sign_up", userapi.sign_up);
     
-    //Superuser http API routes
-    var superuserRoutes = Object.keys(superuserapi.routes).map(function(curr){return "/superuser/"+curr.toString();});
-    //db.createUser(console.log, console.log, { username : "admin", password : "changeme", dob : new Date(946684800000) });
-    //app.use(superuserRoutes, auth.admin_token);
+	//Create admin user
+	db.checkUsernameExists(function(exists){
+		if(exists) return;
+		else db.createUser(console.log, console.log, { username : "admin", password : "changeme", dob : new Date(946684800000) });
+	}, console.log, 'admin');
 
+	//Superuser http API routes
     // These require uploads, which needs to be the first middleware
     app.use(["/superuser/add_bag_item", "/superuser/add_status"], upload_multer.single("sprite"));
 
