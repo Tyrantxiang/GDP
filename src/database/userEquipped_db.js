@@ -27,7 +27,7 @@ userEquippedDB.createUserEquipped = function(pass, fail, equippedObj) {
 
 //Gets the user_equipped entry that matches the given id
 userEquippedDB.readUserEquippedById = function(pass, fail, id){
-	dbutils.readById(pass, fail, TABLE_NAME, ["id", "user_id", "item_id", "active", "created"], id);
+	dbutils.readById(pass, fail, TABLE_NAME, ["*"], id);
 }
 
 //Returns all the columns for the matching Equipped entry

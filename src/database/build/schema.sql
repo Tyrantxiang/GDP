@@ -84,6 +84,7 @@ CREATE TABLE "{schema}".user_equipped
 , eyes				text		NULL
 , skin				text		NULL
 , shirt				text		NULL
+, trousers			text		NULL
 , tree              text        NULL
 , swing             text        NULL
 , house             text        NULL
