@@ -586,28 +586,20 @@
     // Sleep, resetting health.
     hub.sleep = function(cb) {
         hub.setAbsoluteHealth(100, function() {
-            menu.stairs.load();
+            menu.sleep.load();
 
             draw.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
             draw.update_avatar();
         });
     };
 
+    // Gets all unlocked (hub) items and passes them to the customisation menu.
     hub.launchHomeCustomisation = function(cb) {
-        hub.getEquippedHouseItems(function(data) {
-            menu.paint.load(data);
+        comms.get_item_slot_names_by_type('hub', function(slots) {
+            hub.getUserUnlockedItemsForSlot(slots, function(data) {
+                menu.customise_home.load(data);
+            });
         });
-        /*
-        hub.getUserUnlockedItems(function(data) {
-            console.log("UNLOCKED: ");
-            console.log(data);
-            comms.get_user_equipped_items(function(d) {
-                console.log("EQUIPPED: ");
-                console.log(d);
-                menu.paint.load();
-            })
-        });
-        */
     };
 
     // Launches high score screen.

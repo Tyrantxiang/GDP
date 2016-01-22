@@ -12,7 +12,7 @@
 
 	window.menu = {};
 
-	window.menu.stairs = {
+	window.menu.sleep	= {
 		load : function() {
 			$.get('/views/sleep.html', function(data) {
 				$('#menu-overlays').html(data);
@@ -119,7 +119,7 @@
 		}
 	};
 
-	window.menu.paint = {
+	window.menu.customise_home = {
 		load : function(data) {
 			console.log(data);
 

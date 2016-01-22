@@ -360,7 +360,7 @@ var commsEventListeners = {
      * Gets the names of all item slots for a given type
      *
      * @param {Object} data      - The data passed from the client to the server
-     * @param {Object} data.type - The type to get items for
+     * @param {Object} data.type - The type to get items for ('hub' or 'avatar')
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_item_slot_names_by_type : function(data, fn){
