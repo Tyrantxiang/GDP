@@ -596,8 +596,10 @@
     // Gets all unlocked (hub) items and passes them to the customisation menu.
     hub.launchHomeCustomisation = function(cb) {
         comms.get_item_slot_names_by_type('hub', function(slots) {
-            hub.getUserUnlockedItemsForSlot(slots, function(data) {
-                menu.customise_home.load(data);
+            hub.getUserUnlockedItemsForSlot(slots, function(available) {
+                hub.getEquippedHouseItems(function(equipped) {
+                    menu.customise_hub.load(available, equipped);
+                });
             });
         });
     };

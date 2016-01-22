@@ -106,7 +106,6 @@
 
 				$('#minigame_accept').on('click', function(obj) {
 					hub.launchGame(selected_minigame, function() {});
-
 					$('#overlay').hide();
 				});
 
@@ -119,41 +118,69 @@
 		}
 	};
 
-	window.menu.customise_home = {
-		load : function(data) {
-			console.log(data);
+	window.menu.customise_hub = {
+		load : function(available, equipped) {
+			$.get('/views/customise_hub.html', function(data) {
+				$('#menu-overlays').html(data);
+				document.title	= 'Customise the hub!';
 
-			// TODO: Pull ID out to config file/find some way of making it across-the-board.
-			/*
-			var canvas = document.getElementById('canvas').fabric;
-			var canvas_height	= canvas.height;
-			var canvas_width	= canvas.width;
+				Object.keys(available).forEach(function(key) {
+					// TODO: Proper title formatting, rather than upper-casing the system name.
+					var slot_title_div			= document.createElement('div');
+					slot_title_div.innerHTML	= key.toUpperCase();
+					slot_title_div.className	= 'dark-dark-grey-box';
 
-			console.log(canvas);
+					document.getElementById('hub_customisables_container').appendChild(slot_title_div);
 
-			var mirror_top	= data.mirror.top;
-			var mirror_left	= data.mirror.left;
+					var container_div	= document.createElement('div');
+					container_div.className	= 'row row-centered';
 
-			var tr = new fabric.Triangle({
-				left: mirror_left * canvas_width,
-				top: mirror_top * canvas_height,
-				fill: 'red',
-				width: 20,
-				height: 20
+					var available_for_slot	= available[key];
+					for(var a in available_for_slot)
+					{
+						item	= available_for_slot[a];
+
+						var sub_container_div	= document.createElement('div'),
+							text_div			= document.createElement('div'),
+							img					= document.createElement('img');
+
+						text_div.innerHTML		= item.name;
+
+						// TODO: Find proper classname.
+						img.src					= item.url;
+						img.className			= 'packing_images';
+
+						sub_container_div.appendChild(img);
+						sub_container_div.appendChild(text_div);
+
+						sub_container_div.className	= 'col-md-3 col-centered';
+
+						// TODO: Make current selection, as well as highlighting.
+						// TODO: Fix how the border looks for current selection.
+						if(item.id == equipped[key].id)
+						{
+							sub_container_div.className += ' customise-selected';
+						}
+
+						// TODO: Add event listener on click.
+
+						container_div.appendChild(sub_container_div);
+					}
+
+					document.getElementById('hub_customisables_container').appendChild(container_div);
+				});
+
+				// TODO: Put in accept functionality (changing equipped and re-drawing).
+				$('#hub_customise_accept').on('click', function(obj) {
+					$('#overlay').hide();
+				});
+
+				$('#hub_customise_cancel').on('click', function(obj) {
+					$('#overlay').hide();
+				});
+
+				$('#overlay').show();
 			});
-
-			canvas.add(tr);*/
-			/*
-			var rekt = new fabric.Rect({
-				left: 0,
-			  	top: 0,
-			  	fill: 'red',
-			  	width: 20,
-			  	height: 20
-			});
-
-			canvas.add(rekt);
-			*/
 		}
 	};
 
