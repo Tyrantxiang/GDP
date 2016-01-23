@@ -285,15 +285,16 @@
 	<div style="display: none;">
 		<h3>Remove minigame</h3>
 		<form id="remove_minigame" action="/superuser/remove_minigame">
-			<div>
+			<div >
 				<label for="remove_minigame_id">ID:</label>
-				<div class="col-sm-10">
-					<input id="remove_minigame_id" type="text" name="id"/>
+				<div class="col-sm-10" >
+					<select id="remove_minigame_sel" class="form-control" name="id">
+					</select>
 				</div>
 			</div>
 			<div>
 				<div class="col-sm-offset-2 col-sm-10">
-					<button id="add_carriable_submit" type="button" class="btn btn-default">Submit</button>
+					<button id="remove_minigame_submit" type="submit" class="btn btn-default">Submit</button>
 				</div>
 			</div>
 		</form>

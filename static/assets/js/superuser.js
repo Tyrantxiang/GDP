@@ -138,7 +138,7 @@ function superuserSetup(token){
 		}).toArray();
 		
 		$('#add_condition_statuses').remove();
-		$('<input>').attr({'type': 'text', 'name': 'effects'}).val(JSON.stringify(statuses)).appendTo('#add_condition');
+		$('<input>').attr({'type': 'text', 'name': 'statuses'}).val(JSON.stringify(statuses)).appendTo('#add_condition');
 		
 		$('#add_condition').submit();
 	});
@@ -178,6 +178,13 @@ function superuserSetup(token){
 		
 		changeFunc();
 		$(selectForm).change(changeFunc);
+	});
+})();
+
+//remove minigame
+(function(){
+	$.post("/superuser/get_minigames", {token : token}, function(data){
+		attachOptions($('#remove_minigame_sel'), data);
 	});
 })();
 
