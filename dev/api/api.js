@@ -292,9 +292,10 @@
 
     GameLauncher.prototype.cloneBag = function(){
         var b = {};
+		var t = this;
         this.bag.getCarriables().forEach(function(c){
             if(carriables[c]){
-                b[c] = cloneCarriable(c);
+                b[c] = t.cloneCarriable(c);
             }
         });
 
@@ -302,8 +303,9 @@
     };
 
     GameLauncher.prototype.cloneCarriable = function(carriableId){
-        var c = carriables[carriableId], o, i;
+        var c = carriables[carriableId], o = {}, i;
         for(i in c){
+			console.log(o, i, c);
             o[i] = c[i];
         }
         return o;
@@ -336,7 +338,9 @@
     
     // Object for a Game API system
     function GameAPI(gameId, gameName, sessionId, canvas, canvasContainer, assetBaseURL, version, launcher){
-        this.gameName = gameName;
+        console.log(assetBaseURL);
+		
+		this.gameName = gameName;
         this.assetBaseURL = assetBaseURL;
         this.version = version;
         this.canvas = canvas;
