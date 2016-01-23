@@ -1,0 +1,133 @@
+\documentclass[a4paper,12pt]{article}
+\input{structure.tex} % Input the structure.tex file which specifies the document layout and style
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\begin{center}
+{\Huge How to use the Superuser interface}
+\end{center}
+
+
+%----------------------------------------------------------------------------------------
+%	OVERVIEW SECTION
+%----------------------------------------------------------------------------------------
+\section{Overview}
+
+The Superuser Inteface allows easy creation of new configurations which the game can use.
+The diffrerent types of configurations include:
+\begin{itemize}
+	\item New carriable items (medicine, food, etc)
+	\item New conditions (diabetes, renal failure etc)
+	\item New status effects that are linked to conditions (bloodsugar etc)
+	\item New customization items (new avatar items or house items)
+	\item New minigames the users can play
+\end{itemize}
+
+The purpose of the interface is to both allow quick access to the addition and removal of the objects without
+direct access to the server, but also to allow those without the technical knowledge to navigate the server the
+ability to still add their own ideas.
+
+
+%----------------------------------------------------------------------------------------
+%	THE SUPERUSER API SECTION
+%----------------------------------------------------------------------------------------
+\section{The Superuser API}
+\subsection*{Add carriable}
+This adds a new carriable item that users can add to the backpack.\\
+Parameters:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item Name: The name of the item as it appears in game
+	\item Sprite: The image the carriable displays in game. Must be PNG format.
+	\item Effects: A list of effects this item has and how much it affects them by.
+\end{itemize}
+
+\subsection*{Remove carriable}
+Deletes a carriable item from the game so users can no longer use it. A picture of the currently
+selected item appears for confirmation.\\
+Parameters:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item Name: Name of the currently selected carriable to be submitted for deletion
+\end{itemize}
+
+\newpage
+
+\subsection*{Add status}
+Adds a new status configuration. A status is what is affected by a condition.\\
+e.g. Bloodsugar is a status, which is caused by the condition diabetes.\\
+Parameters (all numbers must be integers):
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item Name: the name of the status effect
+	\item Min value: The minimum value the status can take (like "health value" of the status).
+	\item Max value: The maximum value the status effect can take
+	\item Healthy min value: The minimum value this status can take and still be considered healthy
+	\item Healthy max value: The maximum value this status can take and still be considered healthy
+	\item Sprite file: The sprite to use when the value is in an unhealthy range (showing the symptoms)
+\end{itemize}
+
+\subsection*{Remove status}
+Removes the submitted status configuration file.
+Parameters:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item Status: The status currently selected that if submitted, will be deleted.
+\end{itemize}
+
+\subsection*{Add condition}
+Adds a new condition that users can have when they signup/change their conditions.
+A condition is the medical condition such as diabetes or renal failure.
+Note that you must specify the statuses that are related to this condition, and therefore you must create the statuses
+first, and then create the condition.
+Parameters:                                                                                                                                                                       
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item Name: the name of the condition
+	\item Statsues: the list of all the statuses associated with this condition
+\end{itemize}
+
+\subsection*{Remove condition}
+Remove a condition so that users cannot select it.\\
+Parameters:                                                                                                                                                                       
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item Name: the name of the condition to be deleted
+\end{itemize}
+
+\subsection*{Add store item}
+Adds a new item available to buy from the ingame store. These items include avatar items and hub customization items.\\
+Parameters:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item Name: the name of the new item
+	\item Description: a description of the item
+	\item Slot: the slot this item is for
+	\item Price: the price of the item. An item with price 0 will automatically be unlocked for all users
+	\item Sprite: the image the item has in game. Must be PNG format.
+\end{itemize}	
+
+\subsection*{Remove store item}
+Removes an item from the store. These items include avatar items and hub customization items.\\
+Parameters:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item Slot: the slot of the item you want to remove
+	\item Item: the name of the item  to be removed
+\end{itemize}	
+
+\subsection*{Add minigame}
+Adds a new minigame to the server, so that users can play it.\\
+Currently not implemented through the interface.\\
+
+\subsection*{Remove minigame}
+Removes a minigame from the server, so that users can no longer play it.
+Parameters:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item Name: the name of the minigame to delete
+\end{itemize}		
+
+\end{document}

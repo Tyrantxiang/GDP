@@ -44,6 +44,9 @@ hub_skeleton/images
 ## MAC SHIT
 .DS_Store
 
+#LaTeX
+*.aux
+*.synctex.gz
 
 out
 jsdoc

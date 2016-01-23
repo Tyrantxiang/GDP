@@ -1,0 +1,193 @@
+\documentclass[a4paper,12pt]{article}
+\input{structure.tex} % Input the structure.tex file which specifies the document layout and style
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\begin{center}
+{\Huge How to use the Game Developer API}
+\end{center}
+
+
+%----------------------------------------------------------------------------------------
+%	OVERVIEW SECTION
+%----------------------------------------------------------------------------------------
+\section{Overview}
+
+
+The Game API is intended to have as little intrusion into the game making process as possible.
+Games can be made with creation program or by hand, using any assortment of libraries.
+
+The API is provided as a set of Javascript functions that are to be called on specific actions.
+Exactly how these functions are called is left to the discretion on the implementor, but the game
+must promise to execute them in given scenarios.
+
+
+%----------------------------------------------------------------------------------------
+%	THE GAME API SECTION
+%----------------------------------------------------------------------------------------
+\section{The Game API}
+
+The API has 7 functions that can be called to make an impact on the user outside of the minigame.
+The user has backpack which contains items they can use to modify their health, irrespective of any game mechanics
+the minigame may have. This is NOT to say extra items inside the game cannot also affect the health and status values.
+
+It is upto the game developer to also visualise the backpack; there is no standardised menu to use. The contents of the bag
+are passed in when the game is launched, and then are updated when an item is used. Beyond this, the backpack can be displayed
+in any way that is seen fit by the developer.
+
+Additionally, when modifying health or status values, the new value should be read from the callback function.
+The returned value may not always be exactly what was specified (e.g. if old health was 100 and we take away 
+20, the value returned may not be 80). For this reason, you should not manually keep track of health. 
+When a users health reaches 0, the game is over and the user is returned to the hub.
+\\
+The 7 functions are as follows:
+
+\subsection*{finishGame(score, currency)}
+This should be called when the game ends for any reason. If you wish to display a score screen for the game then
+this should appear before this function is called. It will unload the game from memory and return to the hub area.\\
+Parameters:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item score: the score of the game
+	\item currency: the currency earned from playing the game
+\end{itemize}
+
+\newpage
+
+\subsection*{useCarriable(carriableId, cb)}
+A carriable is an item the user can use to restore health and status values. This function should be called when the
+user wishes to utilise an item, which are all provided for you in the 'bag' object when the game is run.\\
+Parameters:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item carriableId: the id of the carriable to use
+	\item cb: the callback function, explained below
+\end{itemize}
+
+The callback function accepts the parameters (bag, health, statuses, avatarImage, symptoms) which are:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item bag: the updated contents of the players bag
+	\item health: the new health value
+	\item statuses: the new status values
+	\item avatarImage: the new avatar image
+	\item symptoms: the updated list of symptoms
+\end{itemize}
+
+\subsection*{getCarriableInfo(carriableId, cb)}
+Gets the information for a carriableId, which will be needed to display the information and sprite to the user
+so they can select it.\\
+Parameters:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item carriableId: the ID of the carriable to query for information
+	\item cb: the callback function, explained below
+\end{itemize}
+
+The callback function accepts the parameters (carriable) which are:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item carriable: the carriable configuration object
+\end{itemize}
+
+\subsection*{modifyHealth(changeVal, cb)}
+Modifies the health by a \textbf{relative} amount. It is important to not the value specified may be modified by the server.
+It is therefore important to use the value specified in the callback as the new health, and not calculate it yourself.\\
+Parameters:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item changeVal: the amount to add/subtract from the health value
+	\item cb: the callback function, explained below
+\end{itemize}
+
+The callback function accepts the parameters (health, avatar, symptoms) which are:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item health: the new health value
+	\item avatar: the new avatar image
+	\item symptoms: the new list of symptoms
+\end{itemize}
+
+\subsection*{modifyStatus(statusId, changeVal, cb)}
+Modifies the value of a given status.\\
+Parameters:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item statusId: the ID of the status to affect
+	\item changeVal: the amount to add/subtract from the status value
+	\item cb: the callback function, explained below
+\end{itemize}
+
+The callback function accepts the parameters (id, value) which are:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item id: the id of the specified status (the same as the one supplied)
+	\item value: the new value for the status
+\end{itemize}
+
+\subsection*{getAvatarImage()}
+Returns the avatar image that is current in use. It is in the form of an image object, not the raw Base64 encoding.
+
+\subsection*{getAssetURL(asset)}
+This is how extra assets are loaded. Returns the URL of where the asset is located. This must be manipulated into a tag
+and then added to the canvas. e.g. images must be put in an <img> object, and Javascript files must be put in
+a <script> tag.\\
+Parameters:
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item asset: a string specifying the asset to load relative to the entryObject
+\end{itemize}	
+
+%----------------------------------------------------------------------------------------
+%	HOW TO STRUCTURE YOUR CODE SECTION
+%----------------------------------------------------------------------------------------
+\section{How to structure your code}
+There must be exactly one entry script, which will be the script the framework calls. This entry script
+can then, in turn, call other scripts and assets as desired. The entry script must contain a function "run"
+as details below:
+
+\subsection*{function run(api, canvas, assetBaseURL, startHp, statuses, bag)}
+\begin{itemize}
+	\setlength\itemsep{0em}
+	\item a: 			the Game API, this is the object that will contain the callable functions as detailed earlier
+	\item can : 			the HTML5 canvas. This is where the display will be rendered.
+	\item assetBaseURL:	the base URL for the assets. It is the root folder of the game scripts.
+	\item startHp:		the value of health the player currently has
+	\item statuses:		all the different statuses the player has (e.g. bloodsugar for diabetes)
+	\item bag:			the bag with the players carriable items
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+%	SETTING UP THE DEVELOPMENT SCRIPT SECTION
+%----------------------------------------------------------------------------------------
+\section{Setting up the development script}
+
+There is a development script available, which will allow you to simulate the server on a local machine. The responses are of course limited, but
+it will allow you to see the functionality work.
+
+The easiest way to set up local testing is with a few files, and be sure to include all other assets within an 'assets' folder:
+
+\subsection*{example.html}
+The following 4 lines should be written to \textit{example.html}. api.js is the local api testing file, and dummyGame.js is the script containing the \textit{run} function
+
+\begin{verbatim}
+<canvas id="canvas"></canvas>
+<script src="api.js"></script>
+<script src="dummyGame.js"></script>
+<script src="example.js"></script>
+\end{verbatim}
+
+\subsection*{example.js}
+This file will set up the canvas environment and launch the game
+
+\begin{verbatim}
+var c = document.getElementById("canvas");
+var g = new GameLauncher();
+g.launchGame(dummyGame, c);
+\end{verbatim}
+
+\section{Conclusion}
+With this, you should now be able to create games using the framework, test it locally and be in a ready state for it to be uploaded and used by players!
+\end{document}
