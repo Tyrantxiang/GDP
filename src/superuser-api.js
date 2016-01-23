@@ -495,7 +495,7 @@ var routes = {
      * @type {express_route}
      */
 	add_minigame : createRoute(["name", "description", "img", "scripts", "entry_point"], function(req, res){
-		sendError(res, "Not implemented"));
+		sendError(res, "Not implemented");
 	}),
 
 	/**
