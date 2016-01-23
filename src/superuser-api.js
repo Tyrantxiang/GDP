@@ -10,6 +10,7 @@
 
 var fs = require("fs");
 var path = require("path");
+var validate = require("validate.js");
 
 var config;
 function setConfig(cfg){
@@ -81,15 +82,17 @@ function getRandomUnusedId(configObj){
  * @param {array} 	otherFiles 	- the paths of other files to move on the filesystem
  */
 function createFiles(spriteLoc, newLoc, configObj, otherFiles){
-	newLoc = config.app.getRootDirectory() + newLoc + "/";
-	
+	newLoc = config.app.getRootDirectory() + "configs/" + newLoc + "/";
+	console.log(newLoc);
 	fs.mkdir(newLoc, function(err){
-		fs.readFile(spriteLoc, function (err, data) {
-			var newPath = newLoc + "sprite.png";
-			fs.writeFile(newPath, data, err => {});
-			
-			fs.unlink(spriteLoc, err => {});
-		});
+		if(spriteLoc){
+			fs.readFile(spriteLoc, function (err, data) {
+				var newPath = newLoc + "sprite.png";
+				fs.writeFile(newPath, data, err => {});
+				
+				fs.unlink(spriteLoc, err => {});
+			});
+		}
 		
 		fs.writeFile(newLoc + "config.json", JSON.stringify(configObj), err => {});
 		
@@ -119,13 +122,18 @@ function isJsonString(str) {
  *
  * @param {string} path - The folder path to delete
  */
-function removeFiles(path){
-	fs.unlink(path + "/config.json", function(err){
-		fs.unlink(path + "/sprite.png", function(err){
-			//TODO: Fix config.js to not freeze when deleting empty folder
-			//fs.rmdir(path, function(err){});
+function deleteFolderRecursive(path) {
+	if(fs.existsSync(path)){
+		fs.readdirSync(path).forEach(function(file, index){
+			var curPath = path + "/" + file;
+			if(fs.lstatSync(curPath).isDirectory()){
+				deleteFolderRecursive(curPath);
+			}else{
+				fs.unlinkSync(curPath);
+			}
 		});
-	});
+		fs.rmdirSync(path);
+	}
 }
 
 /**
@@ -142,6 +150,7 @@ function createRoute(properties, cb){
 		if(!invalid){
 			cb(req, res);
 		}else{
+			console.log("Error in validation:" + invalid);
 			sendError(res, "Request body not valid - missing: " + invalid);
 		}
 	}
@@ -162,31 +171,52 @@ var routes = {
      * @type {express_route}
      */
 	add_bag_item : createRoute(["name", "effects"], function(req, res){
-		function checkEffectsAreValid(arr){
-			if(isJsonString(arr)) arr = JSON.parse(arr);
-			var valid = arr.constructor===Array;
-			valid = valid && arr.every(ele => (typeof ele === "object") && ele.id && ele.amount);
-			valid = valid && arr.every(ele => (typeof ele.id==="number") && (typeof ele.amount==="number"))
-			return valid;
+		//the validate.js constraints of all the properties
+		var constraints = {
+			name : {
+				presence : true,
+				format : /^[a-zA-Z\s]+$/
+			}, effects : {
+				presence: true
+			}
 		};
-		
+		//the validate.js constraints of the effects array
+		var constraintsEffect = {
+			id : {
+				presence : true,
+				numericality : {
+					onlyInteger : true
+				}
+			}, amount : {
+				presence : true,
+				numericality : {
+					onlyInteger : true
+				}
+			}
+		};
+			
+		//setup variables for use
 		var properties = ["name", "effects"];
+		if(isJsonString(req.body.effects)) req.body.effects = JSON.parse(req.body.effects);
 		
-		req.body.effects = JSON.parse(req.body.effects);
-		if(!checkEffectsAreValid(req.body.effects)){
-			sendError(res, "effects invalid");
+		//perform validation
+		var allValid = validate(req.body, constraints);
+		var effectsValid = validate.isArray(arr) && arr.every(ele => !validate(ele, constraintsEffect));
+		
+		if(allValid || !effectsValid){
+			sendError(res, "Validation failed");
 			return;
 		}
 		
-		var obj = {};
-		for(var i=0; i<properties.length; i++){
+		//copy relevant properties over to config object and write it to file
+		var obj = {}, i;
+		for(i=0; i<properties.length; i++){
 			obj[properties[i]] = req.body[properties[i]];
 		}
-		obj.id = getRandomUnusedId(config.carriables);;
-		
-		createFiles(req.file.path, "/carriables/" + obj.id.toString(), obj, undefined);
+		obj.id = getRandomUnusedId(config.carriables);	
+		createFiles(req.file.path, "carriables\\" + obj.id.toString(), obj, undefined);
 
-		res.status(200).json({"okay": "A OK!"});
+		res.json({"success": true});
 	}),
 	
 	/**
@@ -196,11 +226,28 @@ var routes = {
      * @type {express_route}
      */
 	remove_bag_item : createRoute(["id"], function(req, res){
+		//the validate.js constraints of all the properties
+		var constraints = {
+			id : {
+				presence : true,
+				numericality : {
+					onlyInteger : true
+				}
+			}
+		};
+		
+		//perform validation
+		var allValid = validate(req.body, constraints);
+		if(allValid){
+			sendError(res, "Validation failed");
+			return;
+		}
+		
+		//remove the item
 		var path = config.carriables.getConfig(req.body.id, "directory");
+		deleteFolderRecursive(path);
 		
-		removeFiles(path);
-		
-		res.status(200).json({"okay": "A OK!"});
+		res.json({"success": true});
 	}),
 
 	/**
@@ -210,7 +257,49 @@ var routes = {
      * @type {express_route}
      */
 	add_status : createRoute(["name", "min_val", "max_val", "healthy_min", "healthy_max", "isNumber", "words"], function(req, res){
+		//the validate.js constraints of all the properties
+		var constraints = {
+			name : {
+				presence : true,
+				format : /^[a-zA-Z\s]+$/
+			}, min_val : {
+				presence: true,
+				numericality : {
+					onlyInteger : true
+				}
+			}, max_val : {
+				presence: true,
+				numericality : {
+					onlyInteger : true
+				}
+			}, healthy_min : {
+				presence: true,
+				numericality : {
+					onlyInteger : true
+				}
+			}, healthy_max : {
+				presence : true,
+				numericality : {
+					onlyInteger : true
+				}
+			}, isNumber : {
+				presence: true,
+			}
+		};
+		
+		//define the variables used in this function
 		var properties = ["name", "min_val", "max_val", "healthy_min", "healthy_max", "isNumber", "words"];
+		
+		//validate
+		var allValid = !validate(req.body, constraints);
+		var wordsValid = req.body.isNumber || Object.keys(req.body.words).every(ele => isInteger(ele));;
+		var valsValid = () => {
+			var a = req.body;
+			var valsOk = (a.min_val <= healthy_min) && (a.healthy_min < a.healthy_max) && (a.healthy_max < a.max_val);
+			return valsOk;
+		};
+		
+		//all valid, proceed to create config
 		var id = getRandomUnusedId(config.statuses);
 		var obj = {};
 		for(var i=0; i<properties.length; i++){
@@ -219,6 +308,8 @@ var routes = {
 		obj.id = id;
 		
 		createFiles(req.file.path, "/statuses/" + id.toString(), obj, undefined);
+		
+		res.json({"success": true});
 	}),
 
 	/**
@@ -228,11 +319,28 @@ var routes = {
      * @type {express_route}
      */
 	remove_status : createRoute(["id"], function(req, res){
+		//the validate.js constraints of all the properties
+		var constraints = {
+			id : {
+				presence : true,
+				numericality : {
+					onlyInteger : true
+				}
+			}
+		};
+		
+		//perform validation
+		var allValid = validate(req.body, constraints);
+		if(allValid){
+			sendError(res, "Validation failed");
+			return;
+		}
+		
+		//remove the status
 		var path = config.statuses.getConfig(req.body.id, "directory");
+		deleteFolderRecursive(path);
 		
-		removeFiles(path);
-		
-		res.json({"okay": "A OK!"});
+		res.json({"success": true});
 	}),
 
 	/**
@@ -242,7 +350,42 @@ var routes = {
      * @type {express_route}
      */
 	add_condition : createRoute(["name", "statuses"], function(req, res){
+		//the validate.js constraints of all the properties
+		var constraints = {
+			name : {
+				presence : true
+			}, statuses : {
+				presence : true
+			}
+		};
 		
+		//set up variables
+		var properties = ["name", "statuses"];
+		if(isJsonString(req.body.statuses)) req.body.statuses = JSON.parse(req.body.statuses);
+		
+		//validate
+		var allValid = !validate(req.body, constraints);
+		var statusesValid = req.body.statuses.every(ele => validate.isInteger(ele));
+		if(!(allValid && statusesValid)){
+			sendError(res, "Validation failed");
+			return;
+		}
+		
+		//make sure each status is unique ID
+		req.body.statuses = req.body.statuses.filter(function(item, pos) {
+			return req.body.statuses.indexOf(item) == pos;
+		});
+		
+		//create the config
+		var id = getRandomUnusedId(config.conditions);
+		var obj = {};
+		for(var i=0; i<properties.length; i++){
+			obj[properties[i]] = req.body[properties[i]];
+		}
+		obj.id = id;
+		createFiles(undefined, "/conditions/" + id.toString(), obj, undefined);
+		
+		res.json({"success": true});
 	}),
 
 	/**
@@ -252,11 +395,28 @@ var routes = {
      * @type {express_route}
      */
 	remove_condition : createRoute(["id"], function(req, res){
+		//the validate.js constraints of all the properties
+		var constraints = {
+			id : {
+				presence : true,
+				numericality : {
+					onlyInteger : true
+				}
+			}
+		};
+		
+		//perform validation
+		var allValid = validate(req.body, constraints);
+		if(allValid){
+			sendError(res, "Validation failed");
+			return;
+		}
+		
+		//remove the condition
 		var path = config.conditions.getConfig(req.body.id, "directory");
+		deleteFolderRecursive(path);
 		
-		removeFiles(path);
-		
-		res.json({"okay": "A OK!"});
+		res.json({"success": true});
 	}),
 
 	/**
@@ -265,8 +425,36 @@ var routes = {
 	 * @var
      * @type {express_route}
      */
-	add_store_item : createRoute(["name", "description", "slot", "price", "sprite"], function(req, res){
+	add_store_item : createRoute(["name", "description", "slot", "price"], function(req, res){
+		//the validate.js constraints of all the properties
+		var constraints = {
+			slot : {
+				presence: true,
+				inclusion : config.hub.getItemSlots()
+			}, price : {
+				presence: true,
+				numericality : {
+					onlyInteger : true
+				}
+			}
+		};
 		
+		//perform validation
+		var allValid = validate(req.body, constraints);
+		if(allValid){
+			sendError(res, "Validation failed");
+			return;
+		}
+		
+		//copy relevant properties over to config object and write it to file
+		var obj = {}, i;
+		for(i=0; i<properties.length; i++){
+			obj[properties[i]] = req.body[properties[i]];
+		}
+		obj.id = getRandomUnusedId(config.items);	
+		createFiles(req.file.path, "items/" + obj.id.toString(), obj, undefined);
+		
+		res.json({"success": true});
 	}),
 
 	/**
@@ -276,11 +464,28 @@ var routes = {
      * @type {express_route}
      */
 	remove_store_item : createRoute(["id"], function(req, res){		
+		//the validate.js constraints of all the properties
+		var constraints = {
+			id : {
+				presence : true,
+				numericality : {
+					onlyInteger : true
+				}
+			}
+		};
+		
+		//perform validation
+		var allValid = validate(req.body, constraints);
+		if(allValid){
+			sendError(res, "Validation failed");
+			return;
+		}
+		
+		//remove the store item
 		var path = config.items.getConfig(req.body.id, "directory");
+		deleteFolderRecursive(path);
 		
-		removeFiles(path);
-		
-		res.json({"okay": "A OK!"});
+		res.json({"success": true});
 	}),
 	
 	/**
@@ -289,8 +494,8 @@ var routes = {
 	 * @var
      * @type {express_route}
      */
-	add_minigame : createRoute(["id", "name", "description", "img", "scripts", "entry_point"], function(req, res){
-		
+	add_minigame : createRoute(["name", "description", "img", "scripts", "entry_point"], function(req, res){
+		sendError(res, "Not implemented"));
 	}),
 
 	/**
@@ -299,8 +504,29 @@ var routes = {
 	 * @var
      * @type {express_route}
      */
-	remove_minigame : createRoute(["id"], function(req, res){
+	remove_minigame : createRoute(["id"], function(req, res){		
+		//the validate.js constraints of all the properties
+		var constraints = {
+			id : {
+				presence : true,
+				numericality : {
+					onlyInteger : true
+				}
+			}
+		};
 		
+		//perform validation
+		var allValid = validate(req.body, constraints);
+		if(allValid){
+			sendError(res, "Validation failed");
+			return;
+		}
+		
+		//remove the minigame
+		var path = config.games.getConfig(req.body.id, "directory");
+		deleteFolderRecursive(path);
+		
+		res.json({"success": true});
 	})
 };
 
@@ -367,8 +593,17 @@ var dataRoutes = {
 			res.status(200).json(config.items.listItemsForSlot(req.body.slot));
 		else
 			res.status(400).json({"success": false});
-	}
+	},
 	
+	/**
+     * Returns all minigame titles and ids
+	 *
+	 * @var
+     * @type {express_route}
+     */
+	get_minigames : function(req, res){
+		res.status(200).json(config.games.listAll());
+	}
 };
 
 

@@ -161,8 +161,9 @@ function startApp(db){
 
     app.post("/superuser/add_store_item", superuserapi.routes.add_store_item);
     app.post("/superuser/remove_store_item", superuserapi.routes.remove_store_item);
-    //app.post("/superuser/add_minigame", auth.admin_token, superuserapi.add_minigame);
-    //app.post("/superuser/remove_minigame", auth.admin_token, superuserapi.remove_minigame);
+	
+    app.post("/superuser/add_minigame", superuserapi.routes.add_minigame);
+    app.post("/superuser/remove_minigame", superuserapi.routes.remove_minigame);
 
 
     for(var i in superuserapi.dataRoutes){
