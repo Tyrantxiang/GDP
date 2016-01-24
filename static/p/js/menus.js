@@ -121,15 +121,18 @@
 	window.menu.customise_hub = {
 		load : function(available, equipped) {
 			var selected_items	= [];
+			var selected_images	= [];
 
 			$.get('/views/customise_hub.html', function(data) {
 				$('#menu-overlays').html(data);
 				document.title	= 'Customise the hub!';
 
 				var temp = 0;
+				var slots	= Object.keys(available);
 
-				Object.keys(available).forEach(function(key) {
+				slots.forEach(function(key) {
 					selected_items[key]	= equipped[key].id;
+					console.log(equipped[key].id);
 
 					// TODO: Proper title formatting, rather than upper-casing the system name.
 					/*
@@ -179,98 +182,64 @@
 					for(var a in available_for_slot)
 					{
 						(function(item) {
-							//item	= available_for_slot[a];
-
-							/*
-							var sub_container_div	= document.createElement('div'),
-								text_div			= document.createElement('div'),
-								img					= document.createElement('img');
-							*/
 							var img					= document.createElement('img');
-
-							//text_div.innerHTML		= item.name;
 
 							// TODO: Find proper classname.
 							img.src					= item.url;
 							//img.className			= 'packing_images';
 							img.className			= 'height-100px white-img-box';
+							//img.className			= 'col-md-3 col-centered';
 
-							//sub_container_div.appendChild(img);
-							//sub_container_div.appendChild(text_div);
-
-							//sub_container_div.className	= 'col-md-3 col-centered';
-
-							/*
-							if(item.id == equipped[key].id)
-							{
-								sub_container_div.className	+= ' customise-selected';
-							}
-							*/
 							if(item.id == equipped[key].id)
 							{
 								img.className	+= ' active';
 							}
 
-							/*
-							sub_container_div.addEventListener('click', function(obj) {
-								selected_items[key]	= item.id;
-								sub_container_div.className += ' customise-selected';
-							});
-							*/
 							img.addEventListener('click', function(obj) {
-								selected_items[key]	= item.id;
-								console.log(selected_items);
-							})
+								selected_items[key]		= item.id;
+								selected_images[key]	= item.url;
+							});
 
-							//container_div.appendChild(sub_container_div);
 							container_div.appendChild(img);
 						})(available_for_slot[a]);
 					}
 
 					document.getElementById('hub_customisables_content').appendChild(container_div);
-
-					/*
-					var container_div	= document.createElement('div');
-					container_div.className	= 'row row-centered';
-
-					var available_for_slot	= available[key];
-					for(var a in available_for_slot)
-					{
-						item	= available_for_slot[a];
-
-						var sub_container_div	= document.createElement('div'),
-							text_div			= document.createElement('div'),
-							img					= document.createElement('img');
-
-						text_div.innerHTML		= item.name;
-
-						// TODO: Find proper classname.
-						img.src					= item.url;
-						img.className			= 'packing_images';
-
-						sub_container_div.appendChild(img);
-						sub_container_div.appendChild(text_div);
-
-						sub_container_div.className	= 'col-md-3 col-centered';
-
-						// TODO: Make current selection, as well as highlighting.
-						// TODO: Fix how the border looks for current selection.
-						if(item.id == equipped[key].id)
-						{
-							sub_container_div.className += ' customise-selected';
-						}
-
-						// TODO: Add event listener on click.
-
-						container_div.appendChild(sub_container_div);
-					}
-
-					document.getElementById('hub_customisables_container').appendChild(container_div);
-					*/
 				});
 
 				// TODO: Put in accept functionality (changing equipped and re-drawing).
 				$('#hub_customise_accept').on('click', function(obj) {
+					var canvas	= document.getElementById('canvas').fabric;
+					//console.log(canvas.item(0));
+
+					/*
+					for(var si in selected_items)
+					{
+						(function(item) {
+							console.log(item);
+						})(selected_items[si]);
+					}
+					*/
+
+					
+					var canvas_objects	= canvas.getObjects();
+					for(var co in canvas_objects)
+					{
+						(function(canvas_object) {
+							if(slots.indexOf(canvas_object.name) > -1)
+							{
+								if(canvas_object.id != selected_items[canvas_object.name])
+								{
+									canvas_object._element.src	= selected_images[canvas_object.name];
+									canvas_object.id 			= selected_items[canvas_object.name];
+									//console.log(selected_images[canvas_object.name]);
+									// TODO: Remove old object, add new one.
+								}
+							}
+						})(canvas_objects[co]);
+					}
+
+					canvas.renderAll();
 					$('#overlay').hide();
 				});
 

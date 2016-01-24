@@ -30,6 +30,9 @@
 		canvasEl							= cnvs;
 		canvas								= new fabric.Canvas(cnvs);
 
+		canvasEl.id							= 'canvas';
+		canvasEl.fabric						= canvas;
+
 		canvas.hoverCursor					= 'pointer';
 		fabric.Object.prototype.selectable	= false;
 

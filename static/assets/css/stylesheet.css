@@ -401,10 +401,6 @@ path:hover {
 .canvas-container {
   margin: 0 auto;
 }
-
-.customise-selected {
-  border: 2px solid black;
-}
 /*
 #overlay div {
      width:300px;
