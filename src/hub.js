@@ -69,6 +69,8 @@ function Hub(userId, comms){
         throw new Error("UserId and comms must be defined");
     }
 
+    var self = this;
+
     /** The ID for the user this hub is associated with */
     this.userId = userId;
     /** Further information about the user. Currently unused */
@@ -101,7 +103,27 @@ function Hub(userId, comms){
     /** The user's current health */
     this.health = 100;
 
-    this.avatarImage = undefined;
+    /** The avatar image of the user, in base64 */
+    this.avatarImage = null;
+
+    /** The currently equipped items for the user */
+    this.equipped = {};
+
+
+    // Get the equppied items here
+    db.getEquippedForUser(
+        function(results){
+            var meta = config.hub.getItemMetaData(),
+                e = self.equipped,
+                slot;
+
+            for(slot in meta){
+                e[slot] = results[slot] || meta[slot].default;
+            };
+        },
+        function(){},
+        userId
+    );
 
     // Get the user data from the db
     db.createSession(function(){},
@@ -116,7 +138,7 @@ function Hub(userId, comms){
                     var statuses = config.conditions.getConfig(results[i]).statuses;
                     for(var j=0; j<statuses.length; j++){
                         var currentStatus = config.statuses.getConfig(statuses[j]);
-                        this.statues[currentStatus.id] = new Status(currentStatus);
+                        self.statues[currentStatus.id] = new Status(currentStatus);
                     }
                 }
             }, function(){
@@ -149,6 +171,85 @@ Hub.prototype.exit = function(){
 
     db.endSession(function(){}, function(){}, disconnectTime.toISOString(), this.userId);
 };
+
+
+/**
+ * Gets the currently equipped items for this user
+ *
+ * @param {string} [type] - The type of items to get: "avatar" or "hub", if not present will return all
+ * @return {Object} The config for a given item, including the slot's meta data
+ */
+Hub.prototype.getEquippedItems = function(type){
+    var o = {},
+        e = this.equipped,
+        itemMetaData = config.hub.getItemMetaData(),
+        slot;
+
+    for(slot in e){
+        let id = e[slot],
+            md = itemMetaData[slot];
+
+        if(!type || type === md.type){
+            let itemConfig = config.items.getConfig(id),
+                url = config.items.getSpriteURL(id),
+                i = {};
+
+            for(var a in md){
+                i[a] = md[a];
+            }
+            for(var b in itemConfig){
+                i[b] = itemConfig[b];
+            }
+
+            i.slot = slot;
+            i.url = url;
+
+            o[slot] = i;
+        }
+    }
+
+    return o;
+};
+
+/**
+ * Updates the equipped items for the user
+ *
+ * @todo Check that the item to equip is unlocked!!
+ * @param {Object<string, int>} items - The items to update to
+ * @param {function} cb - Callback with the results
+ */
+Hub.prototype.updateEquippedItems = function(items, cb){
+    var newItems = {},
+        e = this.equipped,
+        h = this,
+        i;
+
+    for(i in e){
+        if(items[i]){
+            newItems[i] = items[i];
+        }else{
+            newItems[i] = e[i];
+        }
+    }
+
+    // Add the user_id to the object for the database call
+    newItems.user_id = this.userId;
+
+    db.createUserEquipped(
+        function(results){
+            // Delete the user_id, as it is not an item!
+            delete newItems.user_id;
+            h.equipped = newItems;
+            cb(newItems);
+        },
+        function(err){
+            cb({err: err});
+        },
+        newItems
+    );
+};
+
+
 
 /**
  * Generates and returns symtoms from a given health value
@@ -258,18 +359,16 @@ Hub.prototype.generateAvatarImage = function(items, cb){
  * @param {function} cb - Called when the image has been generated
  */
 Hub.prototype.generateAvatarImageFromEquippedItems = function(cb){
-    var h = this;
-    // Equipped items could possibly be saved locally?
-    this.get_user_equipped_items({}, function(data){
-        var d = {};
-        for(var i in data){
-            d[i] = data[i].id;
-        }
-        h.generateAvatarImage(d, function(img){
-            h.avatarImage = img;
-            cb(img);
-        });
+    var h = this,
+        items = this.getEquippedItems("avatar");
 
+
+    for(var i in items){
+        items[i] = items[i].id;
+    }
+    h.generateAvatarImage(items, function(img){
+        h.avatarImage = img;
+        cb(img);
     });
 };
 
@@ -500,51 +599,23 @@ var commsEventListeners = {
     /**
      * Gets the items this user currently has equipped
      *
-     * @param {Object|null} data - The data passed from the client to the server
+     * @param {null} data - The data passed from the client to the server
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_user_equipped_items : function(data, fn){
-        db.getEquippedForUser(
-            function(results){
-                // Get the meta data for the items
-                var itemMetaData = config.hub.getItemMetaData(),
-                    sendBack = {},
-                    slot;
-
-                for(slot in itemMetaData){
-
-                    let md = itemMetaData[slot],
-                        itemConfig = config.items.getConfig(results[slot] || md.default),
-                        url = config.items.getSpriteURL(itemConfig.id);
+        fn(this.getEquippedItems());
+    },
 
 
-                    sendBack[slot] = {
-                        id : itemConfig.id,
-                        name : itemConfig.name,
-                        description : itemConfig.description,
-                        price : itemConfig.price,
-
-                        left: md.left,
-                        top: md.top,
-                        scale: md.scale,
-                        select_scale: md.select_scale,
-
-                        slot : slot,
-                        type : md.type,
-                        url : url
-                    };
-                }
-
-                fn(sendBack);
-            },
-            function(err){
-                console.log(err);
-                fn(err);
-            },
-            this.userId
-        );
-
-
+    /**
+     * Gets the items this user currently has equipped of a given type
+     *
+     * @param {Object} data - The data passed from the client to the server
+     * @param {Object} data.type - The type to get metadata for it's slots
+     * @param {module:hub~commsEventListeners~commsCallback} fn
+     */
+    get_user_equipped_items_by_type : function(data, fn){
+        fn(this.getEquippedItems(data.type));
     },
 
     /**
@@ -554,26 +625,18 @@ var commsEventListeners = {
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     update_equipped_items : function(data, fn){
-        var invObj = {
-            user_id : this.userId,
-            head: data.head,
-            eyes: data.eyes,
-            skin: data.skin,
-            shirt: data.shirt
-        };
-
         var t = this;
 
-        db.createUserEquipped(
-            function(results){
-                t.generateAvatarImageFromEquippedItems(function(){
-                    fn({ avatarImage : t.avatarImage });
-                });
-            }, function(err){
-                fn({err: err});
-            },
-            invObj
-        );
+        this.updateEquippedItems(data, function(results){
+            if(results.err){
+                cb(results);
+                return;
+            }
+
+            t.generateAvatarImageFromEquippedItems(function(){
+                fn({ avatarImage : t.avatarImage });
+            });
+        });
     },
 
     /**

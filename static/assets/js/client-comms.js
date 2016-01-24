@@ -510,6 +510,13 @@ window.comms = {
 						);
 	},
 
+	get_user_equipped_items_by_type : function(type, cb){
+		client_socket_call( 'get_user_equipped_items_by_type',
+							{type : type},
+							cb
+						);
+	},
+
 	update_equipped_items : function(items, cb){
 		client_socket_call(	'update_equipped_items',
 							items,
