@@ -120,18 +120,116 @@
 
 	window.menu.customise_hub = {
 		load : function(available, equipped) {
+			var selected_items	= [];
+
 			$.get('/views/customise_hub.html', function(data) {
 				$('#menu-overlays').html(data);
 				document.title	= 'Customise the hub!';
 
+				var temp = 0;
+
 				Object.keys(available).forEach(function(key) {
+					selected_items[key]	= equipped[key].id;
+
 					// TODO: Proper title formatting, rather than upper-casing the system name.
+					/*
 					var slot_title_div			= document.createElement('div');
 					slot_title_div.innerHTML	= key.toUpperCase();
 					slot_title_div.className	= 'dark-dark-grey-box';
 
 					document.getElementById('hub_customisables_container').appendChild(slot_title_div);
+					*/
+					var div_id					= 'div_' + key;
 
+					var slot_title_li			= document.createElement('li');
+					var slot_title_elem			= document.createElement('a');
+
+					slot_title_elem.innerHTML	= key.toUpperCase();
+					slot_title_elem.setAttribute('data-toggle', 'tab');
+					slot_title_elem.setAttribute('href', '#' + div_id);
+					//slot_title_elem.href(div_id);
+
+					// Check size of the ul (hub_customisables_titles), make active if empty.
+					// ul/title bit to 'active', content to 'in active'
+					if(temp == 0)
+					{
+						slot_title_li.className = 'active';
+					}
+
+					slot_title_li.appendChild(slot_title_elem);
+					document.getElementById('hub_customisables_titles').appendChild(slot_title_li);
+					// set data-toggle -> blah.setAttribute('data-toggle', val);
+					// Not sure if best way, but a way.
+					// set href to content link -> blah.href('link');
+
+					var container_div		= document.createElement('div');
+					container_div.id		= div_id;
+					container_div.className	= 'row row-centered';
+					container_div.className += ' tab-pane fade';
+
+					// Check size of the ul (hub_customisables_titles), make active if empty.
+					// ul/title bit to 'active', content to 'in active'
+					if(temp == 0)
+					{
+						container_div.className += ' in active';
+						temp 					+= 1;
+					}
+
+					var available_for_slot	= available[key];
+					for(var a in available_for_slot)
+					{
+						(function(item) {
+							//item	= available_for_slot[a];
+
+							/*
+							var sub_container_div	= document.createElement('div'),
+								text_div			= document.createElement('div'),
+								img					= document.createElement('img');
+							*/
+							var img					= document.createElement('img');
+
+							//text_div.innerHTML		= item.name;
+
+							// TODO: Find proper classname.
+							img.src					= item.url;
+							//img.className			= 'packing_images';
+							img.className			= 'height-100px white-img-box';
+
+							//sub_container_div.appendChild(img);
+							//sub_container_div.appendChild(text_div);
+
+							//sub_container_div.className	= 'col-md-3 col-centered';
+
+							/*
+							if(item.id == equipped[key].id)
+							{
+								sub_container_div.className	+= ' customise-selected';
+							}
+							*/
+							if(item.id == equipped[key].id)
+							{
+								img.className	+= ' active';
+							}
+
+							/*
+							sub_container_div.addEventListener('click', function(obj) {
+								selected_items[key]	= item.id;
+								sub_container_div.className += ' customise-selected';
+							});
+							*/
+							img.addEventListener('click', function(obj) {
+								selected_items[key]	= item.id;
+								console.log(selected_items);
+							})
+
+							//container_div.appendChild(sub_container_div);
+							container_div.appendChild(img);
+						})(available_for_slot[a]);
+					}
+
+					document.getElementById('hub_customisables_content').appendChild(container_div);
+
+					/*
 					var container_div	= document.createElement('div');
 					container_div.className	= 'row row-centered';
 
@@ -168,6 +266,7 @@
 					}
 
 					document.getElementById('hub_customisables_container').appendChild(container_div);
+					*/
 				});
 
 				// TODO: Put in accept functionality (changing equipped and re-drawing).

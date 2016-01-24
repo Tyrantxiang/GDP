@@ -23,6 +23,10 @@ body.signup, body.login {
   width: 22%;
 }
 
+.height-100px {
+  height: 100px;
+}
+
 /* Avatar creation */
 html, body, .section-img {
   width:100%;
