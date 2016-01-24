@@ -187,7 +187,7 @@
 							// TODO: Find proper classname.
 							img.src					= item.url;
 							//img.className			= 'packing_images';
-							img.className			= 'height-100px white-img-box';
+							img.className			= 'height-100px white-img-box hub-item-box';
 							//img.className			= 'col-md-3 col-centered';
 
 							if(item.id == equipped[key].id)

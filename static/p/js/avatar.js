@@ -66,7 +66,7 @@
             curr = equipped[slot];
 
             elements = slots[slot].map(function(item){
-              var imgEl = $(document.createElement("img")).attr("src", item.url).data("itemId", item.id).addClass("width-22 white-img-box");
+              var imgEl = $(document.createElement("img")).attr("src", item.url).data("itemId", item.id).addClass("width-22 white-img-box avatar-item-box").on("click", avatarItemBoxClick);
               // Set as active if it is equipped
               if(curr.id === item.id){
                 imgEl.addClass("active");
@@ -86,12 +86,6 @@
           equipItemsOnSelect();
         });
       });
-      
-      $(document).on("click", '.white-img-box', function(e) {
-        $('.white-img-box', e.target.parentNode).removeClass('active');
-        $(this).addClass('active');
-        equipItemsOnSelect();
-      });
 
 
       $("#avatar-creation-close").click(function(){
@@ -101,6 +95,12 @@
         });
       });
 
+
+      function avatarItemBoxClick(e){
+        $('.avatar-item-box', e.target.parentNode).removeClass('active');
+        $(this).addClass('active');
+        equipItemsOnSelect();
+      }
 
       function setEquippedItemAsActive(itemId, item) {
         if (itemId == $(item).data("itemId")) {
