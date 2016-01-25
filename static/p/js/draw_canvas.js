@@ -125,8 +125,8 @@
 			});
 
 			canvas.add(item_instance);
-		};
-	};
+		}
+	}
 
 	/*
 	Parameters:
@@ -231,7 +231,7 @@
 				}
 			}
 		});
-	};
+	}
 
 	/****************** Healthbar code *******************/
 	var hb = {
@@ -289,9 +289,9 @@
 			/*
 			 * Health bar itself
 			*/
-			hb.barVals.xscaler  = 0.9,
-			hb.barVals.xpadding = ( 1-hb.barVals.xscaler )/2,
-			hb.barVals.yscaler  = 0.7,
+			hb.barVals.xscaler  = 0.9;
+			hb.barVals.xpadding = ( 1-hb.barVals.xscaler )/2;
+			hb.barVals.yscaler  = 0.7;
 			hb.barVals.ypadding = ( 1-hb.barVals.yscaler )/1.45;
 
 			hb.barVals.width  	= hb.barborderVals.width  * hb.barVals.xscaler;
@@ -375,7 +375,7 @@
 				var statusText = new fabric.Text('', textVals);
 
 				hb.statuslist.push(statusText);
-			};
+			}
 			changeStatuses(statuses);
 
 
@@ -517,7 +517,7 @@
 		canvas.add(avatar_instance);
 
 		canvas.renderAll();
-	};
+	}
 
 	window.draw			= {};
 	window.draw.init	= function(cnvs, images)
@@ -543,14 +543,7 @@
 		var canvas_items	= canvas.getObjects();
 
 		var avatar			= canvas_items.filter(function(i) {
-			if('name' in i && i.name === 'avatar')
-			{
-				return true
-			}
-			else
-			{
-				return false
-			}
+			return i.name === 'avatar';
 		});
 
 		avatar				= avatar[0].getElement();

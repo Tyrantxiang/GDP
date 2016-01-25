@@ -44,7 +44,7 @@ function ajaz(url, verb, data, success, error, responseType, contentType){
 	
 	// Attach data to the get request
 	if(verb === "GET"){
-		dataStrings = [];
+		var dataStrings = [];
 		for(var d in data){
 			if(data.hasOwnProperty(d)){
 				dataStrings.push(d + "=" + encodeURIComponent(data[d]));
@@ -381,7 +381,7 @@ window.comms = {
 					);
 	},
 
-	validate_conditions : function(dob, cb){
+	validate_conditions : function(conditions, cb){
 		postRequest(	'/user/validate_conditions',
 						{conditions: conditions},
 						cb

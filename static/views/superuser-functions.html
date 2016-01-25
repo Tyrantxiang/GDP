@@ -116,13 +116,13 @@
 				<div class="col-sm-10">
 					<div class="checkbox">
 					  <label>
-						<input type="checkbox" id="add_status_numbers" value="1">
+						<input type="checkbox" id="add_status_numbers" value="1" disabled>
 					  </label>
 					</div>
 				</div>
 			</div>
 			
-			<div>
+			<div style="display: none">
 				<label for="add_status_name">Word labels:</label>
 				<div class="col-sm-10" id="add_status_div">
 					TODO
@@ -286,7 +286,7 @@
 		<h3>Remove minigame</h3>
 		<form id="remove_minigame" action="/superuser/remove_minigame">
 			<div >
-				<label for="remove_minigame_id">ID:</label>
+				<label for="remove_minigame_id">Name:</label>
 				<div class="col-sm-10" >
 					<select id="remove_minigame_sel" class="form-control" name="id">
 					</select>

@@ -9,7 +9,6 @@
  */
 
 var fs = require("fs");
-var path = require("path");
 var validate = require("validate.js");
 
 var config;
@@ -62,7 +61,7 @@ function sendError(res, message){
  * @return {integer} the unused integer to use as the id for the new config
  */
 function getRandomUnusedId(configObj){
-	var newId = undefined;
+	var newId;
 	while(!newId){
 		var currentId = Math.floor(Math.random() * 32767);
 		
@@ -153,7 +152,7 @@ function createRoute(properties, cb){
 			console.log("Error in validation:" + invalid);
 			sendError(res, "Request body not valid - missing: " + invalid);
 		}
-	}
+	};
 } 
 
 /****** Route functions ******/
@@ -198,10 +197,11 @@ var routes = {
 		//setup variables for use
 		var properties = ["name", "effects"];
 		if(isJsonString(req.body.effects)) req.body.effects = JSON.parse(req.body.effects);
+		var effects = req.body.effects;
 		
 		//perform validation
 		var allValid = validate(req.body, constraints);
-		var effectsValid = validate.isArray(arr) && arr.every(ele => !validate(ele, constraintsEffect));
+		var effectsValid = validate.isArray(effects) && effects.every(ele => !validate(ele, constraintsEffect));
 		
 		if(allValid || !effectsValid){
 			sendError(res, "Validation failed");
@@ -292,12 +292,16 @@ var routes = {
 		
 		//validate
 		var allValid = !validate(req.body, constraints);
-		var wordsValid = req.body.isNumber || Object.keys(req.body.words).every(ele => isInteger(ele));;
+		var wordsValid = req.body.isNumber || Object.keys(req.body.words).every(ele => validate.isInteger(ele));
 		var valsValid = () => {
 			var a = req.body;
-			var valsOk = (a.min_val <= healthy_min) && (a.healthy_min < a.healthy_max) && (a.healthy_max < a.max_val);
+			var valsOk = (a.min_val <= a.healthy_min) && (a.healthy_min < a.healthy_max) && (a.healthy_max < a.max_val);
 			return valsOk;
 		};
+		if(!(allValid && wordsValid && valsValid())){
+			sendError(res, "Validation failed");
+			return;
+		}
 		
 		//all valid, proceed to create config
 		var id = getRandomUnusedId(config.statuses);
@@ -438,6 +442,8 @@ var routes = {
 				}
 			}
 		};
+		
+		var properties = ["name", "description", "slot", "price"];
 		
 		//perform validation
 		var allValid = validate(req.body, constraints);
@@ -631,5 +637,5 @@ module.exports = function (cfg, db){
     return {
 		routes : routes,
 		dataRoutes : newDataRoutes
-	}
+	};
 };

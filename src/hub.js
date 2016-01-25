@@ -119,7 +119,7 @@ function Hub(userId, comms){
 
             for(slot in meta){
                 e[slot] = results[slot] || meta[slot].default;
-            };
+            }
         },
         function(){},
         userId
@@ -629,7 +629,7 @@ var commsEventListeners = {
 
         this.updateEquippedItems(data, function(results){
             if(results.err){
-                cb(results);
+                fn(results);
                 return;
             }
 
@@ -870,15 +870,14 @@ var commsEventListeners = {
         }
 
         db.getScores(   function(results){
+							var total = {};
                             if(data.option_num === 3){
                                 results.sort(function(a, b){
                                     return b.score - a.score;
                                 });
-                                var total = {};
                                 total[results[0].game_id] = results;
                                 results = total;
                             }else if(data.option_num === 2){
-                                var total = {};
                                 for(var i=0; i<results.length; i++){
                                     var current = results[i];
                                     if(!total.hasOwnProperty(current.game_id)){
@@ -887,9 +886,11 @@ var commsEventListeners = {
                                     total[current.game_id].push(current);
                                 }
                                 for(var j in total){
-                                    total[j].sort(function(a, b){
-                                        return b.score - a.score;
-                                    });
+                                    if(total.hasOwnProperty(j)){
+										total[j].sort(function(a, b){
+											return b.score - a.score;
+										});
+									}
                                 }
                                 results = total;
                             }
@@ -916,7 +917,9 @@ var commsEventListeners = {
 
         var multiplier = 1;
         for(var stat in this.statuses){
-            multiplier *= this.statuses[stat].getMultiplier();
+			if(this.statuses.hasOwnProperty(stat)){
+				multiplier *= this.statuses[stat].getMultiplier();
+			}
         }
 
         //The multiplier makes bad health changes go up, and good health changes go down
@@ -960,7 +963,7 @@ var commsEventListeners = {
         if(status){
             status.addToValue(data.value);
 
-            fn(statuses.getClientObject());
+            fn(this.statuses.getClientObject());
         }else{
             fn({
                 err : "User does not have that status"
@@ -1007,8 +1010,10 @@ var commsEventListeners = {
     get_all_status_values : function(data, fn){
         var statuses = {};
         for(var id in this.statuses){
-            var status = this.statuses[id];
-            statuses[status.id] = status.getClientObject();
+			if(this.statuses.hasOwnProperty(id)){
+				var status = this.statuses[id];
+				statuses[status.id] = status.getClientObject();
+			}
         }
 
         fn(statuses);

@@ -11,7 +11,9 @@ function superuserSetup(token){
 	var generateRemoveButton = function(div){
 		var removeBtn = $("<button>").addClass("btn").addClass("btn-danger").attr("type", "button").appendTo(div);
 		$("<span>").addClass("glyphicon").addClass("glyphicon-minus").appendTo(removeBtn);
-		removeBtn.click(e => div.remove());
+		removeBtn.click(function(e){
+			div.remove();
+		});
 	};
 	
 	//add the form-horizontal class to every form
@@ -83,11 +85,13 @@ function superuserSetup(token){
 
 		var getSprite = function(){
 			var id = $(selectForm).children('option:selected').first().attr("value");
-			var url = data.filter(ele => ele.id==id)[0].url;
+			var url = data.filter(function(ele){
+				return ele.id==id;
+			})[0].url;
 			
 			
 			var sprite = new Image();
-			sprite.onload = () => {
+			sprite.onload = function(){
 				var maxPreviewDimension = 75;
 				
 				var bigSide 	= $(sprite).width() > $(sprite).height() 	? "width" : "height";
@@ -170,11 +174,13 @@ function superuserSetup(token){
 		});
 		attachOptions(selectForm, dataArr);
 		
-		var changeFunc = e => $.post("/superuser/get_items_for_slot", {"slot": $(selectForm).val(), token : token}, function(dataTwo){
-			$("#remove_store_item_item").empty();
+		var changeFunc = function(e){
+			$.post("/superuser/get_items_for_slot", {"slot": $(selectForm).val(), token : token}, function(dataTwo){
+				$("#remove_store_item_item").empty();
 			
-			attachOptions($("#remove_store_item_item"), dataTwo, "id", "name");
-		});
+				attachOptions($("#remove_store_item_item"), dataTwo, "id", "name");
+			});
+		};
 		
 		changeFunc();
 		$(selectForm).change(changeFunc);
@@ -188,4 +194,4 @@ function superuserSetup(token){
 	});
 })();
 
-};
+}

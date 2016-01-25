@@ -13,7 +13,7 @@
     this.arcTo(x,   y,   x+w, y,   r);
     this.closePath();
     return this;
-  }
+  };
 
   var canvasRadius = 20;
 
@@ -38,7 +38,7 @@
       
       // Draw white background on canvas
       var canvas = document.getElementById("avatar-create");
-      ctx = canvas.getContext("2d");
+      var ctx = canvas.getContext("2d");
       ctx.roundRect(0, 0, canvas.width, canvas.height, canvasRadius);
       ctx.fillStyle = "#ffffff";
       ctx.fill();
@@ -128,5 +128,5 @@
         updateAvatarDisplay(userObj);
       }
     });
-  } 
+  };
 })();

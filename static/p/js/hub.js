@@ -248,7 +248,7 @@
                                 });
                                 i.addEventListener("error", fail);
                                 i.src = item.url;
-                            };
+                            }
                             // Load the item images
                             for(var item in items){
                                 imageLoader(items[item]);
@@ -433,7 +433,7 @@
                 cb(hub.health, hub.avatarImage, hub.symptoms);
             });
         });
-    }
+    };
 
     //TODO: Joe
     hub.useCarriable = function(carriableId, cb){
@@ -477,7 +477,7 @@
     };
 
     hub.getHighScoresForGame = function(gameid, cb){
-        comms.get_scores(3, null, gameid, cb)
+        comms.get_scores(3, null, gameid, cb);
     };
 
     //an array of ints, referring to item ids
@@ -536,7 +536,7 @@
             }
             cb(hub.avatarImage);
         });
-    }
+    };
 
     hub.getEquippedHouseItems = function(cb){
         comms.get_user_equipped_items(function(data){
@@ -544,11 +544,11 @@
             for(var i=0; i<avatar.length; i++) delete data[avatar[i]];
             cb(data);
         });
-    }
+    };
 
     hub.getGameInfo = function(gameid, cb){
         comms.get_minigame_info(gameid, cb);
-    }
+    };
 
 
     hub.cloneStatuses = function(){
@@ -636,7 +636,7 @@
                     score_array.push(raw_scores[key][i].score);
                 }
 
-                for(var i = 0; i < padding; i++)
+                for(var j = 0; j < padding; j++)
                 {
                     score_array.push('-');
                 }
@@ -755,7 +755,7 @@
                 utils.addSuccess("Currency earnt: " + currency);
             }
         });
-    }
+    };
 
     hub.getAssetsByType = getAssetsByType;
 
@@ -915,7 +915,7 @@
             hub.getCarriable(carriableId, function(carriable){
                 cb.call(t, carriable);
             });
-        }
+        };
 
         proto.modifyHealth = function(changeVal, cb){
             var t = this;

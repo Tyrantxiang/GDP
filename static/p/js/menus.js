@@ -22,7 +22,7 @@
 				setTimeout(function(e) {
 					$('#fade-overlay').fadeToggle(2000);
 				}, 3000);
-			})
+			});
 		}
 	};
 
@@ -90,8 +90,8 @@
 						container_div.addEventListener('click', function(obj) {
 							selected_minigame	= minigame.id;
 
-							prev_selection		= container_div.parentNode.querySelectorAll(".minigame-selection");
-							if(prev_selection.length != 0)
+							var prev_selection		= container_div.parentNode.querySelectorAll(".minigame-selection");
+							if(prev_selection.length !== 0)
 							{
 								prev_selection				= prev_selection[0];
 								prev_selection.className	= 'col-md-5 col-centered dark-dark-grey-box-no-text';
@@ -102,7 +102,7 @@
 
 						document.getElementById('minigames_available').appendChild(container_div);
 					})(minigames[m]);
-				};
+				}
 
 				$('#minigame_accept').on('click', function(obj) {
 					hub.launchGame(selected_minigame, function() {});
@@ -154,7 +154,7 @@
 
 					// Check size of the ul (hub_customisables_titles), make active if empty.
 					// ul/title bit to 'active', content to 'in active'
-					if(temp == 0)
+					if(temp === 0)
 					{
 						slot_title_li.className = 'active';
 					}
@@ -172,7 +172,7 @@
 
 					// Check size of the ul (hub_customisables_titles), make active if empty.
 					// ul/title bit to 'active', content to 'in active'
-					if(temp == 0)
+					if(temp === 0)
 					{
 						container_div.className += ' in active';
 						temp 					+= 1;
@@ -294,14 +294,14 @@
 
 						document.getElementById('backpack_available').appendChild(container_div);
 					})(carriables[c]);
-				};
+				}
 
 				for(var b in backpack)
 				{
 					(function(backpack_item) {
 						add_to_backpack(backpack_item);
 					})(backpack[b]);
-				};
+				}
 
 				$('#backpack_accept').on('click', function(obj) {
 					$('#overlay').hide();
@@ -313,8 +313,8 @@
 						for(var i = 0; i < array_to_add[a]; i++)
 						{
 							set_array.push(a);
-						};
-					};
+						}
+					}
 
 					hub.setBag(set_array, function() {});
 				});
