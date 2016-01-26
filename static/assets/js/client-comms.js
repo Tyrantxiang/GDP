@@ -530,6 +530,20 @@ window.comms = {
 							cb
 						);
 	},
+	
+	get_currency : function(cb){
+		client_socket_call( 'get_currency',
+							{},
+							cb
+						);
+	},
+	
+	add_currency : function(value, cb){
+		client_socket_call( 'add_currency',
+							{value: value},
+							cb
+						);
+	},
 
 	//BAG
 	get_bag : function(cb){
