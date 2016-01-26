@@ -118,6 +118,9 @@
 		}
 	};
 
+	// fix highlighting of selection -> done
+	// send updated items to db -> done
+	// live updating of customisation
 	window.menu.customise_hub = {
 		load : function(available, equipped) {
 			var selected_items	= {};
@@ -197,6 +200,10 @@
 							img.addEventListener('click', function(obj) {
 								selected_items[key]		= item.id;
 								selected_images[key]	= item.url;
+
+								// TODO: If changed from 'white-img-box' in definition, change here.
+								$('.white-img-box', obj.target.parentNode).removeClass('active');
+								$(this).addClass('active');
 							});
 
 							container_div.appendChild(img);
