@@ -84,7 +84,7 @@ img > .section-img {
 
 /* TODO: Work out how to make background cover areas not currently shown (off-screen scrolling). */
 .hub #main-content-area > .hub-canvas-container {
-  background-image : url(http://localhost:3000/assets/img/hub/test_background.png);
+  background-image : url(/assets/img/hub/test_background.png);
   background-size : 100% 100%;
   background-repeat : no-repeat;
 }
