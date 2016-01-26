@@ -120,7 +120,7 @@
 
 	window.menu.customise_hub = {
 		load : function(available, equipped) {
-			var selected_items	= [];
+			var selected_items	= {};
 			var selected_images	= [];
 
 			$.get('/views/customise_hub.html', function(data) {
@@ -132,7 +132,6 @@
 
 				slots.forEach(function(key) {
 					selected_items[key]	= equipped[key].id;
-					console.log(equipped[key].id);
 
 					// TODO: Proper title formatting, rather than upper-casing the system name.
 					/*
@@ -210,7 +209,6 @@
 				// TODO: Put in accept functionality (changing equipped and re-drawing).
 				$('#hub_customise_accept').on('click', function(obj) {
 					var canvas	= document.getElementById('canvas').fabric;
-					//console.log(canvas.item(0));
 
 					/*
 					for(var si in selected_items)
@@ -239,8 +237,10 @@
 						})(canvas_objects[co]);
 					}
 
-					canvas.renderAll();
-					$('#overlay').hide();
+					comms.update_equipped_items(selected_items, function(obj) {
+						canvas.renderAll();
+						$('#overlay').hide();
+					});
 				});
 
 				$('#hub_customise_cancel').on('click', function(obj) {
