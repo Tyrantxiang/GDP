@@ -118,13 +118,12 @@
 		}
 	};
 
-	// fix highlighting of selection -> done
-	// send updated items to db -> done
-	// live updating of customisation
 	window.menu.customise_hub = {
 		load : function(available, equipped) {
-			var selected_items	= {};
-			var selected_images	= [];
+			var original_selection	= {};
+			var original_images		= [];
+			var selected_items		= {};
+			var selected_images		= [];
 
 			$.get('/views/customise_hub.html', function(data) {
 				$('#menu-overlays').html(data);
@@ -134,7 +133,8 @@
 				var slots	= Object.keys(available);
 
 				slots.forEach(function(key) {
-					selected_items[key]	= equipped[key].id;
+					original_selection[key]	= equipped[key].id;
+					selected_items[key]		= equipped[key].id;
 
 					// TODO: Proper title formatting, rather than upper-casing the system name.
 					/*
@@ -194,7 +194,8 @@
 
 							if(item.id == equipped[key].id)
 							{
-								img.className	+= ' active';
+								img.className			+= ' active';
+								original_images[key]	= item.url;
 							}
 
 							img.addEventListener('click', function(obj) {
@@ -204,6 +205,24 @@
 								// TODO: If changed from 'white-img-box' in definition, change here.
 								$('.white-img-box', obj.target.parentNode).removeClass('active');
 								$(this).addClass('active');
+
+								// TODO: Need reworking, heavily inefficient.
+								var canvas			= document.getElementById('canvas').fabric;
+								var canvas_objects	= canvas.getObjects();
+								for(var co in canvas_objects)
+								{
+									(function(canvas_object) {
+										if(slots.indexOf(canvas_object.name) > -1)
+										{
+											if(canvas_object.id != selected_items[canvas_object.name])
+											{
+												canvas_object._element.src	= selected_images[canvas_object.name];
+												canvas_object.id			= selected_items[canvas_object.name];
+											}
+										}
+									})(canvas_objects[co]);
+								}
+								canvas.renderAll();
 							});
 
 							container_div.appendChild(img);
@@ -213,37 +232,9 @@
 					document.getElementById('hub_customisables_content').appendChild(container_div);
 				});
 
-				// TODO: Put in accept functionality (changing equipped and re-drawing).
+				var canvas	= document.getElementById('canvas').fabric;
+
 				$('#hub_customise_accept').on('click', function(obj) {
-					var canvas	= document.getElementById('canvas').fabric;
-
-					/*
-					for(var si in selected_items)
-					{
-						(function(item) {
-							console.log(item);
-						})(selected_items[si]);
-					}
-					*/
-
-					
-					var canvas_objects	= canvas.getObjects();
-					for(var co in canvas_objects)
-					{
-						(function(canvas_object) {
-							if(slots.indexOf(canvas_object.name) > -1)
-							{
-								if(canvas_object.id != selected_items[canvas_object.name])
-								{
-									canvas_object._element.src	= selected_images[canvas_object.name];
-									canvas_object.id 			= selected_items[canvas_object.name];
-									//console.log(selected_images[canvas_object.name]);
-									// TODO: Remove old object, add new one.
-								}
-							}
-						})(canvas_objects[co]);
-					}
-
 					comms.update_equipped_items(selected_items, function(obj) {
 						canvas.renderAll();
 						$('#overlay').hide();
@@ -251,6 +242,22 @@
 				});
 
 				$('#hub_customise_cancel').on('click', function(obj) {
+					var canvas_objects	= canvas.getObjects();
+					for(var co in canvas_objects)
+					{
+						(function(canvas_object) {
+							if(slots.indexOf(canvas_object.name) > -1)
+							{
+								if(canvas_object.id != original_selection[canvas_object.name])
+								{
+									canvas_object._element.src	= original_images[canvas_object.name];
+									canvas_object.id 			= original_selection[canvas_object.name];
+								}
+							}
+						})(canvas_objects[co]);
+					}
+
+					canvas.renderAll();
 					$('#overlay').hide();
 				});
 
