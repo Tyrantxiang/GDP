@@ -1097,12 +1097,13 @@ var commsEventListeners = {
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
 	add_currency : function(data, fn){
+		var h = this.userId;
 		db.readUserById(function(user){
 			db.updateUserCurrency(function(){
 				fn({"success": true});
 			}, function(err){
 				fn({error: err});
-			}, user.currency+data.value, this.userId);
+			}, user.currency+data.value, h);
 		}, function(err){
 			fn({error: err});
 		}, this.userId);
