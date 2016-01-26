@@ -538,9 +538,9 @@ window.comms = {
 						);
 	},
 	
-	add_currency : function(value, cb){
+	add_currency : function(currency, cb){
 		client_socket_call( 'add_currency',
-							{value: value},
+							{currency: currency},
 							cb
 						);
 	},

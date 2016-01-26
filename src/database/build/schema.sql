@@ -16,7 +16,7 @@ CREATE TABLE "{schema}".users
 , username		  	text    	NOT NULL UNIQUE
 , saltedpw		 	text    	NOT NULL
 , dob			  	date    	NOT NULL
-, currency			bigint		NOT NULL DEFAULT 0
+, currency			integer		NOT NULL DEFAULT 0
 , created 			timestamp   NOT NULL DEFAULT current_timestamp
 , modified			timestamp 	NOT NULL DEFAULT current_timestamp
 , PRIMARY KEY(id)
@@ -50,7 +50,7 @@ CREATE TABLE "{schema}".plays
 , game_id		  	text    	NOT NULL
 , start_time		timestamp	NOT NULL
 , end_time			timestamp	NOT NULL
-, score				bigint		NOT NULL
+, score				integer		NOT NULL
 , created			timestamp 	NOT NULL DEFAULT current_timestamp
 , PRIMARY KEY(id)
 );

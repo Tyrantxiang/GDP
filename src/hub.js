@@ -827,12 +827,13 @@ var commsEventListeners = {
             this.gameStartTime = undefined;
 
             //update the users currency
-            db.readUserById(function(result){
+            /*db.readUserById(function(result){
                                 db.updateUserCurrency(function(){}, function(){}, result.currency+data.currency, this.user_id);
                             },
                             function(){},
                             this.user_id
-            );
+            );*/
+			this.add_currency(data, function(){});
 
             // Save score in database
             db.createPlay(  function(){ fn(); },
@@ -1083,7 +1084,7 @@ var commsEventListeners = {
      */
 	get_currency : function(data, fn){
 		db.readUserById(function(user){
-			fn({value: user.currency});
+			fn({currency: user.currency});
 		}, function(err){
 			fn({error: err});
 		}, this.userId);
@@ -1103,7 +1104,7 @@ var commsEventListeners = {
 				fn({"success": true});
 			}, function(err){
 				fn({error: err});
-			}, user.currency+data.value, h);
+			}, user.currency+data.currency, h);
 		}, function(err){
 			fn({error: err});
 		}, this.userId);
