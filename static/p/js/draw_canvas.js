@@ -206,7 +206,7 @@
 							break;
 
 						case 'laptop':
-							console.log('laptop clicked');
+							hub.launchShop();
 							break;
 
 						case 'backpack':

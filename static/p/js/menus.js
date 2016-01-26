@@ -266,6 +266,32 @@
 		}
 	};
 
+	window.menu.shop = {
+		load : function(locked_items) {
+			$.get('/views/shop.html', function(data) {
+				$('#menu-overlays').html(data);
+				document.title	= 'Shop';
+				console.log(locked_items);
+				locked_items.forEach(function(item) {
+					if (item.url) {
+						var img_html = '<img src="' + item.url + '" style="width:100%">';
+						$('#hub_shop_content').append('<div class="col-md-2 white-img-box">' + img_html + '</div>');
+					}
+				});
+				
+				$('#hub_shop_accept').on('click', function(data) {
+					// process currency etc.
+				});
+
+				$('#hub_shop_cancel').on('click', function(data) {
+					$('#overlay').hide();
+				});
+
+				
+			});
+		}
+	}
+
 	window.menu.backpack = {
 		load : function(carriables, backpack){
 

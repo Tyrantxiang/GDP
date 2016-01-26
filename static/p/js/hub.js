@@ -757,6 +757,26 @@
         });
     };
 
+    hub.launchShop = function() {
+        // Gets all items and user unlocked items
+        comms.get_all_item_info(function(all_items) {
+            comms.get_user_unlocked_items(function(unlocked_items) {
+                // Include no items that are priced at 0
+                var not_free_items = all_items.filter(function(item) {
+                    return item.price > 0;
+                });
+
+                // Return the difference between not_free_items and unlocked items
+                var shop_items = not_free_items.filter(function(current){
+                    return unlocked_items.filter(function(current_b){
+                        return current_b.id == current.id;
+                    }).length == 0
+                });
+                menu.shop.load(shop_items);
+            });
+        });
+    };
+
     hub.getAssetsByType = getAssetsByType;
 
 
