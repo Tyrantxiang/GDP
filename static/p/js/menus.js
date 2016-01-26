@@ -267,11 +267,13 @@
 	};
 
 	window.menu.shop = {
-		load : function(locked_items) {
+		load : function(locked_items, currency) {
 			$.get('/views/shop.html', function(data) {
 				$('#menu-overlays').html(data);
 				document.title	= 'Shop';
-				console.log(locked_items);
+				
+				$('#currency_container').html("You have " + currency.value + " to spend in the shop");
+
 				locked_items.forEach(function(item) {
 					if (item.url) {
 						var img_html = '<img src="' + item.url + '" style="width:100%">';
@@ -280,7 +282,7 @@
 				});
 				
 				$('#hub_shop_accept').on('click', function(data) {
-					// process currency etc.
+					// Add currency stuff
 				});
 
 				$('#hub_shop_cancel').on('click', function(data) {

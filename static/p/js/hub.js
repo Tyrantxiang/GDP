@@ -772,7 +772,9 @@
                         return current_b.id == current.id;
                     }).length == 0
                 });
-                menu.shop.load(shop_items);
+                comms.get_currency(function(currency) {
+                    menu.shop.load(shop_items, currency);
+                });
             });
         });
     };
