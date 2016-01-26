@@ -415,7 +415,10 @@ var commsEventListeners = {
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_all_item_info : function(data, fn){
-        fn(config.items.listAll());
+        fn(config.items.listAll().map(function(i){
+            i.url = config.items.getSpriteURL(i.id);
+            return i;
+        }));
     },
 
 
