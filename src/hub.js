@@ -1073,7 +1073,40 @@ var commsEventListeners = {
      */
     get_symptoms : function(data, fn){
         this.generateSymptoms(this.health, fn);
-    }
+    },
+	
+	/**
+     * Get the amount of currency a user has
+     *
+     * @param {Object|null} data - The data passed from the client to the server
+     * @param {module:hub~commsEventListeners~commsCallback} fn
+     */
+	get_currency : function(data, fn){
+		db.readUserById(function(user){
+			fn({value: user.currency});
+		}, function(err){
+			fn({error: err});
+		}, this.userId);
+	},
+	
+	/**
+     * Get the amount of currency a user has
+     *
+     * @param {Object|null} data - The data passed from the client to the server
+	 * @param {int}    data.value - The amount to set the user's health to
+     * @param {module:hub~commsEventListeners~commsCallback} fn
+     */
+	add_currency : function(data, fn){
+		db.readUserById(function(user){
+			db.updateUserCurrency(function(){
+				fn({"success": true});
+			}, function(err){
+				fn({error: err});
+			}, user.currency+data.value, this.userId);
+		}, function(err){
+			fn({error: err});
+		}, this.userId);
+	}
 };
 
 
