@@ -120,17 +120,18 @@
 
 	window.menu.customise_hub = {
 		load : function(available, equipped) {
-			var original_selection	= {};
-			var original_images		= [];
-			var selected_items		= {};
-			var selected_images		= [];
+			var original_selection	= {},
+				original_images		= [],
+				selected_items		= {},
+				selected_images		= [],
+				title_storage		= [];
 
 			$.get('/views/customise_hub.html', function(data) {
 				$('#menu-overlays').html(data);
 				document.title	= 'Customise the hub!';
 
-				var temp = 0;
-				var slots	= Object.keys(available);
+				var temp	= 0,
+					slots	= Object.keys(available);
 
 				slots.forEach(function(key) {
 					original_selection[key]	= equipped[key].id;
@@ -144,10 +145,9 @@
 
 					document.getElementById('hub_customisables_container').appendChild(slot_title_div);
 					*/
-					var div_id					= 'div_' + key;
-
-					var slot_title_li			= document.createElement('li');
-					var slot_title_elem			= document.createElement('a');
+					var div_id					= 'div_' + key,
+						slot_title_li			= document.createElement('li'),
+						slot_title_elem			= document.createElement('a');
 
 					slot_title_elem.innerHTML	= key.toUpperCase();
 					slot_title_elem.setAttribute('data-toggle', 'tab');
@@ -162,7 +162,8 @@
 					}
 
 					slot_title_li.appendChild(slot_title_elem);
-					document.getElementById('hub_customisables_titles').appendChild(slot_title_li);
+					title_storage.push(slot_title_li);
+
 					// set data-toggle -> blah.setAttribute('data-toggle', val);
 					// Not sure if best way, but a way.
 					// set href to content link -> blah.href('link');
@@ -207,8 +208,8 @@
 								$(this).addClass('active');
 
 								// TODO: Need reworking, heavily inefficient.
-								var canvas			= document.getElementById('canvas').fabric;
-								var canvas_objects	= canvas.getObjects();
+								var canvas			= document.getElementById('canvas').fabric,
+									canvas_objects	= canvas.getObjects();
 								for(var co in canvas_objects)
 								{
 									(function(canvas_object) {
@@ -227,6 +228,28 @@
 
 							container_div.appendChild(img);
 						})(available_for_slot[a]);
+					}
+
+					// Adds the tabs in alphabetical order.
+					function compare(a, b) {
+						if (a.innerText < b.innerText)
+						{
+							return -1;
+						}
+						else if (a.innerText > b.innerText)
+						{
+  							return 1;
+						}
+						else
+						{
+  							return 0;
+						}
+					}
+					title_storage.sort(compare);
+
+					for(var t in title_storage)
+					{
+						document.getElementById('hub_customisables_titles').appendChild(title_storage[t]);
 					}
 
 					document.getElementById('hub_customisables_content').appendChild(container_div);
