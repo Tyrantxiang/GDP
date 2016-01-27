@@ -10,7 +10,10 @@
 	var currentBag;
 
 
-	function run(a, can, assetBaseURL, startHp, stats, bag){
+	function run(a, div, assetBaseURL, startHp, stats, bag){
+		// Create the canvas
+		var can = document.createElement("canvas");
+		div.appendChild(can);
 
 		api = a;
 		canvas = can;

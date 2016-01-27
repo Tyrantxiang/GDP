@@ -673,9 +673,9 @@
                     return;
                 }
 
-                // Create a new canvas for the game
-                var canvas = document.createElement("canvas"),
-                    canvasContainer = document.createElement("div"),
+                // Create a new div for the game
+                var div = document.createElement("div"),
+                    divContainer = document.createElement("div"),
 
 
                     // Create the API object
@@ -683,8 +683,8 @@
                         data.gameId,
                         data.name,
                         data.sessionId,
-                        canvas,
-                        canvasContainer,
+                        div,
+                        divContainer,
                         data.assetBaseURL,
                         data.version
                     );
@@ -700,11 +700,11 @@
                 // Load the scripts into memory
                 var lscripts = latch(data.scriptURLs.length, function(){
                     container.removeChild(hubCanvasContainer);
-                    canvasContainer.appendChild(canvas);
-                    container.appendChild(canvasContainer);
+                    divContainer.appendChild(div);
+                    container.appendChild(divContainer);
 
                     var e = window[data.entryObject];
-                    e.run.call(e, api, canvas, data.assetBaseURL, hub.health, hub.cloneStatuses(), bag);
+                    e.run.call(e, api, div, data.assetBaseURL, hub.health, hub.cloneStatuses(), bag);
                 });
 
                 data.scriptURLs.forEach(function(script){
@@ -721,7 +721,7 @@
         api.clearAllGameSideEffects();
 
         //return to hub here!
-        container.removeChild(api.getCanvasContainer());
+        container.removeChild(api.getDivContainer());
         container.appendChild(hubCanvasContainer);
 
         // Recover the internal and controlled functions
@@ -777,11 +777,11 @@
 
 
     // Object for a Game API system
-    function GameAPI(gameId, gameName, sessionId, canvas, canvasContainer, assetBaseURL, version){
+    function GameAPI(gameId, gameName, sessionId, div, divContainer, assetBaseURL, version){
         this.gameName = gameName;
         this.assetBaseURL = assetBaseURL;
         this.version = version;
-        this.canvas = canvas;
+        this.div = div;
 
 
 
@@ -805,7 +805,7 @@
 
             if(allowedEvents.indexOf(eventType) > -1){
                 listeners.push({"type": "mouse", "eventType": eventType, "func": func});
-                this.canvas.addEventListener(eventType, func, false);
+                this.div.addEventListener(eventType, func, false);
             } else {
                 console.err("Event "+eventType+" is not allowed for mouse listener!");
             }
@@ -816,9 +816,9 @@
                 if(l.type == "key"){
                     window.removeEventListener(l.eventType, l.func);
                 } else if(l.type == "mouse"){
-                    this.canvas.removeEventListener(l.eventType, l.func);
+                    this.div.removeEventListener(l.eventType, l.func);
                 }
-            });
+            }, this);
         };
 
 
@@ -904,8 +904,8 @@
         this.getSessionId = function(){
             return sessionId;
         };
-        this.getCanvasContainer = function(){
-            return canvasContainer;
+        this.getDivContainer = function(){
+            return divContainer;
         };
     }
     // Add to the prototype
