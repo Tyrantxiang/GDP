@@ -38,7 +38,7 @@
         scripts.forEach(function(url){
             var script = document.createElement("script");
             script.addEventListener("load", l);
-            script.src = windowOrigin + "/" + url;
+            script.src = windowOrigin + url;
 
             stag.parentNode.insertBefore(script, stag);
         });
@@ -58,8 +58,10 @@
 
         // Confirm we are ready
         disp.sendMessage("ready");
+        var c = document.createElement("canvas");
+        div.appendChild(c);
 
-        var api = new GameAPI(disp, data.gameId, data.sessionId, data.assetBaseURL, div, data.version),
+        var api = new GameAPI(disp, data.gameId, data.sessionId, data.assetBaseURL, c, data.version),
             eo = window[data.entryObject];
 
         // Just in case they lose track of it!
@@ -67,7 +69,7 @@
             return api;
         };
 
-        eo.run.call(eo, api, div, data.assetBaseURL, data.health, data.statuses, data.bag);
+        eo.run.call(eo, api, c, data.assetBaseURL, data.health, data.statuses, data.bag);
     }
 
 
@@ -132,7 +134,7 @@
 
 
         this.getAvatarImage = function(cb){
-            dispatcher.sendMessage("modifyStatus", {},
+            dispatcher.sendMessage("getAvatarImage", {},
                 function(d){
                     cb.call(self, d.avatarImage);
                 }
@@ -141,7 +143,7 @@
 
 
         this.getAssetURL = function(asset){
-            return dispatcher.windowOrigin + "/" + baseAssetURL + "/" + asset;
+            return dispatcher.windowOrigin + baseAssetURL + "/" + asset;
         };
     }
 
@@ -175,7 +177,7 @@
                 type : type,
                 uid : uid,
                 data : data
-            }, this.windowOrigin);
+            });
         };
 
 

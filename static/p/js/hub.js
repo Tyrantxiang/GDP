@@ -673,42 +673,91 @@
                     return;
                 }
 
-                // Create a new div for the game
-                var div = document.createElement("div"),
-                    divContainer = document.createElement("div"),
+
+                // Fill the bag
+                var newBag = [],
+
+                    lcarriables = latch(bag.length, function(){
+                        // Create the iframe
+                        var frame = document.createElement("iframe");
+
+                        // Sandbox the frame
+                        frame.sandbox = "allow-scripts allow-pointer-lock";
+                        frame.className = "game-frame";
+                        frame.src = "/views/game_container.html";
+
+                        // Create a channel
+                        var channel = new MessageChannel(),
+                        // Create a new GameCoordinator
+                            gc = new GameCoordinator(frame, channel);
+
+                        // Remove the hub and replace with the iframe!
+                        container.removeChild(hubCanvasContainer);
+                        container.appendChild(frame);
+
+                        var win = frame.contentWindow,
+                            ready = false;
+
+                        channel.port1.addEventListener("message", gettingReadyToPlay);
+
+                        window.setTimeout(function tim(){
+                            if(ready){
+                                readyToPlay();
+                            }else{
+                                try{
+                                // Pass in the data and channel
+                                win.postMessage({
+                                    gameId : data.gameId,
+                                    sessionId : data.sessionId,
+                                    version : data.version,
+                                    scripts : data.scriptURLs,
+                                    entryObject : data.entryObject,
+                                    assetBaseURL : data.assetBaseURL,
+                                    health : hub.health,
+                                    statuses : hub.cloneStatuses(),
+                                    bag : newBag
+                                }, '*', [channel.port2]);
+                                }catch(e){}
+
+                                window.setTimeout(tim, 250);
+                            }
+                        }, 250);
 
 
-                    // Create the API object
-                    api = new GameAPI(
-                        data.gameId,
-                        data.name,
-                        data.sessionId,
-                        div,
-                        divContainer,
-                        data.assetBaseURL,
-                        data.version
-                    );
+                        function gettingReadyToPlay(e){
+                            if(e.data.type === "ready"){
+                                ready = true;
+                            }
+                        }
 
-                // Remove internal and controlled functions
-                clearInternalWindowFunctions();
-                clearControlledFunctions();
+                        function readyToPlay(){
+                            channel.port1.removeEventListener("message", gettingReadyToPlay);
+                            channel.port1.addEventListener("message", function(e){
+                                var data = e.data,
+                                    type = data.type,
+                                    uid = data.uid,
+                                    d = data.data,
 
-                // Replace the window functions with the API ones
-                replaceControlledFunctions(api);
+                                    func = gc[type];
 
+                                if(func && typeof func === "function"){
+                                    func.call(gc, d, function(response){
+                                        channel.port1.postMessage({
+                                            type : type,
+                                            uid : uid,
+                                            data : response
+                                        });
+                                    });
+                                }
+                            });
+                        }
+                    });
 
-                // Load the scripts into memory
-                var lscripts = latch(data.scriptURLs.length, function(){
-                    container.removeChild(hubCanvasContainer);
-                    divContainer.appendChild(div);
-                    container.appendChild(divContainer);
-
-                    var e = window[data.entryObject];
-                    e.run.call(e, api, div, data.assetBaseURL, hub.health, hub.cloneStatuses(), bag);
-                });
-
-                data.scriptURLs.forEach(function(script){
-                    comms.loadScriptFile(script, lscripts, false);
+                bag.forEach(function(c){
+                    hub.getCarriable(c, function(carriable){
+                        newBag.push(carriable);
+                        lcarriables();
+                    });
                 });
             });
         });
@@ -716,17 +765,14 @@
 
 
     // Finish a game
-    hub.finishGame = function(api, score, currency){
-        // Clear listeners, timeouts, etc
-        api.clearAllGameSideEffects();
+    hub.finishGame = function(coord, gameId, sessionId, score, currency){
+        // Kill the channel
+        channel.port1.close();
 
-        //return to hub here!
-        container.removeChild(api.getDivContainer());
+
+        // Return to hub here!
+        container.removeChild(coord.frame);
         container.appendChild(hubCanvasContainer);
-
-        // Recover the internal and controlled functions
-        recoverInternalWindowFunctions();
-        recoverControlledFunctions();
 
         draw.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
         draw.healthbar.updateStatuses(hub.statuses);
@@ -734,7 +780,7 @@
         draw.update_avatar();
 
         // Send game data to the server
-        comms.finish_minigame(api.getGameId(), score, currency, function(data){
+        comms.finish_minigame(gameId, score, currency, function(data){
             if(data && data.err){
                 utils.addError(JSON.stringify(data.err));
             }else{
@@ -781,161 +827,38 @@
 
 
 
-
-    // Object for a Game API system
-    function GameAPI(gameId, gameName, sessionId, div, divContainer, assetBaseURL, version){
-        this.gameName = gameName;
-        this.assetBaseURL = assetBaseURL;
-        this.version = version;
-        this.div = div;
-
-
-
-
-        /* Event listeners for games to bind to */
-        var listeners = [];
-
-        this.addKeyListener = function(eventType, func){
-            var allowedEvents = ["keypress", "keydown", "keyup"];
-
-            if(allowedEvents.indexOf(eventType) > -1){
-                listeners.push({"type": "key", "eventType": eventType, "func": func});
-                window.addEventListener(eventType, func, false);
-            } else {
-                console.err("Event "+eventType+" is not allowed for key listener!");
-            }
-        };
-
-        this.addMouseListener = function(eventType, func){
-            var allowedEvents = ["mousedown", "mouseup", "mouseover", "mouseout", "mousemove", "click", "contextmenu", "dblclick"];
-
-            if(allowedEvents.indexOf(eventType) > -1){
-                listeners.push({"type": "mouse", "eventType": eventType, "func": func});
-                this.div.addEventListener(eventType, func, false);
-            } else {
-                console.err("Event "+eventType+" is not allowed for mouse listener!");
-            }
-        };
-
-        this.removeAllListeners = function(){
-            listeners.forEach(function(l){
-                if(l.type == "key"){
-                    window.removeEventListener(l.eventType, l.func);
-                } else if(l.type == "mouse"){
-                    this.div.removeEventListener(l.eventType, l.func);
-                }
-            }, this);
-        };
-
-
-        /* setTimeout/setInterval implementations that allow cleanup of events on game finish */
-        var timeouts = [], intervals = [];
-        this.setTimeout = function setTimeout(){
-            // Pass the arguments directly into the new function
-            var id = controlledFunctions.setTimeout.func.apply(window, arguments);
-            timeouts.push(id);
-            return id;
-        };
-        this.clearTimeout = function clearTimeout(id){
-            // Pass the arguments directly into the new function
-            controlledFunctions.clearTimeout.func.apply(window, arguments);
-            var index = timeouts.indexOf(id);
-            if(index >= 0){
-                timeouts.splice(index, 1);
-            }
-        };
-        this.removeAllTimeouts = function(){
-            timeouts.splice(0).forEach(function(id){
-                controlledFunctions.clearTimeout.func.call(window, id);
-            });
-        };
-
-        this.setInterval = function setInterval(){
-            // Pass the arguments directly into the new function
-            var id = controlledFunctions.setInterval.func.apply(window, arguments);
-            timeouts.push(id);
-            return id;
-        };
-        this.clearInterval = function clearInterval(id){
-            // Pass the arguments directly into the new function
-            controlledFunctions.clearInterval.func.apply(window, arguments);
-            var index = timeouts.indexOf(id);
-            if(index >= 0){
-                timeouts.splice(index, 1);
-            }
-        };
-        this.removeAllIntervals = function(){
-            intervals.splice(0).forEach(function(id){
-                controlledFunctions.clearinterval.func.call(window, id);
-            });
-        };
-
-        /* Implementations for requestAnimationFrame (already includes a shiv) */
-        var aniFrames = [];
-        function removeFromAinFramesArray(id){
-            var index = aniFrames.indexOf(id);
-            if(index >= 0){
-                aniFrames.splice(index, 1);
-            }
-        }
-        this.requestAnimationFrame = function requestAnimationFrame(cb){
-            var id = controlledFunctions.requestAnimationFrame.func.call(window, function(){
-                removeFromAinFramesArray(id);
-                cb.apply(this, arguments);
-            });
-        };
-        this.cancelAnimationFrame = function cancelAnimationFrame(id){
-            controlledFunctions.cancelAnimationFrame.func.apply(window, arguments);
-            removeFromAinFramesArray(id);
-        };
-        this.removeAllAnims = function(){
-            aniFrames.splice(0).forEach(function(id){
-                controlledFunctions.cancelAnimationFrame.func.call(window, id);
-            });
-        };
-
-
-
-        this.clearAllGameSideEffects = function(){
-            this.removeAllListeners();
-            this.removeAllTimeouts();
-            this.removeAllIntervals();
-            this.removeAllAnims();
-        };
-
-
-        this.getGameId = function(){
-            return gameId;
-        };
-        this.getSessionId = function(){
-            return sessionId;
-        };
-        this.getDivContainer = function(){
-            return divContainer;
-        };
+    // Simple class to coordinate the game api and the hub
+    function GameCoordinator(frame, channel){
+        this.frame = frame;
+        this.channel = channel;
     }
     // Add to the prototype
     (function(proto){
-        proto.finishGame = function(score, currency){
-            hub.finishGame(this, score, currency);
+        proto.finishGame = function(data){
+            hub.finishGame(this, data.gameId, data.sessionId, data.score, data.currency);
         };
 
-        proto.useCarriable = function(carriableId, cb){
-            var t = this;
-            hub.useCarriable(carriableId, function(bag, health, statuses, avatarImage, symptoms){
-                cb.call(t, bag, health, statuses, avatarImage, symptoms);
+        proto.useCarriable = function(data, cb){
+            hub.useCarriable(data.carriableId, function(bag, health, statuses, avatarImage, symptoms){
+                cb({
+                    bag : bag,
+                    health : health,
+                    statuses : statuses,
+                    avatarImage : avatarImage,
+                    symptoms : symptoms
+                });
             });
         };
 
-        proto.getCarriableInfo = function(carriableId, cb){
-            var t = this;
+        proto.getCarriableInfo = function(data, cb){
             hub.getCarriable(carriableId, function(carriable){
-                cb.call(t, carriable);
+                cb({
+                    carriable : carriable
+                });
             });
         };
 
-        proto.modifyHealth = function(changeVal, cb){
-            var t = this;
+        proto.modifyHealth = function(data, cb){
             hub.modifyHealth(changeVal, function(health, avatarImage, symptoms){
                 cb.call(t, health, avatarImage, symptoms);
             });
