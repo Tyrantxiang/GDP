@@ -10,13 +10,17 @@
     <title>Welcome to the hub</title>
 
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <!-- Core application stylesheet -->
+    <link rel="stylesheet" href="/assets/css/stylesheet.css">
 
-    <link rel="stylesheet" href="assets/css/stylesheet.css">
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+
+    <!-- IE support files -->
     <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.2/es5-shim.min.js"></script>
+      <script src="/assets/polyfills/addEventListener.js"></script>
     <![endif]-->
   </head>
 
@@ -74,23 +78,23 @@
           </div>
         </div>
       </footer>
-    </div> <!-- /container -->
+    </div>
 
     <div id="menu-overlays"></div>
     <div id="avatar-creation-overlay"></div>
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+
+
+
+    <!-- ================== Libaray includes ================== -->
+    <!-- jQuery for bootstrap -->
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-    <!-- Latest compiled and minified JavaScript -->
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-
-    <script src="//code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
-
+    <!-- Socket.io -->
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/assets/js/client-comms.js"></script>
 
+    <!-- Application files -->
+    <script src="/assets/js/client-comms.js"></script>
     <script src="/assets/js/index-scripts.js"></script>
   </body>
 </html>

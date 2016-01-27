@@ -190,7 +190,7 @@
         // Scripts to load
         var scripts = [
             ['//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js', false],
-            ['/assets/js/rAF.js', false],
+            ['/assets/polyfills/rAF.js', false],
             ['/p/js/draw_canvas.js', true],
             ['/p/js/avatar.js', true],
             ['/p/js/menus.js', true]
