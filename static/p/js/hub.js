@@ -461,9 +461,11 @@
         comms.modify_status_value(statusId, changeVal, function(data){
             if(!data.err){
                 if(hub.statuses[data.id]){
-                    hub.statuses[data.id].value = data.newValue;
+                    hub.statuses[data.id].value = data.value;
                 }
-                cb(data.id, data.newValue);
+                cb(data.id, data.value);
+            } else {
+                console.log(data.err);
             }
         });
     };
@@ -948,8 +950,8 @@
 
         proto.modifyStatus = function(statusId, changeVal, cb){
             var t = this;
-            hub.modifyStatus(statusId, changeVal, function(data){
-                cb.call(t, data.id, data.newValue);
+            hub.modifyStatus(statusId, changeVal, function(id, newValue){
+                cb.call(t, id, newValue);
             });
         };
 

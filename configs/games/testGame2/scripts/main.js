@@ -2,21 +2,23 @@
 
 	var api;
 	var canvas;
-	//var changeableStatus;
+	var statuses;
+	var changeableStatus;
 	var health;
 	var score;
 	var currency;
 	var currentBag;
 
 
-	function run(a, can, assetBaseURL, startHp, statuses, bag){
+	function run(a, can, assetBaseURL, startHp, stats, bag){
 
 		api = a;
 		canvas = can;
 		can.width="800";
 		can.height="500";
 
-		//changeableStatus = statuses[Object.keys(statuses)[0]]
+		statuses = stats;
+		changeableStatus = statuses[Object.keys(statuses)[0]];
 		health = startHp;
 		symptom = "HEALTHY";
 		score = 0;
@@ -34,23 +36,25 @@
 		switch(e.keyCode){
 			case(40) : // Player pressed down
 				//console.log("down");
-				api.modifyHealth(-1, updateHealthAndAvatar);
+				api.modifyHealth(-5, updateHealthAndAvatar);
 				break;			
 			case(38) : // Player pressed up
 				//console.log("up");
-				api.modifyHealth(1, updateHealthAndAvatar);
+				api.modifyHealth(5, updateHealthAndAvatar);
 				break;
 
-				/*
+				
 			case(37) : // Player pressed left
 				//console.log("left");
-				api.modifyStatus(changeableStatus.id, -1, updateStatus);
+				if(changeableStatus)
+					api.modifyStatus(changeableStatus.id, -1, updateStatus);
 				break;
 			case(39) : // Player pressed right
 				//console.log("right");
-				api.modifyStatus(changeableStatus.id, 1, updateStatus);
+				if(changeableStatus)
+					api.modifyStatus(changeableStatus.id, 1, updateStatus);
 				break;
-			*/
+			
 
 			case(74) : // Player pressed j
 				//console.log("J");
@@ -137,7 +141,7 @@
 	function updateHealthAndAvatar(newHealth, newAvatar, newSymps){
 		health = newHealth;
 		//Do something with avatar
-		symptom = (newSymps[0] || "healthy").toUpperCase();
+		symptom = ((newSymps && newSymps[0]) || "healthy").toUpperCase();
 		render();
 	}
 
@@ -177,7 +181,8 @@
 
 		ctx.font = "24px serif";
 		ctx.fillText("UP/DOWN to change health", 10, 120);
-		//ctx.fillText("LEFT/RIGHT to change status: "+changeableStatus.name, 10, 150);
+		if(changeableStatus)
+			ctx.fillText("LEFT/RIGHT to change status: "+changeableStatus.name, 10, 150);
 		ctx.fillText("J/K to change score", 10, 180);
 		ctx.fillText("N/M to change currency", 10, 210);
 		ctx.fillText("Numbers to use carriables", 10, 240);
@@ -185,10 +190,12 @@
 
 
 		ctx.fillText("Health: "+health, 10, 350);
-		ctx.fillText("Symptom: "+symptom, 10, 380);
-		ctx.fillText("Score: "+score, 10, 410);
-		ctx.fillText("Currency: "+currency, 10, 440);
-		ctx.fillText("Carriables: "+makeBagString(), 10, 470);
+		if(changeableStatus)
+			ctx.fillText(changeableStatus.name+": "+changeableStatus.value, 10, 380);
+		ctx.fillText("Symptom: "+symptom, 10, 410);
+		ctx.fillText("Score: "+score, 10, 440);
+		ctx.fillText("Currency: "+currency, 10, 470);
+		ctx.fillText("Carriables: "+makeBagString(), 10, 500);
 
 		ctx.drawImage(api.getAvatarImage(),canvas.width-300,0);
 	};

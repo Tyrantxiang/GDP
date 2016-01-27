@@ -626,9 +626,9 @@ window.comms = {
 						);
 	},
 
-	modify_status_value : function(status_name, value, cb){
+	modify_status_value : function(statusId, value, cb){
 		client_socket_call(	'modify_status_value',
-							{"status_name": status_name, value: value},
+							{id: statusId, value: value},
 							cb
 						);
 	},

@@ -841,7 +841,7 @@ var commsEventListeners = {
                             function(){},
                             this.user_id
             );*/
-			this.add_currency(data, function(){});
+            this.add_currency(data, function(){});
 
             // Save score in database
             db.createPlay(  function(){ fn(); },
@@ -882,7 +882,7 @@ var commsEventListeners = {
         }
 
         db.getScores(   function(results){
-							var total = {};
+                            var total = {};
                             if(data.option_num === 3){
                                 results.sort(function(a, b){
                                     return b.score - a.score;
@@ -899,10 +899,10 @@ var commsEventListeners = {
                                 }
                                 for(var j in total){
                                     if(total.hasOwnProperty(j)){
-										total[j].sort(function(a, b){
-											return b.score - a.score;
-										});
-									}
+                                        total[j].sort(function(a, b){
+                                            return b.score - a.score;
+                                        });
+                                    }
                                 }
                                 results = total;
                             }
@@ -927,16 +927,29 @@ var commsEventListeners = {
 
         var value = data.value;
 
-        var multiplier = 1;
-        for(var stat in this.statuses){
-			if(this.statuses.hasOwnProperty(stat)){
-				multiplier *= this.statuses[stat].getMultiplier();
-			}
+        var multiplierSum = 0;
+        for(var s in this.statuses){
+            if(this.statuses.hasOwnProperty(s)){
+                var stat = this.statuses[s];
+                multiplierSum += stat.getMultiplier();
+            }
         }
 
         //The multiplier makes bad health changes go up, and good health changes go down
-        if(value < 0) value = Math.floor(value * multiplier);
-        else value = Math.floor(value / multiplier);
+        var finalMultiplier = 1;
+        if(value < 0){
+            //increases multiplier so negative values get more negative
+            finalMultiplier = 1 + multiplierSum;
+        }  else if (value > 0){
+            //decreases multiplier so positive values get less positive
+            if(multiplierSum > 1){
+                finalMultiplier = 0;
+            } else {
+                finalMultiplier = 1 - multiplierSum;
+            }
+        }
+
+        value = Math.round( value * finalMultiplier );
 
         // Keep health between 100 and 0;
         var oldHealth = this.health;
@@ -975,7 +988,7 @@ var commsEventListeners = {
         if(status){
             status.addToValue(data.value);
 
-            fn(this.statuses.getClientObject());
+            fn(status.getClientObject());
         }else{
             fn({
                 err : "User does not have that status"
@@ -1022,10 +1035,10 @@ var commsEventListeners = {
     get_all_status_values : function(data, fn){
         var statuses = {};
         for(var id in this.statuses){
-			if(this.statuses.hasOwnProperty(id)){
-				var status = this.statuses[id];
-				statuses[status.id] = status.getClientObject();
-			}
+            if(this.statuses.hasOwnProperty(id)){
+                var status = this.statuses[id];
+                statuses[status.id] = status.getClientObject();
+            }
         }
 
         fn(statuses);
@@ -1083,40 +1096,40 @@ var commsEventListeners = {
     get_symptoms : function(data, fn){
         this.generateSymptoms(this.health, fn);
     },
-	
-	/**
+
+    /**
      * Get the amount of currency a user has
      *
      * @param {Object|null} data - The data passed from the client to the server
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
-	get_currency : function(data, fn){
-		db.readUserById(function(user){
-			fn({currency: user.currency});
-		}, function(err){
-			fn({error: err});
-		}, this.userId);
-	},
-	
-	/**
+    get_currency : function(data, fn){
+        db.readUserById(function(user){
+            fn({currency: user.currency});
+        }, function(err){
+            fn({error: err});
+        }, this.userId);
+    },
+
+    /**
      * Get the amount of currency a user has
      *
      * @param {Object|null} data - The data passed from the client to the server
-	 * @param {int}    data.value - The amount to set the user's health to
+     * @param {int}    data.value - The amount to set the user's health to
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
-	add_currency : function(data, fn){
-		var h = this.userId;
-		db.readUserById(function(user){
-			db.updateUserCurrency(function(){
-				fn({"success": true});
-			}, function(err){
-				fn({error: err});
-			}, user.currency+data.currency, h);
-		}, function(err){
-			fn({error: err});
-		}, this.userId);
-	}
+    add_currency : function(data, fn){
+        var h = this.userId;
+        db.readUserById(function(user){
+            db.updateUserCurrency(function(){
+                fn({"success": true});
+            }, function(err){
+                fn({error: err});
+            }, user.currency+data.currency, h);
+        }, function(err){
+            fn({error: err});
+        }, this.userId);
+    }
 };
 
 
@@ -1221,18 +1234,20 @@ Status.prototype.addToValue = function(addValue){
  * @return {int} - The multiplier
  */
 Status.prototype.getMultiplier = function(){
-    var multiplier = 1,
-        difference;
+    var value_difference,
+        unhealthy_range;
 
     if(this.value<this.healthy_min){
-        difference = this.healthy_min-this.value;
-        multiplier *= (difference / this.heathy_min);
+        value_difference = this.healthy_min - this.value;
+        unhealthy_range = this.healthy_min - this.min;
     }else if(this.value>this.healthy_max){
-        difference = this.value-this.healthy_max;
-        multiplier *= (difference / this.healthy_max);
+        value_difference = this.value - this.healthy_max;
+        unhealthy_range = this.max - this.healthy_max;
+    } else {
+        return 0;
     }
 
-    return multiplier;
+    return (value_difference / unhealthy_range);
 };
 
 
