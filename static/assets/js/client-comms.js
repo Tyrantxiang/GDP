@@ -206,8 +206,8 @@ function clearEventListeners(name){
 function authenticate(username, password, cb){
 	ajaz("/authenticate", "POST",
 		{ username : username, password : password },
-		function(){
-			setToken(this.response.token);
+		function(r){
+			setToken(r.token);
 			cb({
 				authenticated : true
 			});
