@@ -100,6 +100,7 @@ $(function() {
         });
 
         $("#signup_conditions").append(elements);
+        $("#signup_username").focus();
       });
     });
   }
@@ -109,6 +110,8 @@ $(function() {
       $('body').removeClass("index signup").addClass("login");
       $("#main-content-area").html(data);
       document.title = "Log in";
+
+      $("#login_username").focus();
     });
   }
 
@@ -124,12 +127,11 @@ $(function() {
   $(document).on('click', '.login-btn', loadLogin);
 
 
-// Non-ideal fix, but does prevent multiple being launched.
-// May cause issues if/when we include a logout button.
-var active = false;
+  // Non-ideal fix, but does prevent multiple being launched.
+  // May cause issues if/when we include a logout button.
+  var active = false;
 
-  // Login submission button
-  $(document).on('click', '.login-submit', function () {
+  function login_submit(){
     if(!active)
     {
       active = true;
@@ -143,6 +145,15 @@ var active = false;
           active = false;
         }
       });
+    }
+  }
+
+  // Login submission button
+  $(document).on('click', '.login-submit', login_submit);
+
+  $(document).on('keypress', "#login_username, #login_password", function(e){
+    if(e.keyCode === 13){
+      login_submit();
     }
   });
 
