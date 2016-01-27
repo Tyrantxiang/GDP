@@ -382,6 +382,36 @@ Hub.prototype.generateAvatarImageFromEquippedItems = function(cb){
 
 
 /**
+ * Modify the current currency for the user by modify
+ *
+ * @todo Make a database function that modifies, not just sets
+ * @param {int} modify  - The amount to adjust the user's currency by
+ * @param {function} cb - Called on success or failure
+ */
+Hub.prototype.modifyCurrency = function(modify, cb){
+    var userId = this.userId;
+
+    db.readUserById(function(user){
+
+        var newVal = parseInt(user.currency) + parseInt(modify);
+        db.updateUserCurrency(
+            function(){
+                cb({
+                    success: true,
+                    currency: newVal
+                });
+            },
+            function(err){
+                cb({error: err});
+            }, newVal, userId);
+
+    }, function(err){
+        cb({error: err});
+    }, userId);
+};
+
+
+/**
  * Callback for the server comms functions, normally implimented in Socket.io and returns data to the client
  *
  * @callback module:hub~commsEventListeners~commsCallback
@@ -840,7 +870,7 @@ var commsEventListeners = {
                             function(){},
                             this.user_id
             );*/
-            this.add_currency(data, function(){});
+            this.modifyCurrency(data.currency, function(){});
 
             // Save score in database
             db.createPlay(  function(){ fn(); },
@@ -889,15 +919,15 @@ var commsEventListeners = {
                                 total[results[0].game_id] = results;
                                 results = total;
                             }else if(data.option_num === 2){
-								/*var allMinigameIds = config.games.listAll().map(function(ele){
-									return ele.id;
-								});
-								
-								var allMinigameTopScores = allMinigameIds.map(function(ele){
-									
-								});*/
-								
-								console.log(allMinigameIds);
+                                /*var allMinigameIds = config.games.listAll().map(function(ele){
+                                    return ele.id;
+                                });
+
+                                var allMinigameTopScores = allMinigameIds.map(function(ele){
+
+                                });*/
+
+                                console.log(allMinigameIds);
                                 for(var i=0; i<results.length; i++){
                                     var current = results[i];
                                     if(!total.hasOwnProperty(current.game_id)){
@@ -913,7 +943,7 @@ var commsEventListeners = {
                                     }
                                 }
                                 results = total;
-								console.log(total);
+                                console.log(total);
                             }
 
                             fn(results);
@@ -1120,49 +1150,53 @@ var commsEventListeners = {
         }, this.userId);
     },
 
-	/**
+    /**
      * Get the amount of currency a user has
      *
      * @param {Object|null} data - The data passed from the client to the server
-	 * @param {int}    data.item_id - The ID number of the item to unlock
+     * @param {int}    data.item_id - The ID number of the item to unlock
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
-	unlock_item : function(data, fn){
-		var inventoryObj = {
-			user_id: this.userId,
-			item_id: data.item_id,
-			active: true
-		};
+    unlock_item : function(data, fn){
+        var userId = this.userId,
+            inventoryObj = {
+                user_id: userId,
+                item_id: data.item_id,
+                active: true
+            },
 
-		var item_price = config.items.getConfig(data.item_id).price;
-		
-		function doUnlock(){
-			db.createUserInventory(function(obj){
-				fn({'success' : true});
-			}, function(err){
-				fn({'error': err});
-			}, inventoryObj);
-		}
-		
-		var h = this.userId;
-		
-		db.readUserById(function(user){
-			if(item_price < user.currency){
-				db.readUserById(function(user){
-					db.updateUserCurrency(doUnlock, function(err){
-						fn({error: err});
-					}, user.currency-item_price, h);
-				}, function(err){
-					fn({error: err});
-				}, h);
-			}else{
-				fn({'error' : 'Not enough currency'});
-			}
-		}, function(err){
-			fn({'error': err});
-		}, this.userId);
-		
-	}
+            item_price = config.items.getConfig(data.item_id).price;
+
+        function doUnlock(){
+            db.createUserInventory(function(obj){
+                fn({success : true});
+            }, function(err){
+                fn({error: err});
+            }, inventoryObj);
+        }
+
+        // TODO use modifyCurrency and adjust that so it cannot go below zero
+        db.readUserById(function(user){
+
+            if(item_price < user.currency){
+
+                db.readUserById(function(user){
+                    db.updateUserCurrency(doUnlock, function(err){
+                        fn({error: err});
+                    }, user.currency-item_price, userId);
+                }, function(err){
+                    fn({error: err});
+                }, userId);
+
+            }else{
+                fn({'error' : 'Not enough currency'});
+            }
+
+        }, function(err){
+            fn({'error': err});
+        }, userId);
+
+    }
 };
 
 
