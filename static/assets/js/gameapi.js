@@ -155,16 +155,6 @@
             });
         };
 
-
-        this.getAvatarImage = function(cb){
-            dispatcher.sendMessage("getAvatarImage", {},
-                function(d){
-                    self.avatarImage = base64ToImg(d.avatarImage);
-                    cb.call(self, self.avatarImage);
-                }
-            );
-        };
-
         this.getAvatarImage = function(){
             return this.avatarImage;
         };
