@@ -115,10 +115,15 @@ function Hub(userId, comms){
         function(results){
             var meta = config.hub.getItemMetaData(),
                 e = self.equipped,
-                slot;
+                slot, r;
 
             for(slot in meta){
-                e[slot] = results[slot] || meta[slot].default;
+                r = results[slot]
+                if(r && config.items.exists(results[slot])){
+                    e[slot] = r;
+                }else{
+                    e[slot] = meta[slot].default;
+                }
             }
         },
         function(){},
