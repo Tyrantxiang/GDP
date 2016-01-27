@@ -864,13 +864,12 @@ var commsEventListeners = {
             this.gameStartTime = undefined;
 
             //update the users currency
-            /*db.readUserById(function(result){
+            db.readUserById(function(result){
                                 db.updateUserCurrency(function(){}, function(){}, result.currency+data.currency, this.user_id);
                             },
                             function(){},
                             this.user_id
-            );*/
-            this.modifyCurrency(data.currency, function(){});
+			);
 
             // Save score in database
             db.createPlay(  function(){ fn(); },
@@ -892,67 +891,45 @@ var commsEventListeners = {
      * @todo Document
      */
     get_scores : function(data, fn){
+		//['all_scores', 'all_scores_for_game', 'all_scores_for_user', 'all_scores_for_user_for_game'];
+		
         var numOfScores = 3;
 
-        var filterConds = {};
-
         if(data.option_num === 0){
-            //get top 100 overall scores
-            filterConds = {};
+			fn({'error': 'Not implemented'});
+			return;
         }else if(data.option_num === 1){
-            //filtering on user for all games
-            filterConds = {game_id: data.game_id};
-        }else if(data.option_num === 2){
-            filterConds = {user_id: this.userId};
+            fn({'error': 'Not implemented'});
+			return;
+        }else if(data.option_num === 2){				
+			var total = {}, userId = this.userId;
+			var allMinigameIds = config.games.listAll().map(function(ele){
+				return ele.id;
+			});
+			var miniGameLatch = latch(allMinigameIds.length, function(){
+				fn(total);
+			});
+			
+			allMinigameIds.forEach(function(ele){
+				var filterConds = {user_id: userId, game_id: ele};
+				
+				db.getScores(function(results){
+					total[ele] = results;
+					miniGameLatch();
+				}, function(err){ fn({err: "Error accessing database entries" }); }, filterConds, {column: "score", direction: "DESC"}, numOfScores)
+			});			
         }else if(data.option_num === 3){
-            filterConds = {user_id: this.userId, game_id: data.game_id};
+            var filterConds = {user_id: this.userId, game_id: data.game_id};
+			
+			db.getScores(function(results){
+					fn(results);
+			}, function(err){ fn({err: "Error accessing database entries" }); },
+			filterConds, {column: "score", direction: "DESC"}, numOfScores);
+			
         }else{
             fn({err: "Invalid score option selected"});
+			return;
         }
-
-        db.getScores(   function(results){
-                            var total = {};
-                            if(data.option_num === 3){
-                                results.sort(function(a, b){
-                                    return b.score - a.score;
-                                });
-                                total[results[0].game_id] = results;
-                                results = total;
-                            }else if(data.option_num === 2){
-                                /*var allMinigameIds = config.games.listAll().map(function(ele){
-                                    return ele.id;
-                                });
-
-                                var allMinigameTopScores = allMinigameIds.map(function(ele){
-
-                                });*/
-
-                                console.log(allMinigameIds);
-                                for(var i=0; i<results.length; i++){
-                                    var current = results[i];
-                                    if(!total.hasOwnProperty(current.game_id)){
-                                        total[current.game_id] = [];
-                                    }
-                                    total[current.game_id].push(current);
-                                }
-                                for(var j in total){
-                                    if(total.hasOwnProperty(j)){
-                                        total[j].sort(function(a, b){
-                                            return b.score - a.score;
-                                        });
-                                    }
-                                }
-                                results = total;
-                                console.log(total);
-                            }
-
-                            fn(results);
-                        },
-                        function(err){ fn({err: "Error accessing database entries" }); },
-                        filterConds,
-                        {column: "score", direction: "DESC"},
-                        numOfScores
-                    );
     },
 
     /**
