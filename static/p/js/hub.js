@@ -674,50 +674,39 @@
                 }
 
 
-                // Fill the bag
-                var newBag = [],
+                // Create the iframe
+                var frame = document.createElement("iframe");
 
-                    lcarriables = latch(bag.length, function(){
-                        // Create the iframe
-                        var frame = document.createElement("iframe");
+                // Sandbox the frame
+                frame.sandbox = "allow-scripts allow-pointer-lock";
+                frame.className = "game-frame";
+                frame.src = "/views/game_container.html";
 
-                        // Sandbox the frame
-                        frame.sandbox = "allow-scripts allow-pointer-lock";
-                        frame.className = "game-frame";
-                        frame.src = "/views/game_container.html";
+                // Create a channel
+                var channel = new MessageChannel(),
+                // Create a new GameCoordinator
+                    gc = new GameCoordinator(frame, channel),
+                    mess = new GameMessenger(frame, channel, gc);
 
-                        // Create a channel
-                        var channel = new MessageChannel(),
-                        // Create a new GameCoordinator
-                            gc = new GameCoordinator(frame, channel),
-                            mess = new GameMessenger(frame, channel, gc);
-
-                        // Remove the hub and replace with the iframe!
-                        container.removeChild(hubCanvasContainer);
-                        container.appendChild(frame);
+                // Remove the hub and replace with the iframe!
+                container.removeChild(hubCanvasContainer);
+                container.appendChild(frame);
 
 
-                        mess.init({
-                            gameId : data.gameId,
-                            sessionId : data.sessionId,
-                            version : data.version,
-                            scripts : data.scriptURLs,
-                            entryObject : data.entryObject,
-                            assetBaseURL : data.assetBaseURL,
-                            avatarImage : hub.avatarImage.src,
-                            health : hub.health,
-                            statuses : hub.cloneStatuses(),
-                            bag : newBag
-                        });
-
-                    });
-
-                bag.forEach(function(c){
-                    hub.getCarriable(c, function(carriable){
-                        newBag.push(carriable);
-                        lcarriables();
-                    });
+                mess.init({
+                    gameId : data.gameId,
+                    sessionId : data.sessionId,
+                    version : data.version,
+                    scripts : data.scriptURLs,
+                    entryObject : data.entryObject,
+                    assetBaseURL : data.assetBaseURL,
+                    avatarImage : hub.avatarImage.src,
+                    health : hub.health,
+                    statuses : hub.cloneStatuses(),
+                    bag : bag
                 });
+
+
             });
         });
     };
