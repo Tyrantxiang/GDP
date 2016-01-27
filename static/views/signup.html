@@ -10,7 +10,7 @@
         <form class="form-inline top-buffer">
           <div class="form-large">
             <label for="signup_username"><span class="required">*</span>username: </label>
-            <div class="pull-right cleafix">
+            <div class="pull-right clearfix">
               <span class="hidden signup_username-ok glyphicon glyphicon-ok-sign"></span><span class="hidden signup_username-error glyphicon glyphicon-remove-sign"></span>
               <input type="text" class="form-control" id="signup_username" placeholder="username" required="required">
             </div>
@@ -18,7 +18,7 @@
           <hr class="hr-grey">
           <div class="form-large">
             <label for="signup_password"><span class="required">*</span>password: </label>
-            <div class="pull-right cleafix">
+            <div class="pull-right clearfix">
               <span class="hidden signup_password-ok glyphicon glyphicon-ok-sign"></span><span class="hidden signup_password-error glyphicon glyphicon-remove-sign"></span>
               <input type="password" class="form-control" id="signup_password" placeholder="password" required="required">
             </div>
@@ -26,7 +26,7 @@
           <hr class="hr-grey">
           <div class="form-large">
             <label for="signup_repeatPassword"><span class="required">*</span>re-enter password: </label>
-            <div class="pull-right cleafix">
+            <div class="pull-right clearfix">
               <span class="hidden signup_repeatPassword-ok glyphicon glyphicon-ok-sign"></span><span class="hidden signup_repeatPassword-error glyphicon glyphicon-remove-sign"></span>
               <input type="password" class="form-control" id="signup_repeatPassword" placeholder="password" required="required">
             </div>
@@ -34,9 +34,17 @@
           <hr class="hr-grey">
           <div class="form-large">
             <label for="signup_dob"><span class="required">*</span>date of birth: </label>
-            <div class="pull-right cleafix">
+            <div class="pull-right clearfix">
               <span class="hidden signup_dob-ok glyphicon glyphicon-ok-sign"></span><span class="hidden signup_dob-error glyphicon glyphicon-remove-sign"></span>
               <input type="date" class="form-control" style="width:370px;" id="signup_dob" required="required">
+            </div>
+          </div>
+          <hr class="hr-grey">
+          <div class="form-large">
+            <label for="signup_conditions"><span class="required">*</span>select conditions: </label>
+            <div class="pull-right clearfix">
+              <select multiple id="signup_conditions" class="form-control input-lg" style="width:370px;">
+              </select>
             </div>
           </div>
           <br>

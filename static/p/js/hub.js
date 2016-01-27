@@ -435,7 +435,6 @@
         });
     };
 
-    //TODO: Joe
     hub.useCarriable = function(carriableId, cb){
         comms.use_carriable(carriableId, function(data){
             if(!data.err){
@@ -456,14 +455,15 @@
         });
     };
 
-    //TODO: Joe
     hub.modifyStatus = function(statusId, changeVal, cb){
         comms.modify_status_value(statusId, changeVal, function(data){
             if(!data.err){
                 if(hub.statuses[data.id]){
-                    hub.statuses[data.id].value = data.newValue;
+                    hub.statuses[data.id].value = data.value;
                 }
-                cb(data.id, data.newValue);
+                cb(data.id, data.value);
+            } else {
+                console.log(data.err);
             }
         });
     };
@@ -697,29 +697,18 @@
                 replaceControlledFunctions(api);
 
 
-                var newBag = [];
+                // Load the scripts into memory
+                var lscripts = latch(data.scriptURLs.length, function(){
+                    container.removeChild(hubCanvasContainer);
+                    canvasContainer.appendChild(canvas);
+                    container.appendChild(canvasContainer);
 
-                var lcarriables = latch(bag.length, function(){
-                    // Load the scripts into memory
-                    var lscripts = latch(data.scriptURLs.length, function(){
-                        container.removeChild(hubCanvasContainer);
-                        canvasContainer.appendChild(canvas);
-                        container.appendChild(canvasContainer);
-
-                        var e = window[data.entryObject];
-                        e.run.call(e, api, canvas, data.assetBaseURL, hub.health, hub.cloneStatuses(), newBag);
-                    });
-
-                    data.scriptURLs.forEach(function(script){
-                        comms.loadScriptFile(script, lscripts, false);
-                    });
+                    var e = window[data.entryObject];
+                    e.run.call(e, api, canvas, data.assetBaseURL, hub.health, hub.cloneStatuses(), bag);
                 });
 
-                bag.forEach(function(c){
-                    hub.getCarriable(c, function(carriable){
-                        newBag.push(carriable);
-                        lcarriables();
-                    });
+                data.scriptURLs.forEach(function(script){
+                    comms.loadScriptFile(script, lscripts, false);
                 });
             });
         });
@@ -948,8 +937,8 @@
 
         proto.modifyStatus = function(statusId, changeVal, cb){
             var t = this;
-            hub.modifyStatus(statusId, changeVal, function(data){
-                cb.call(t, data.id, data.newValue);
+            hub.modifyStatus(statusId, changeVal, function(id, newValue){
+                cb.call(t, id, newValue);
             });
         };
 

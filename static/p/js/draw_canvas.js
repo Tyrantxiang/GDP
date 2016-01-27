@@ -339,10 +339,11 @@
 			/*
 			 * Statuses border
 			*/
+			var numOfStatuses = Object.keys(statuses).length;
+
 			hb.statuslistborderVals.width  		= hb.barborderVals.width;
-			hb.statuslistborderVals.padScale	= 0.1;
-			hb.statuslistborderVals.padHeight   = hb.fontSize * statuses.length * hb.statuslistborderVals.padScale;
-			hb.statuslistborderVals.height 		= hb.fontSize * statuses.length + (hb.statuslistborderVals.padHeight * (statuses.length+1));
+			hb.statuslistborderVals.padHeight   = hb.fontSize * numOfStatuses * 0.1;
+			hb.statuslistborderVals.height 		= hb.fontSize * numOfStatuses + (hb.statuslistborderVals.padHeight * (numOfStatuses+1));
 			hb.statuslistborderVals.left		= hb.barborderVals.left;
 			hb.statuslistborderVals.top			= hb.symptomborderVals.top - hb.statuslistborderVals.height;
 			hb.statuslistborderVals.fill		= hb.barborderVals.fill;
@@ -352,32 +353,32 @@
 
 			hb.statuslistborderVals.name = hb.mouseoverGroupName;
 
-			hb.statuslistborderVals.visible = false;
+			hb.statuslistborderVals.visible = true;
 
 			hb.statuslistborder = new fabric.Rect(hb.statuslistborderVals);
 
 			/*
 			 * Statuses text
 			*/
+
+			hb.statuslist = [];
 			for(var i in statuses){
-				var numOfPads = parseInt(i) + 1;
+				var numOfPads = hb.statuslist.length + 1;
 
 				var textVals = {};
 				textVals.fill 		= 'white';
 				textVals.fontSize  	= hb.fontSize;
-				textVals.left 		= hb.barVals.left;
-				textVals.top 		= hb.statuslistborderVals.top + (hb.statuslistborderVals.padHeight * numOfPads) + (hb.fontSize*i);
+				textVals.left 		= hb.symptomVals.left;
+				textVals.top 		= hb.statuslistborderVals.top + (hb.statuslistborderVals.padHeight * numOfPads) + (hb.fontSize*hb.statuslist.length);
 
 				textVals.name = hb.mouseoverGroupName;
+				textVals.visible = true;
 
-				textVals.visible = false;
-				//Will set text after
 				var statusText = new fabric.Text('', textVals);
+				statusText.setText(statuses[i].name+": "+statuses[i].value);
 
 				hb.statuslist.push(statusText);
 			}
-			changeStatuses(statuses);
-
 
 			//Adding all to canvas
 			hb.canvas.add(hb.barborder);
@@ -438,6 +439,7 @@
 
 			hb.statuslistborder.set({visible: newVis});
 			hb.statuslist.forEach(function(s){
+				console.log(newVis);
 				s.set({visible: newVis});
 			});
 
@@ -483,12 +485,14 @@
 		//	hb.currStatuses = statuses;
 		//	hb.draw(hb.currHealth, statuses, hb.currSymptoms);
 		//} else {
-			for(var i in statuses){
-				var statusString = statuses[i].name+': '+statuses[i].value;
-				statuslist[i].setText(statusString);
-			}
-			hb.currStatuses = statuses;
+		//	for(var i in statuses){
+		//		var statusString = statuses[i].name+': '+statuses[i].value;
+		//		hb.statuslist[i].setText(statusString);
+		//	}
+		//	hb.currStatuses = statuses;
 		//}
+
+		hb.init(hb.currHealth, statuses, hb.currSymptoms);
 	}
 
 

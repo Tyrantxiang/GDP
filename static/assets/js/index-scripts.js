@@ -92,6 +92,15 @@ $(function() {
       $('body').removeClass("index login").addClass("signup");
       $("#main-content-area").html(data);
       document.title = "Sign up for the hub";
+
+      //Populating the conditions list for selection!
+      comms.get_conditions_list(function(conditions){
+        var elements = conditions.map(function(cond){
+          return $(document.createElement("option")).attr("value", cond.id).html(cond.name);
+        });
+
+        $("#signup_conditions").append(elements);
+      });
     });
   }
 
@@ -221,8 +230,12 @@ var active = false;
     var username = $("#signup_username").val(),
       password = $("#signup_password").val(),
       repeatPassword = $("#signup_repeatPassword").val(),
-      dob = new Date($("#signup_dob").val());
+      dob = new Date($("#signup_dob").val()),
 
+      //Converting condition ids from strings to ints
+      conditions = ($("#signup_conditions").val() || []).map(function(c){
+        return parseInt(c);
+      });
 
     signup_validUsername(username, function(valid){
       if(!valid){
@@ -245,7 +258,7 @@ var active = false;
               return;
             }
 
-            comms.sign_up(username, password, dob, function(data){
+            comms.sign_up(username, password, dob, conditions, function(data){
               if(data.error){
                 addFail("Sign up failed");
               }else{

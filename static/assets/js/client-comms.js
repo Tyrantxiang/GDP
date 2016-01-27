@@ -11,7 +11,10 @@
 var token = null,
 	socket = null,
 	// The event listeners for the comms
-	eventListeners = {};
+	eventListeners = {},
+
+	emptyFunction = function(){},
+	emptyObject = {};
 
 /**
  * An AJAX success callback
@@ -98,10 +101,12 @@ function ajaz(url, verb, data, success, error, responseType, contentType){
  * @return {XMLHttpRequest} The raw XMLHttpRequest object
  */
 function postRequest(url, data, cb){
-	return ajaz(url, "POST", data, cb);
+	return ajaz(url, "POST", data || emptyObject, cb);
 }
 
-
+function getRequest(url, data, cb){
+	return ajaz(url, "GET", data || emptyObject, cb);
+}
 
 /**
  * Sets the authentication token for further requests. Not exposed by the module
@@ -287,9 +292,6 @@ function socketOpen(){
 	return !!socket;
 }
 
-
-var emptyFunction = function(){},
-	emptyObject = {};
 /**
  * Generic abstraction over the socket.io interface.
  * Sends data over the socket to a specific event (server function)
@@ -361,7 +363,7 @@ window.comms = {
 
 //USER MANAGEMENT - Ajax request
 	get_conditions_list : function(cb){
-		postRequest(	'/user/get_conditions_list',
+		getRequest(		'/user/get_conditions_list',
 						null,
 						cb	
 					);
@@ -388,9 +390,9 @@ window.comms = {
 					);
 	},
 
-	sign_up : function(username, password, dob, cb){
+	sign_up : function(username, password, dob, conditions, cb){
 		postRequest(	'/user/sign_up',
-						{username: username, password: password, dob: dob},
+						{username: username, password: password, dob: dob, conditions: conditions},
 						cb
 					);
 	},
@@ -624,9 +626,9 @@ window.comms = {
 						);
 	},
 
-	modify_status_value : function(status_name, value, cb){
+	modify_status_value : function(statusId, value, cb){
 		client_socket_call(	'modify_status_value',
-							{"status_name": status_name, value: value},
+							{id: statusId, value: value},
 							cb
 						);
 	},
