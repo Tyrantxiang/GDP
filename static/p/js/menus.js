@@ -268,28 +268,50 @@
 
 	window.menu.shop = {
 		load : function(locked_items, currency) {
-			$.get('/views/shop.html', function(data) {
-				$('#menu-overlays').html(data);
+			$.get('/views/shop.html', function(shop_html) {
+				$('#menu-overlays').html(shop_html);
 				document.title	= 'Shop';
-				
-				$('#currency_container').html("You have " + currency.value + " to spend in the shop");
+				currency = currency.currency;
+				var price = 0;
+
+				$('#currency_container').html("You have $" + currency + " to spend in the shop");
 
 				locked_items.forEach(function(item) {
 					if (item.url) {
-						var img_html = '<img src="' + item.url + '" style="width:100%">';
+						var img_html = '<img src="' + item.url + '" class="col-md-12" data-price="'+ item.price+'">';
 						$('#hub_shop_content').append('<div class="col-md-2 white-img-box">' + img_html + '</div>');
 					}
 				});
 				
+				$('.white-img-box').on('click', function(data) {
+        	$('div.white-img-box').siblings().removeClass('active');
+        	$(this).addClass('active');
+        	price = $(this).children('img').data("price");
+
+        	$('#price_container').html("Cost: $" + price).addClass("dark-grey-box");
+     		});
+			
+
 				$('#hub_shop_accept').on('click', function(data) {
-					// Add currency stuff
+					if (price == 0) {
+						$('#overlay').hide();
+					} else if (currency => price) {
+						comms.add_currency(-(price), function(d) {
+							if (d.success) {
+								var remaining_currency = parseInt(currency) - parseInt(price);
+								alert("You have $" + remaining_currency + " left.");
+								// TODO Add to player's unlocked items
+								$('#overlay').hide();
+							} else {
+								alert("You have insufficient funds. Try some mini-games!");
+							}
+						});
+					} 
 				});
 
 				$('#hub_shop_cancel').on('click', function(data) {
 					$('#overlay').hide();
 				});
-
-				
 			});
 		}
 	}

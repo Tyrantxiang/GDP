@@ -1104,7 +1104,7 @@ var commsEventListeners = {
 				fn({"success": true});
 			}, function(err){
 				fn({error: err});
-			}, user.currency+data.currency, h);
+			}, parseInt(user.currency) + parseInt(data.currency), h);
 		}, function(err){
 			fn({error: err});
 		}, this.userId);
