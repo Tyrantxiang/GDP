@@ -318,7 +318,7 @@
 				$('#hub_shop_accept').on('click', function(data) {
 					if (price == 0) {
 						$('#overlay').hide();
-					} else if (currency => price) {
+					} else if (currency >= price) {
 						comms.add_currency(-(price), function(d) {
 							if (d.success) {
 								var remaining_currency = parseInt(currency) - parseInt(price);
