@@ -201,9 +201,11 @@
 	};
 
 	var makeBagString = function(){
-		var arr = [];
+		var arr = []
+			index = 1;
 		for(var c in currentBag){
-			arr.push(currentBag[c].name);
+			arr.push("("+index+")"+currentBag[c].name);
+			index++;
 		}
 
 		return arr.join(', ');
