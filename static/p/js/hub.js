@@ -704,6 +704,7 @@
                             scripts : data.scriptURLs,
                             entryObject : data.entryObject,
                             assetBaseURL : data.assetBaseURL,
+                            avatarImage : hub.avatarImage.src,
                             health : hub.health,
                             statuses : hub.cloneStatuses(),
                             bag : newBag
@@ -791,56 +792,53 @@
         this.channel = channel;
     }
     // Add to the prototype
-    (function(proto){
-        proto.finishGame = function(data){
-            hub.finishGame(this, data.gameId, data.sessionId, data.score, data.currency);
-        };
+    GameCoordinator.prototype.finishGame = function(data){
+        hub.finishGame(this, data.gameId, data.sessionId, data.score, data.currency);
+    };
 
-        proto.useCarriable = function(data, cb){
-            hub.useCarriable(data.carriableId, function(bag, health, statuses, avatarImage, symptoms){
-                cb({
-                    bag : bag,
-                    health : health,
-                    statuses : statuses,
-                    //avatarImage : avatarImage,
-                    symptoms : symptoms
-                });
+    GameCoordinator.prototype.useCarriable = function(data, cb){
+        hub.useCarriable(data.carriableId, function(bag, health, statuses, avatarImage, symptoms){
+            cb({
+                bag : bag,
+                health : health,
+                statuses : statuses,
+                avatarImage : avatarImage.src,
+                symptoms : symptoms
             });
-        };
+        });
+    };
 
-        proto.getCarriableInfo = function(data, cb){
-            hub.getCarriable(data.carriableId, function(carriable){
-                cb({
-                    carriable : carriable
-                });
+    GameCoordinator.prototype.getCarriableInfo = function(data, cb){
+        hub.getCarriable(data.carriableId, function(carriable){
+            cb({
+                carriable : carriable
             });
-        };
+        });
+    };
 
-        proto.modifyHealth = function(data, cb){
-            hub.modifyHealth(data.changeVal, function(health, avatarImage, symptoms){
-                cb({
-                    health : health,
-                    //avatarImage : avatarImage,
-                    symptoms : symptoms
-                });
+    GameCoordinator.prototype.modifyHealth = function(data, cb){
+        hub.modifyHealth(data.changeVal, function(health, avatarImage, symptoms){
+            cb({
+                health : health,
+                avatarImage : avatarImage.src,
+                symptoms : symptoms
             });
-        };
+        });
+    };
 
-        proto.modifyStatus = function(data, cb){
-            hub.modifyStatus(data.statusId, data.changeVal, function(id, value){
-                cb({
-                    id : id,
-                    value : value
-                });
+    GameCoordinator.prototype.modifyStatus = function(data, cb){
+        hub.modifyStatus(data.statusId, data.changeVal, function(id, value){
+            cb({
+                id : id,
+                value : value
             });
-        };
+        });
+    };
 
-        // Assume we are always ready
-        proto.ready = function(data, cb){
-            cb({ready : true});
-        };
-
-    })(GameCoordinator.prototype);
+    // Assume we are always ready
+    GameCoordinator.prototype.ready = function(data, cb){
+        cb({ready : true});
+    };
 
 
 

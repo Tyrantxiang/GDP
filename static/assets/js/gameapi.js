@@ -10,7 +10,13 @@
             }
         };
     }
-
+    // Convert base64 to Img object
+    // Does not require the prefix, as this will already be present
+    function base64ToImg(base64){
+        var i = document.createElement("img");
+        i.src = base64;
+        return i;
+    }
 
 
     var init = false;
@@ -38,7 +44,15 @@
         scripts.forEach(function(url){
             var script = document.createElement("script");
             script.addEventListener("load", l);
-            script.src = windowOrigin + url;
+
+            // Check if link is relative or absolute
+            var u;
+            if(url.substr(0,2) === "//" || url.substr(0,4) === "http"){
+                u = url;
+            }else{
+                u = windowOrigin + url;
+            }
+            script.src = u;
 
             stag.parentNode.insertBefore(script, stag);
         });
@@ -59,10 +73,7 @@
 
         // Confirm we are ready
         disp.sendMessage("ready", null, function(){
-            var c = document.createElement("canvas");
-            div.appendChild(c);
-
-            var api = new GameAPI(disp, data.gameId, data.sessionId, data.assetBaseURL, c, data.version),
+            var api = new GameAPI(disp, data.gameId, data.sessionId, base64ToImg(data.avatarImage), data.assetBaseURL, div, data.version),
                 eo = window[data.entryObject];
 
             // Just in case they lose track of it!
@@ -72,19 +83,21 @@
 
             window.focus();
 
-            eo.run.call(eo, api, c, data.assetBaseURL, data.health, data.statuses, data.bag);
+            eo.run.call(eo, api, div, data.assetBaseURL, data.health, data.statuses, data.bag);
         });
     }
 
 
     
 
-    function GameAPI(dispatcher, gameId, sessionId, baseAssetURL, div, version){
+    function GameAPI(dispatcher, gameId, sessionId, avatarImage, baseAssetURL, div, version){
         this.gameId = gameId;
         this.sessionId = sessionId;
         this.baseAssetURL = baseAssetURL;
         this.div = div;
         this.version = version;
+
+        this.avatarImage = avatarImage;
 
         var self = this;
 
@@ -102,7 +115,10 @@
                 carriableId : carriableId 
             },
             function(d){
-                cb.call(self, d.bag, d.health, d.statuses, d.avatarImage, d.symptoms);
+                if(self.avatarImage.src !== d.avatarImage){
+                    self.avatarImage = base64ToImg(d.avatarImage);
+                }
+                cb.call(self, d.bag, d.health, d.statuses, this.avatarImage, d.symptoms);
             });
         };
 
@@ -121,7 +137,10 @@
                 changeVal : changeVal
             },
             function(d){
-                cb.call(self, d.health, d.avatarImage, d.symptoms);
+                if(self.avatarImage.src !== d.avatarImage){
+                    self.avatarImage = base64ToImg(d.avatarImage);
+                }
+                cb.call(self, d.health, this.avatarImage, d.symptoms);
             });
         };
 
@@ -140,11 +159,15 @@
         this.getAvatarImage = function(cb){
             dispatcher.sendMessage("getAvatarImage", {},
                 function(d){
-                    cb.call(self, d.avatarImage);
+                    self.avatarImage = base64ToImg(d.avatarImage);
+                    cb.call(self, self.avatarImage);
                 }
             );
         };
 
+        this.getAvatarImage = function(){
+            return this.avatarImage;
+        };
 
         this.getAssetURL = function(asset){
             return dispatcher.windowOrigin + baseAssetURL + "/" + asset;

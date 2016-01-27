@@ -29,7 +29,6 @@
 		currentBag = bag;
 
 		// Handle keyboard controls
-		//api.addKeyListener("keydown", keyPressed);
 		window.addEventListener("keydown", keyPressed);
 
 		render();
