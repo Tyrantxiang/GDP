@@ -52,24 +52,28 @@
 
         // Add and remove events
         window.removeEventListener("message", initHandle);
-        port.addEventListener("message", function(e){
+
+        port.onmessage = function(e){
             disp.dispatch(e.data);
-        });
-
-        // Confirm we are ready
-        disp.sendMessage("ready");
-        var c = document.createElement("canvas");
-        div.appendChild(c);
-
-        var api = new GameAPI(disp, data.gameId, data.sessionId, data.assetBaseURL, c, data.version),
-            eo = window[data.entryObject];
-
-        // Just in case they lose track of it!
-        window.getGameAPI = function(){
-            return api;
         };
 
-        eo.run.call(eo, api, c, data.assetBaseURL, data.health, data.statuses, data.bag);
+        // Confirm we are ready
+        disp.sendMessage("ready", null, function(){
+            var c = document.createElement("canvas");
+            div.appendChild(c);
+
+            var api = new GameAPI(disp, data.gameId, data.sessionId, data.assetBaseURL, c, data.version),
+                eo = window[data.entryObject];
+
+            // Just in case they lose track of it!
+            window.getGameAPI = function(){
+                return api;
+            };
+
+            window.focus();
+
+            eo.run.call(eo, api, c, data.assetBaseURL, data.health, data.statuses, data.bag);
+        });
     }
 
 

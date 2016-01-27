@@ -29,7 +29,8 @@
 		currentBag = bag;
 
 		// Handle keyboard controls
-		api.addKeyListener("keydown", keyPressed);
+		//api.addKeyListener("keydown", keyPressed);
+		window.addEventListener("keydown", keyPressed);
 
 		render();
 	}
@@ -200,7 +201,7 @@
 		ctx.fillText("Currency: "+currency, 10, 470);
 		ctx.fillText("Carriables: "+makeBagString(), 10, 500);
 
-		ctx.drawImage(api.getAvatarImage(),canvas.width-300,0);
+		//ctx.drawImage(api.getAvatarImage(),canvas.width-300,0);
 	};
 
 	var makeBagString = function(){

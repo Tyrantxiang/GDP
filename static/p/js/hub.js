@@ -689,68 +689,26 @@
                         // Create a channel
                         var channel = new MessageChannel(),
                         // Create a new GameCoordinator
-                            gc = new GameCoordinator(frame, channel);
+                            gc = new GameCoordinator(frame, channel),
+                            mess = new GameMessenger(frame, channel, gc);
 
                         // Remove the hub and replace with the iframe!
                         container.removeChild(hubCanvasContainer);
                         container.appendChild(frame);
 
-                        var win = frame.contentWindow,
-                            ready = false;
 
-                        channel.port1.addEventListener("message", gettingReadyToPlay);
+                        mess.init({
+                            gameId : data.gameId,
+                            sessionId : data.sessionId,
+                            version : data.version,
+                            scripts : data.scriptURLs,
+                            entryObject : data.entryObject,
+                            assetBaseURL : data.assetBaseURL,
+                            health : hub.health,
+                            statuses : hub.cloneStatuses(),
+                            bag : newBag
+                        });
 
-                        window.setTimeout(function tim(){
-                            if(ready){
-                                readyToPlay();
-                            }else{
-                                try{
-                                // Pass in the data and channel
-                                win.postMessage({
-                                    gameId : data.gameId,
-                                    sessionId : data.sessionId,
-                                    version : data.version,
-                                    scripts : data.scriptURLs,
-                                    entryObject : data.entryObject,
-                                    assetBaseURL : data.assetBaseURL,
-                                    health : hub.health,
-                                    statuses : hub.cloneStatuses(),
-                                    bag : newBag
-                                }, '*', [channel.port2]);
-                                }catch(e){}
-
-                                window.setTimeout(tim, 250);
-                            }
-                        }, 250);
-
-
-                        function gettingReadyToPlay(e){
-                            if(e.data.type === "ready"){
-                                ready = true;
-                            }
-                        }
-
-                        function readyToPlay(){
-                            channel.port1.removeEventListener("message", gettingReadyToPlay);
-                            channel.port1.addEventListener("message", function(e){
-                                var data = e.data,
-                                    type = data.type,
-                                    uid = data.uid,
-                                    d = data.data,
-
-                                    func = gc[type];
-
-                                if(func && typeof func === "function"){
-                                    func.call(gc, d, function(response){
-                                        channel.port1.postMessage({
-                                            type : type,
-                                            uid : uid,
-                                            data : response
-                                        });
-                                    });
-                                }
-                            });
-                        }
                     });
 
                 bag.forEach(function(c){
@@ -767,7 +725,7 @@
     // Finish a game
     hub.finishGame = function(coord, gameId, sessionId, score, currency){
         // Kill the channel
-        channel.port1.close();
+        coord.channel.port1.close();
 
 
         // Return to hub here!
@@ -844,14 +802,14 @@
                     bag : bag,
                     health : health,
                     statuses : statuses,
-                    avatarImage : avatarImage,
+                    //avatarImage : avatarImage,
                     symptoms : symptoms
                 });
             });
         };
 
         proto.getCarriableInfo = function(data, cb){
-            hub.getCarriable(carriableId, function(carriable){
+            hub.getCarriable(data.carriableId, function(carriable){
                 cb({
                     carriable : carriable
                 });
@@ -859,27 +817,103 @@
         };
 
         proto.modifyHealth = function(data, cb){
-            hub.modifyHealth(changeVal, function(health, avatarImage, symptoms){
-                cb.call(t, health, avatarImage, symptoms);
+            hub.modifyHealth(data.changeVal, function(health, avatarImage, symptoms){
+                cb({
+                    health : health,
+                    //avatarImage : avatarImage,
+                    symptoms : symptoms
+                });
             });
         };
 
-        proto.modifyStatus = function(statusId, changeVal, cb){
-            var t = this;
-            hub.modifyStatus(statusId, changeVal, function(id, newValue){
-                cb.call(t, id, newValue);
+        proto.modifyStatus = function(data, cb){
+            hub.modifyStatus(data.statusId, data.changeVal, function(id, value){
+                cb({
+                    id : id,
+                    value : value
+                });
             });
         };
 
-        proto.getAvatarImage = function(){
-            return hub.avatarImage;
+        // Assume we are always ready
+        proto.ready = function(data, cb){
+            cb({ready : true});
         };
 
-        proto.getAssetURL = function(asset){
-            return this.assetBaseURL + "/" + asset;
+    })(GameCoordinator.prototype);
+
+
+
+    // Interface to talk to the game
+    function GameMessenger(frame, channel, coordinater, onReady){
+        this.channel = channel
+        this.port = channel.port1;
+        this.coordinater = coordinater;
+        this.frame = frame;
+
+        this.ready = false;
+        this.onReady = onReady;
+    }
+
+    GameMessenger.prototype.init = function(obj){
+        this.initChannel().initHandshake(obj);
+        return this;
+    };
+
+    GameMessenger.prototype.initHandshake = function(obj){
+        var sendHandshake = function(){
+            try{
+                if(this.ready){
+                    throw 0;
+                }
+
+                this.frame.contentWindow.postMessage(obj, '*', [this.channel.port2]);
+
+
+                window.setTimeout(sendHandshake, 250);
+
+            }catch(e){
+                this.gameReady();
+            }
+
+        }.bind(this);
+
+        window.setTimeout(sendHandshake, 250);
+
+        return this;
+    };
+
+
+    GameMessenger.prototype.gameReady = function(){
+        this.ready = true;
+        this.onReady && this.onReady();
+    };
+
+    GameMessenger.prototype.initChannel = function(){
+        var self = this;
+        this.port.onmessage = function(e){
+            var gc = self.coordinater,
+                port = self.port,
+                data = e.data,
+                type = data.type,
+                uid = data.uid,
+                d = data.data,
+
+                func = gc[type];
+
+            if(func && typeof func === "function"){
+                func.call(gc, d, function(response){
+                    port.postMessage({
+                        type : type,
+                        uid : uid,
+                        data : response
+                    });
+                });
+            }
         };
 
-    })(GameAPI.prototype);
+        return this;
+    };
 
 
 
