@@ -19,12 +19,13 @@
             init = true;
 
             var sourceWindow = e.source,
-                windowOrigin = e.origin || e.originalEvent.origin; // For chrome
+                windowOrigin = e.origin || e.originalEvent.origin, // For chrome
+                port = e.ports[0],
 
-            var d = e.data;
+                d = e.data;
 
             loadScripts(d.scripts, windowOrigin, function(){
-                launch(sourceWindow, windowOrigin, d);
+                launch(port, windowOrigin, d);
             });
         }
     }
@@ -44,21 +45,21 @@
     }
 
 
-    function launch(sourceWindow, windowOrigin, data){
+    function launch(port, windowOrigin, data){
         var div = document.getElementById("game-container"),
             // Create the dispatcher
-            disp = new Dispatcher(sourceWindow, windowOrigin);
+            disp = new Dispatcher(port, windowOrigin);
 
         // Add and remove events
         window.removeEventListener("message", initHandle);
-        window.addEventListener("message", function(e){
+        port.addEventListener("message", function(e){
             disp.dispatch(e.data);
         });
 
         // Confirm we are ready
         disp.sendMessage("ready");
 
-        var api = new GameAPI(disp, data.gameId, data.sessionId, div, data.version),
+        var api = new GameAPI(disp, data.gameId, data.sessionId, data.assetBaseURL, div, data.version),
             eo = window[data.entryObject];
 
         // Just in case they lose track of it!
@@ -146,8 +147,8 @@
 
 
 
-    function Dispatcher(sourceWindow, windowOrigin){
-        this.sourceWindow = sourceWindow;
+    function Dispatcher(port, windowOrigin){
+        this.port = port;
         this.windowOrigin = windowOrigin;
 
         this.callbacks = {};
@@ -170,7 +171,7 @@
                 this.callbacks[uid] = cb;
             }
 
-            this.sourceWindow.postMessage({
+            this.port.postMessage({
                 type : type,
                 uid : uid,
                 data : data
@@ -180,13 +181,13 @@
 
         p.dispatch = function(data){
             var uid = data.uid,
+                d = data.data,
                 cb = this.callbacks[uid];
 
             if(cb){
-                delete data.uid;
                 delete this.callbacks[uid];
 
-                cb(data);
+                cb(d);
             }
         };
 
