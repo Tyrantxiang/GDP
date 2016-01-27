@@ -15,7 +15,7 @@
 		api = a;
 		canvas = can;
 		can.width="800";
-		can.height="500";
+		can.height="600";
 
 		statuses = stats;
 		changeableStatus = statuses[Object.keys(statuses)[0]];
@@ -74,9 +74,6 @@
 				updateCurrency(10);
 				break;
 
-			case(48) : // Player pressed 0
-				numberPressed(0);
-				break;
 			case(49) : // Player pressed 1
 				numberPressed(1);
 				break;
@@ -104,6 +101,9 @@
 			case(57) : // Player pressed 9
 				numberPressed(9);
 				break;
+			case(48) : // Player pressed 0
+				numberPressed(10);
+				break;
 
 			case(70) : // Player pressed F
 				//console.log("F");
@@ -119,7 +119,7 @@
 
 	var numberPressed = function(num){
 		//console.log(num);
-		var key = Object.keys(currentBag)[num];
+		var key = Object.keys(currentBag)[num-1];
 
 		if(currentBag[key] == undefined){
 			alert("NO ITEM IN THAT SLOT");
@@ -160,11 +160,11 @@
 		render();
 	}
 
-	function updateCarriables(newBag, newHp, newStatuses, avatarImage){
-		//console.log(newHp);
+	function updateCarriables(newBag, newHp, newStatuses, avatarImage, newSymps){
 		updateHealthAndAvatar(newHp, avatarImage);
-		//!!!!!!!!!!!!!
-		//statuses = newStatuses;
+		for(var i in newStatuses){
+			statuses[i].value = newStatuses[i].value;
+		}
 		currentBag = newBag;
 		render();
 	}

@@ -657,7 +657,7 @@ var commsEventListeners = {
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_bag : function(data, fn){
-        fn(this.bag.getCarriables());
+        fn(this.bag.getDetailedBag());
     },
 
     /**
@@ -730,7 +730,7 @@ var commsEventListeners = {
                 h.generateAvatarImageFromEquippedItems(function(){
 
                     fn({
-                        bag : h.bag.getCarriables(),
+                        bag : h.bag.getDetailedBag(),
                         newhp : h.health,
                         newStatuses : statuses,
                         avatarImage : h.avatarImage
@@ -740,7 +740,6 @@ var commsEventListeners = {
             });
         });
 
-
         effects.forEach(function(effect){
             if(effect.id === "hp"){
                 h.modify_hp_value({
@@ -748,7 +747,7 @@ var commsEventListeners = {
                 }, l);
             }else{
                 h.modify_status_value({
-                    status: effect.id,
+                    id: effect.id,
                     value: effect.amount
                 }, l);
             }
@@ -1154,6 +1153,17 @@ function Bag(){
      @type int[] */
     this.carriables = [];
 }
+/** Gets all the details of the carriables currently in the bag
+ *
+ * @return {Object[]} - The detailed carriables in the bag
+ */
+Bag.prototype.getDetailedBag = function(){
+    return this.carriables.map(function(id){
+       var c = config.carriables.getConfig(id);
+       c.url = config.carriables.getSpriteURL(id);
+       return c;
+    });
+};
 /** Get the id's of the carriables currently in the bag
  *
  * @return {int[]} - The carriables in the bag

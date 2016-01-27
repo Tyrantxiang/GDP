@@ -492,7 +492,7 @@
 		//	hb.currStatuses = statuses;
 		//}
 
-		hb.draw(hb.currHealth, statuses, hb.currSymptoms);
+		hb.init(hb.currHealth, statuses, hb.currSymptoms);
 	}
 
 
