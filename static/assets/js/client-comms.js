@@ -540,9 +540,9 @@ window.comms = {
 						);
 	},
 	
-	add_currency : function(currency, cb){
-		client_socket_call( 'add_currency',
-							{currency: currency},
+	unlock_item : function(id, cb){
+		client_socket_call(	'unlock_item',
+							{item_id : id},
 							cb
 						);
 	},

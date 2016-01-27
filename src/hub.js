@@ -889,6 +889,15 @@ var commsEventListeners = {
                                 total[results[0].game_id] = results;
                                 results = total;
                             }else if(data.option_num === 2){
+								var allMinigameIds = config.games.listAll().map(function(ele){
+									return ele.id;
+								});
+								
+								var allMinigameTopScores = allMinigameIds.map(funciton(ele){
+									
+								});
+								
+								console.log(allMinigameIds);
                                 for(var i=0; i<results.length; i++){
                                     var current = results[i];
                                     if(!total.hasOwnProperty(current.game_id)){
@@ -904,6 +913,7 @@ var commsEventListeners = {
                                     }
                                 }
                                 results = total;
+								console.log(total);
                             }
 
                             fn(results);
@@ -1110,24 +1120,48 @@ var commsEventListeners = {
         }, this.userId);
     },
 
-    /**
+	/**
      * Get the amount of currency a user has
      *
      * @param {Object|null} data - The data passed from the client to the server
-     * @param {int}    data.value - The amount to set the user's health to
+	 * @param {int}    data.item_id - The ID number of the item to unlock
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
-	add_currency : function(data, fn){
-		var h = this.userId;
-		db.readUserById(function(user){
-			db.updateUserCurrency(function(){
-				fn({"success": true});
+	unlock_item : function(data, fn){
+		var inventoryObj = {
+			user_id: this.userId,
+			item_id: data.item_id,
+			active: true
+		};
+
+		var item_price = config.items.getConfig(data.item_id).price;
+		
+		function doUnlock(){
+			db.createUserInventory(function(obj){
+				fn({'success' : true});
 			}, function(err){
-				fn({error: err});
-			}, parseInt(user.currency) + parseInt(data.currency), h);
+				fn({'error': err});
+			}, inventoryObj);
+		}
+		
+		var h = this.userId;
+		
+		db.readUserById(function(user){
+			if(item_price < user.currency){
+				db.readUserById(function(user){
+					db.updateUserCurrency(doUnlock, function(err){
+						fn({error: err});
+					}, user.currency-item_price, h);
+				}, function(err){
+					fn({error: err});
+				}, h);
+			}else{
+				fn({'error' : 'Not enough currency'});
+			}
 		}, function(err){
-			fn({error: err});
+			fn({'error': err});
 		}, this.userId);
+		
 	}
 };
 
