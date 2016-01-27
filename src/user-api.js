@@ -28,6 +28,17 @@ function getDatabase(){
     return db;
 }
 
+function latch(num, complete){
+    if(num < 1){
+        complete();
+    }
+
+    return function(){
+        if(!--num){
+            complete();
+        }
+    };
+}
 
 /*
  * TODO:
@@ -189,7 +200,8 @@ var routes = {
         var b = req.body,
             username = b.username && b.username.trim(),
             password = b.password,
-            dob = b.dob && new Date(b.dob);
+            dob = b.dob && new Date(b.dob),
+            conditions = b.conditions || [];
 
 
         var validations = [];
@@ -201,16 +213,37 @@ var routes = {
                 isDobValid(dob, function(o){
                     validations.push(o);
 
+                    validations.push({
+                        valid : conditions.every(config.conditions.exists)
+                    });
                     var valid = validations.every(resultIsValid);
                     if(valid){
                         db.createUser(
                             // Pass
-                            function(result){
-								res.json({
-									error : false,
-                                    username : username,
-                                    dob : dob
-								});
+                            function(user_result){
+                                var l = latch(conditions.length, function(){
+                                    res.json({
+                                        error : false,
+                                        username : username,
+                                        dob : dob
+                                    });
+                                });
+
+                                conditions.forEach(function(c){
+                                    db.createUserCondition(
+                                        //Pass
+                                        function(c_result){
+                                            l();
+                                        },
+                                        function(error){
+                                            //Silently handle error for now
+                                            //TODO: Don't ignore this error
+                                            console.error(error);
+                                            l();
+                                        },
+                                        {user_id : user_result.id, condition_id: c, active: true}
+                                    );
+                                });
                             },
                             // Fail
                             function(error){

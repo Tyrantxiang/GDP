@@ -112,6 +112,7 @@ function Hub(userId, comms){
 
     // Get the equppied items here
     db.getEquippedForUser(
+
         function(results){
             var meta = config.hub.getItemMetaData(),
                 e = self.equipped,
@@ -144,7 +145,7 @@ function Hub(userId, comms){
                     statuses.forEach(function(status){
                         if(config.statuses.exists(status)){
                             var currentStatus = config.statuses.getConfig(status);
-                            self.statues[currentStatus.id] = new Status(currentStatus);
+                            self.statuses[currentStatus.id] = new Status(currentStatus);
                         }
                     });
                 }
