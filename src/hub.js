@@ -889,13 +889,13 @@ var commsEventListeners = {
                                 total[results[0].game_id] = results;
                                 results = total;
                             }else if(data.option_num === 2){
-								var allMinigameIds = config.games.listAll().map(function(ele){
+								/*var allMinigameIds = config.games.listAll().map(function(ele){
 									return ele.id;
 								});
 								
-								var allMinigameTopScores = allMinigameIds.map(funciton(ele){
+								var allMinigameTopScores = allMinigameIds.map(function(ele){
 									
-								});
+								});*/
 								
 								console.log(allMinigameIds);
                                 for(var i=0; i<results.length; i++){
