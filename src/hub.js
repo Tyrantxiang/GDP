@@ -141,10 +141,12 @@ function Hub(userId, comms){
                 for(var i=0; i<results.length; i++){
                     //loop over all statuses and start
                     var statuses = config.conditions.getConfig(results[i]).statuses;
-                    for(var j=0; j<statuses.length; j++){
-                        var currentStatus = config.statuses.getConfig(statuses[j]);
-                        self.statues[currentStatus.id] = new Status(currentStatus);
-                    }
+                    statuses.forEach(function(status){
+                        if(config.statuses.exists(status)){
+                            var currentStatus = config.statuses.getConfig(status);
+                            self.statues[currentStatus.id] = new Status(currentStatus);
+                        }
+                    });
                 }
             }, function(){
 
