@@ -1,6 +1,7 @@
-Do each instruction separately!
+Do each instruction separately
 
-get database connection info from config.json.database.main !!
+Get database connection info from configs/database.example.json.database.main
+
 
 > sudo -su postgres
 > psql
@@ -18,7 +19,4 @@ get database connection info from config.json.database.main !!
 
 > \q
 
-> node database/buildFiles/buildDB.js main
-
-
-And that should work!!
+> npm run database
