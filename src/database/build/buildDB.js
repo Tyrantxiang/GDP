@@ -43,22 +43,24 @@ module.exports = function build(pass, fail, databaseName){
 
 		var command = [
 			  exp + " PGPASSWORD="+settings.password
-			, 'psql -q -h ' + settings.hostname + ' -U ' + settings.username + ' -d ' + settings.database + ' -c "\\i ' + path.join(__dirname, '/build.sql') + '"'
+			, 'psql -q -h ' + settings.hostname + ' -U ' + settings.username + ' -d ' + settings.database + ' -c "\\i ' + path.posix.normalize(path.join(__dirname, 'build.sql')).replace(/\\/g, '/') + '"'
 			, exp + " PGPASSWORD=foo" //resets password to something unrecognisable
-		].join("; ");
+		]
 
 		var exec = require('child_process').exec;
-		exec(command, function(error, stdout, stderr){
-			if (error !== null) {
-				fail(error);
-			} else if(stderr.indexOf("FATAL") > -1){
-				fail(stderr);
-			} else {
-				pass({
-					stdout: stdout
-					, stderr: stderr
-				});
-			}
+		command.forEach(function(c){
+			exec(c, function(error, stdout, stderr){
+						if (error !== null) {
+							fail(error);
+						} else if(stderr.indexOf("FATAL") > -1){
+							fail(stderr);
+						} else {
+							pass({
+								stdout: stdout
+								, stderr: stderr
+							});
+						}
+					});
 		});
 	}
 
