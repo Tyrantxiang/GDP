@@ -115,14 +115,6 @@ $(function() {
     });
   }
 
-  function loadAvatarCreation() {
-    $.get("/views/createavatar.html", function(data){
-      $("#main-content-area").html(data);
-      document.title = "Customise your avatar";
-      comms.loadScriptFile("/assets/js/avatar-scripts.js", false, false);
-    });
-  }
-
   $(document).on('click', '.signup-btn', loadSignup);
   $(document).on('click', '.login-btn', loadLogin);
 
@@ -160,7 +152,7 @@ $(function() {
 
 
   // Signup scripts!
-  function signup_validUsername(username, cb){
+  function signup_validateUsername(username, cb){
       comms.validate_username(username, function(data){
         cb(data.valid);
       });
@@ -182,7 +174,7 @@ $(function() {
   $(document).on('keyup', '#signup_username', function (event) {
     // Send data to the server to check if it is valid
     var v = $(event.currentTarget).val();
-    signup_validUsername(v, function(valid){
+    signup_validateUsername(v, function(valid){
       if(valid){
         $(".signup_username-error").addClass("hidden");
         $(".signup_username-ok").removeClass("hidden");
@@ -248,7 +240,7 @@ $(function() {
         return parseInt(c);
       });
 
-    signup_validUsername(username, function(valid){
+    signup_validateUsername(username, function(valid){
       if(!valid){
         addError("Username not valid");
         return;
