@@ -1156,7 +1156,7 @@ var commsEventListeners = {
         // TODO use modifyCurrency and adjust that so it cannot go below zero
         db.readUserById(function(user){
 
-            if(item_price < user.currency){
+            if(item_price <= user.currency){
 
                 db.readUserById(function(user){
                     db.updateUserCurrency(doUnlock, function(err){

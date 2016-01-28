@@ -52,7 +52,7 @@ var constraints = {
 	, currency : {
 		numericality : {
 			onlyInteger: true
-			, greaterThan: 0
+			, greaterThan: -1
 		}
 	}
 	, start_time : {

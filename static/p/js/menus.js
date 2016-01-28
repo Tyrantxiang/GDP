@@ -295,27 +295,30 @@
 				$('#menu-overlays').html(shop_html);
 				document.title	= 'Shop';
 				currency = currency.currency;
-				var price = 0;
+				var price	= 0,
+					id;
 
 				$('#currency_container').html("You have $" + currency + " to spend in the shop");
 
 				locked_items.forEach(function(item) {
 					if (item.url) {
-						var img_html = '<img src="' + item.url + '" class="col-md-12" data-price="'+ item.price+'">';
+						var img_html = '<img src="' + item.url + '" class="col-md-12" data-price="'+ item.price+'" data-id="' + item.id + '">';
 						$('#hub_shop_content').append('<div class="col-md-2 white-img-box">' + img_html + '</div>');
 					}
 				});
 				
 				$('.white-img-box').on('click', function(data) {
-        	$('div.white-img-box').siblings().removeClass('active');
-        	$(this).addClass('active');
-        	price = $(this).children('img').data("price");
+	        		$('div.white-img-box').siblings().removeClass('active');
+	        		$(this).addClass('active');
+	        		price = $(this).children('img').data('price');
+	        		id	= $(this).children('img').data('id');
 
-        	$('#price_container').html("Cost: $" + price).addClass("dark-grey-box");
-     		});
+	        		$('#price_container').html("Cost: $" + price).addClass("dark-grey-box");
+	     		});
 			
 
 				$('#hub_shop_accept').on('click', function(data) {
+					/*
 					if (price == 0) {
 						$('#overlay').hide();
 					} else if (currency >= price) {
@@ -323,13 +326,29 @@
 							if (d.success) {
 								var remaining_currency = parseInt(currency) - parseInt(price);
 								alert("You have $" + remaining_currency + " left.");
+
+
+
 								// TODO Add to player's unlocked items
 								$('#overlay').hide();
 							} else {
 								alert("You have insufficient funds. Try some mini-games!");
 							}
 						});
-					} 
+					}*/
+					comms.unlock_item(id, function(obj) {
+						if(obj.success)
+						{
+							comms.get_currency(function(curr) {
+								utils.addSuccess('You have $' + curr.currency + ' left.');
+								$('#overlay').hide();
+							});
+						}
+						else
+						{
+							utils.addError('You have insufficient funds. Try some mini-games!');
+						}
+					});
 				});
 
 				$('#hub_shop_cancel').on('click', function(data) {

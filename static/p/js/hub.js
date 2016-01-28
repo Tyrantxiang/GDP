@@ -746,6 +746,7 @@
         });
     };
 
+    // Fix the filtering.
     hub.launchShop = function() {
         // Gets all items and user unlocked items
         comms.get_all_item_info(function(all_items) {
@@ -761,6 +762,7 @@
                         return current_b.id == current.id;
                     }).length == 0
                 });
+                console.log(shop_items);
                 comms.get_currency(function(currency) {
                     menu.shop.load(shop_items, currency);
                 });
