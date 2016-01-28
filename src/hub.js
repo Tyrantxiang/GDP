@@ -864,12 +864,13 @@ var commsEventListeners = {
             this.gameStartTime = undefined;
 
             //update the users currency
-            db.readUserById(function(result){
+            /*db.readUserById(function(result){
                                 db.updateUserCurrency(function(){}, function(){}, result.currency+data.currency, this.user_id);
                             },
                             function(){},
                             this.user_id
-			);
+			);*/
+            this.modifyCurrency(data.currency, function(){});
 
             // Save score in database
             db.createPlay(  function(){ fn(); },
