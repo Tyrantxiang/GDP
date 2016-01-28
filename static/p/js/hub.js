@@ -756,12 +756,16 @@
                     return item.price > 0;
                 });
 
+                console.log(not_free_items);
+                console.log(unlocked_items);
+
                 // Return the difference between not_free_items and unlocked items
                 var shop_items = not_free_items.filter(function(current){
                     return unlocked_items.filter(function(current_b){
-                        return current_b.id == current.id;
+                        return current_b == current.id;
                     }).length == 0
                 });
+
                 console.log(shop_items);
                 comms.get_currency(function(currency) {
                     menu.shop.load(shop_items, currency);
