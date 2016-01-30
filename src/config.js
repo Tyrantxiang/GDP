@@ -10,6 +10,19 @@
 
 
 
+function latch(num, complete){
+    if(num < 1){
+        complete();
+    }
+
+    return function(){
+        if(!--num){
+            complete();
+        }
+    };
+}
+
+
 
 var fs = require("fs"),
     path = require("path"),
@@ -20,8 +33,6 @@ var fs = require("fs"),
     configFile_location = path.join(rootLocation, "config.json"),
     // The config object
     config;
-
-
 
 
 
@@ -313,16 +324,9 @@ function configReaderFactory(directory){
 
             fs.readdir(directory, function(err, list){
                 if(err){
-                    throw new Error("Count not get subdirs");
+                    throw new Error("Could not get subdirs");
                 }
-                var latch = (function(num, complete){
-                    return function(){
-                        num--;
-                        if(num === 0){
-                            complete();
-                        }
-                    };
-                })(list.length, function(){
+                var l = latch(list.length, function(){
                     cb(subDirectories);
                 });
 
@@ -334,7 +338,7 @@ function configReaderFactory(directory){
                     fs.stat(dir, function(err, stat){
                         if(stat.isDirectory()){
                             subDirectories.push(dir);
-                            latch();
+                            l();
                         }
                     });
                 });
