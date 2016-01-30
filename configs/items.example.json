@@ -78,6 +78,10 @@
 		"skin" : {
 			"default" : 500,
 			"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
+		},
+		"trousers" : {
+			"default" : 600,
+			"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
 		}
 	}
 

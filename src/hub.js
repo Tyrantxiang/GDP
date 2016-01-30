@@ -317,11 +317,10 @@ Hub.prototype.generateAvatarImage = function(items, cb){
         rootLocation = config.app.getRootDirectory(),
 
         // The order to overlay the images
-        order = ["skin", "eyes", "shirt", "head"],
+        order = ["skin", "trousers", "eyes", "shirt", "head"],
 
 
         // Default avatar items that cannot be customised
-        trousers = rootLocation + "avatar_items/trousers_blue.png",
         healthImg = rootLocation + "avatar_items/health_healthy.png",
         mouth = rootLocation + "avatar_items/mouth_smile.png",
         eyes;
@@ -353,7 +352,6 @@ Hub.prototype.generateAvatarImage = function(items, cb){
 
         // Generate
         urls.splice(1, 0, mouth);
-        urls.splice(1, 0, trousers);
         if(eyes) urls.splice(1, 0, eyes);
         urls.splice(1, 0, healthImg);
 
