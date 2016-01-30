@@ -65,22 +65,27 @@
 	"avatar" : {
 		"eyes" : {
 			"default" : 201,
+			"zIndex" : 2,
 			"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
 		},
 		"head" : {
 			"default" : 301,
+			"zIndex" : 4,
 			"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
 		},
 		"shirt" : {
 			"default" : 401,
+			"zIndex" : 3,
 			"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
 		},
 		"skin" : {
 			"default" : 500,
+			"zIndex" : 0,
 			"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
 		},
 		"trousers" : {
 			"default" : 600,
+			"zIndex" : 1,
 			"left": 0.74, "top": 0.26, "scale": 0, "select_scale": 0
 		}
 	}

@@ -315,47 +315,57 @@ Hub.prototype.newAvatarImageNeeded = function(oldHealth, newHealth, cb){
 Hub.prototype.generateAvatarImage = function(items, cb){
     var urls = [],
         rootLocation = config.app.getRootDirectory(),
-
-        // The order to overlay the images
-        order = ["skin", "trousers", "eyes", "shirt", "head"],
-
+        itemMeta = config.hub.getAvatarItemMetaData(),
 
         // Default avatar items that cannot be customised
         healthImg = rootLocation + "avatar_items/health_healthy.png",
         mouth = rootLocation + "avatar_items/mouth_smile.png",
-        eyes;
+        eyes,
 
 
-        // Adjust them to the health specific items
-        if(this.health < 60){
-            delete items.eyes;
-            eyes = rootLocation + "avatar_items/eyes_tired.png";
-            mouth = rootLocation + "avatar_items/mouth_sad.png";
+
+
+        // Order to overlay the images is given in itemMeta.zIndex
+        slot, index, direc;
+
+
+    for(slot in itemMeta){
+        if(items[slot]){
+            index = itemMeta[slot].zIndex;
+            direc = config.items.getConfig(items[slot], "directory");
+            direc += "/sprite.png";
+            urls[index] = direc;
         }
-        if(this.health < 40){
-            healthImg = rootLocation + "avatar_items/health_cold.png";
-            mouth = rootLocation + "avatar_items/mouth_cold.png";
-        }
-        if(this.health < 20){
-            healthImg = rootLocation + "avatar_items/health_nauseated.png";
-            mouth = rootLocation + "avatar_items/mouth_nauseated.png";
-        }
+    }
 
 
-        for(var i in order){
-            if(items[order[i]]){
-                var direc = config.items.getConfig(items[order[i]], "directory");
-                direc += "/sprite.png";
-                urls.push(direc);
-            }
-        }
 
-        // Generate
-        urls.splice(1, 0, mouth);
-        if(eyes) urls.splice(1, 0, eyes);
-        urls.splice(1, 0, healthImg);
+    // Adjust them to the health specific items
+    if(this.health < 60){
+        delete items.eyes;
+        eyes = rootLocation + "avatar_items/eyes_tired.png";
+        mouth = rootLocation + "avatar_items/mouth_sad.png";
+    }
+    if(this.health < 40){
+        healthImg = rootLocation + "avatar_items/health_cold.png";
+        mouth = rootLocation + "avatar_items/mouth_cold.png";
+    }
+    if(this.health < 20){
+        healthImg = rootLocation + "avatar_items/health_nauseated.png";
+        mouth = rootLocation + "avatar_items/mouth_nauseated.png";
+    }
 
-        cb(this.imgMaker(urls));
+
+
+
+
+
+    // Generate
+    urls.splice(1, 0, mouth);
+    if(eyes) urls.splice(1, 0, eyes);
+    urls.splice(1, 0, healthImg);
+
+    cb(this.imgMaker(urls));
 };
 
 /**
