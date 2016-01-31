@@ -9,46 +9,56 @@
 */
 
 var userInventoryDB = {}
-	, TABLE_NAME = "user_inventory"
-	, dbutils = require('./dbutils.js')
-	, validateDetails = require("../validateDetails.js")
+	, UserInventory = undefined
+	//, validateDetails = require("../validateDetails.js")
 	;
 
 //Creates a user_inventory entry
 userInventoryDB.createUserInventory = function(pass, fail, inventoryObj) {
 	//Validates the details given
-	validateDetails(queryExecution, fail, inventoryObj);
+	//validateDetails(queryExecution, fail, inventoryObj);
 	
-	//After validation, persists the play obj
-	function queryExecution(){
-		dbutils.create(pass, fail, TABLE_NAME, inventoryObj);
-	}
+	//if active = false, delete
+	//if active = true, delete all old and then add
+	return UserInventory.destroy({
+		where : {
+			user_id : inventoryObj.user_id,
+			item_id : inventoryObj.item_id
+		}
+	}).then(function(){
+		if(inventoryObj.active) return UserInventory.create(inventoryObj);
+		else return Promise.resolve();
+	}).then(pass).catch(fail);
 }
 
 //Gets the user_inventory entry that matches the given id
 userInventoryDB.readUserInventoryById = function(pass, fail, id){
-	dbutils.readById(pass, fail, TABLE_NAME, ["id", "user_id", "item_id", "active", "created"], id);
+	return UserInventory.findById(id).then(pass).catch(fail);
 }
 
-userInventoryDB.getInventoryForUser = function(pass, fail, user_id){
-	dbutils.readLatestActive(resultsFormatting, fail, TABLE_NAME, 
-		["item_id"], ["user_id, item_id"], {active: true, user_id: user_id});
-
-	function resultsFormatting(results){
-		var idArray = []
-			;
-
-		results.forEach(function(item){
-			idArray.push(item.item_id);
-		});
-
-		pass(idArray);
-	}
+userInventoryDB.getInventoryForUser = function(pass, fail, user_id){	
+	return UserInventory.findAll({
+		attributes : [
+			'item_id'
+		], where : {
+			'user_id' : user_id,
+		}
+	}).map(function(result){
+		return result.item_id;
+	}).then(pass).catch(fail);
 }
 
 //Deletes the entry that matches the id
 userInventoryDB.deleteUserInventory = function(pass, fail, id){
-	dbutils.deleteById(pass, fail, TABLE_NAME, id);
+	return UserInventory.destroy({
+		where : {
+			id : id
+		}
+	}).then(pass).catch(fail);
 }
 
-module.exports = userInventoryDB;
+module.exports = function(seq){
+	UserInventory = seq.UserInventory;
+	
+	return userInventoryDB;
+}

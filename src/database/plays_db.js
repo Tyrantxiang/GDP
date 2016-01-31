@@ -9,24 +9,21 @@
 */
 
 var playsDB = {}
-	, TABLE_NAME = "plays"
-	, dbutils = require('./dbutils.js')
-	, validateDetails = require("../validateDetails.js")
+	, Plays = undefined
+	, Users = undefined
+	//, validateDetails = require("../validateDetails.js")
 	;
 
 playsDB.createPlay = function(pass, fail, playObj) {
 	//Validates the details given
-	validateDetails(queryExecution, fail, playObj);
+	//validateDetails(queryExecution, fail, playObj);
 	
-	//After validation, persists the play obj
-	function queryExecution(){
-		dbutils.create(pass, fail, TABLE_NAME, playObj);
-	}
+	return Plays.create(playObj).then(pass).catch(fail);
 }
 
 //Gets the play entry that matches the given id
 playsDB.readPlayById = function(pass, fail, id){
-	dbutils.readById(pass, fail, TABLE_NAME, ["id", "user_id", "game_id", "start_time", "end_time", "score", "created"], id);
+	return Plays.findById(id).then(pass).catch(fail);
 }
 
 /*
@@ -50,46 +47,47 @@ limit = 10
 ======> LIMIT 10
 */
 playsDB.getScores = function(pass, fail, filterConds, orderBy, limit){
-
-	dbutils.prepareFilterString(queryCreation, fail, filterConds);
-
-	function queryCreation(filterString, filterVals, placeIndex){
-		var orderByString = ""
-			, limitString = ""
-			;
-
-		if(orderBy && orderBy.column){
-			orderByString = "ORDER BY "+orderBy.column+" "
-			orderByString += orderBy.direction || "DESC"
-		}
-
-		if(limit){
-			limitString = "LIMIT $"+placeIndex
-			filterVals.push(limit);
-		}
-
-		var preparedStatement= {
-			text : [
-				"SELECT p.id, p.user_id, u.username, p.game_id, p.start_time, p.end_time, p.score, p.created"
-				, "FROM plays p JOIN users u ON p.user_id = u.id"
-				, filterString
-				, orderByString
-				, limitString
-				].join(" ")
-			, values: filterVals
-		};
-
-		dbutils.query(resultsHandling, fail, preparedStatement);
+	var filter = {
+		attributes : ['id', 'user_id', 'game_id', 'start_time', 'end_time', 'score', 'created'],
+		include : [{
+			model : Users,
+			attributes : ['username']
+		}]
+	};
+	
+	if(orderBy && orderBy.column){
+		orderBy.direction = orderBy.direction || 'DESC';
+		filter.order = [[orderBy.column, orderBy.direction]]
 	}
-
-	function resultsHandling(results){
-		pass(results.rows);
+	if(limit){
+		filter.limit = limit;
 	}
+	if(filterConds){
+		filter.where = filterConds;
+		delete filter.where.time_range;
+		if(filterConds.time_range && filterConds.time_range.start_time){
+			filter.where.start_time = {
+				$gt : filterConds.time_range.start_time
+			}
+		}
+		if(filterConds.time_range && filterConds.time_range.end_time){
+			filter.where.end_time = {
+				$lt : filterConds.time_range.end_time
+			}
+		}
+	}
+		
+	return Plays.findAll(filter).then(pass).catch(fail);
 }
 
 //Deletes the entry that matches the id
 playsDB.deletePlay = function(pass, fail, id){
-	dbutils.deleteById(pass, fail, TABLE_NAME, id);
+	return Plays.destroy({ where : { 'id' : id } }).then(pass).catch(fail);
 }
 
-module.exports = playsDB;
+module.exports = function(seq){
+	Plays = seq.Plays;
+	Users = seq.Users;
+	
+	return playsDB;
+}

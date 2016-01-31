@@ -10,14 +10,16 @@
 */
 
 var db = {}
-	, seq = require('./model.js')
-	, databaseReq = [seq, require('./users_db.js')(seq)
-	, require('./sessions_db.js')(seq)
-	, require('./plays_db.js')(seq)
-	, require('./userConditions_db.js')(seq)
-	, require('./userInventory_db.js')(seq)
-	, require('./userEquipped_db.js')(seq) ]
-	;
+	, databaseReq = [
+		require('./dbutils.js')
+		, require('./users_db.js')
+		, require('./sessions_db.js')
+		, require('./plays_db.js')
+		, require('./userConditions_db.js')
+		, require('./userInventory_db.js')
+		, require('./userEquipped_db.js')
+	]
+;
 
 //Maps all functions in different modules into this one interface
 databaseReq.forEach(function(req){
@@ -30,7 +32,7 @@ databaseReq.forEach(function(req){
 
 
 db.init = function(pass, fail, settings) {
-	/*db.validateServerSettings(setConnString, fail, settings);
+	db.validateServerSettings(setConnString, fail, settings);
 
 	function setConnString(){
 		db.setConnectionString(returnDB, fail, settings);
@@ -38,8 +40,7 @@ db.init = function(pass, fail, settings) {
 
 	function returnDB(){
 		pass.call(null, db);
-	}*/
-	pass.call(null, db);
+	}
 
 	return db;
 }

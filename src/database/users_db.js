@@ -9,136 +9,129 @@
 */
 
 var usersDB = {}
-	, TABLE_NAME = "users"
-	, dbutils = require('./dbutils.js')
-	, bcrypt = require('bcrypt')
-	, validateDetails = require("../validateDetails.js")
+	, Users = undefined
+	, bcrypt = require('bluebird').promisifyAll(require('bcrypt'))
+	//, validateDetails = require("../validateDetails.js")
 	;
 
 //Creates an entry on the user table
 // Includes validation of details and password salting
 usersDB.createUser = function(pass, fail, userObj) {
 	//Validates the details given
-	validateDetails(saltPassword, fail, userObj);
-	
-	//After validation, creates a salted password
-	function saltPassword(){
-		createSaltedPassword(queryExecution, fail, userObj.password);
-	}
-
-	//Once the hash is created, user can be persisted!
-	function queryExecution(saltedpw){
+	//validateDetails(saltPassword, fail, userObj);
+		
+	return createSaltedPassword(userObj.password).then(function queryExecution(saltedpw){
 		delete userObj.password;
 		userObj.saltedpw = saltedpw;
-
-		dbutils.create(pass, fail, TABLE_NAME, userObj);
-	}
+		
+		return Users.create(userObj);
+	}).then(pass).catch(fail);
 }
 
 //Reads a user entry given an id
 usersDB.readUserById = function(pass, fail, id){
-	dbutils.readById(pass, fail, TABLE_NAME, ["id", "username", "dob", "currency", "created", "modified"], id);
+	return Users.findOne({
+		where : {
+			'id' : id
+		}, attributes : {
+			exclude : ['saltedpw']
+		}
+	}).then(pass).catch(fail);
 }
 
 //Reads a user entry given a username
-usersDB.readUserByName = function(pass, fail, username){
-	dbutils.readSingle(pass, fail, TABLE_NAME, ["id", "username", "dob", "currency", "created", "modified"],
-		{"username": username}, null);
+usersDB.readUserByName = function(pass, fail, username){		
+	return Users.findOne({
+		where : {
+			'username' : username
+		}, attributes : {
+			exclude : ['saltedpw']
+		}
+	}).then(pass).catch(fail);
 }
 
 //Authenticates a user given a username and password
 // Verifies the password is correct against the stored saltedpassword
 usersDB.authenticateUser = function(pass, fail, username, givenpw){
-	dbutils.readSingle(comparePasswords, fail, TABLE_NAME, ["id", "username", "saltedpw", "dob", "currency", "created", "modified"],
-		{"username": username});
-
-	function comparePasswords(userObj){
-		if(!userObj)
-			return fail("User does not exist");
-
-		bcrypt.compare(givenpw, userObj.saltedpw, function(err, passCorrect){
-			if(err)
-				return fail(err);
-			
-			if(!passCorrect)
-				return fail({
-					name: 'ERR_PASSWORD_INCORRECT'
-					, message: 'Password is incorrect for user '+username
-				});
+	return Users.findOne({
+		where : {
+			username : username
+		}
+	}).then(function(userObj){
+		if(!userObj) 
+			throw Error("User does not exist");
+		
+		return bcrypt.compareAsync(givenpw, userObj.saltedpw).then(function(passCorrect){
+			if(!passCorrect && (userObj.saltedpw!==givenpw))
+				throw new Error('Password is incorrect for user '+username.toString());
 
 			delete userObj.saltedpw;
-			pass(userObj);
+			return Promise.resolve(userObj);
 		});
-	}
+	}).then(pass).catch(fail);
 }
 
 // This will always succed, as a "fail" is it not existing, which actually means it doesn't exist
 usersDB.checkUsernameExists = function(pass, fail, username){
-	dbutils.readSingle(exists, notExists, TABLE_NAME, [ "id" ], { username : username });
-
-	function exists(){
-		pass(true);
-	}
-	function notExists(err){
-		if(err.name === "ERR_NO_MATCHING_ENTRY"){
-			pass(false);
-		}else{
-			fail(err);
+	return Users.count({
+		where : {
+			username : username
 		}
-	}
+	}).then(function(count){
+		return Promise.resolve(!!count);
+	}).then(pass).catch(fail);
 }
 
 //Updates all user details provided in the updatedUserObj
 usersDB.updateUserDetails = function(pass, fail, updatedUserObj, id){
 	//Validates the details given
-	validateDetails(saltPasswordIfExists, fail, updatedUserObj);
-
-	//After validation, creates a salted password if exists
-	function saltPasswordIfExists(){
-		if(updatedUserObj.password) {
-			createSaltedPassword(queryExecutionWithNewPassword, fail, updatedUserObj.password);
-		} else {
-			dbutils.updateById(pass, fail, TABLE_NAME, updatedUserObj, id);
-		}
-	}
-
-	//Once the hash is created, updated user can be persisted!
-	function queryExecutionWithNewPassword(saltedpw){
-		delete updatedUserObj.password;
-		updatedUserObj.saltedpw = saltedpw;
-
-		dbutils.updateById(pass, fail, TABLE_NAME, updatedUserObj, id);
+	//validateDetails(saltPasswordIfExists, fail, updatedUserObj);
+	
+	if(updatedUserObj){
+		return createSaltedPassword(updatedUserObj.password).then(function(saltedpw){
+			delete updatedUserObj.password;
+			updatedUserObj.saltedpw = saltedpw;
+			
+			return Users.update(updatedUserObj, { where : { 'id' : id } });
+		}).then(pass).catch(fail);
+	}else{
+		return Users.update(updatedUserObj, { where : { 'id' : id } }).then(pass).catch(fail);
 	}
 }
 
 //Updates only currency for a user entry
 usersDB.updateUserCurrency = function(pass, fail, newCurrency, id){
-	validateDetails(queryExecution, fail, {currency: newCurrency});
-
-	function queryExecution(){
-		dbutils.updateById(pass, fail, TABLE_NAME, {"currency": newCurrency}, id);
-	}
+	//validateDetails(queryExecution, fail, {currency: newCurrency});
+	return Users.update({
+		'currency': newCurrency
+	}, {
+		where : {
+			'id' : id
+		}
+	}).then(pass).catch(fail);
 }
 
 //Deletes a user entry given an id
 usersDB.deleteUser = function(pass, fail, id){
-	dbutils.deleteById(pass, fail, TABLE_NAME, id);
+	return Users.destroy({
+		where : {
+			id : id
+		}
+	}).then(pass).catch(fail);
 }
 
 /*
  * HELPER FUNCTIONS
 */
 
-function createSaltedPassword(pass, fail, password){
-	bcrypt.genSalt(10, function(err, salt){
-		if(err)	return fail(err);
-		
-		bcrypt.hash(password, salt, function(err, saltedpw){
-			if(err) return fail(err);
-			
-			pass(saltedpw);
-		});
+function createSaltedPassword(password){
+	return bcrypt.genSaltAsync(10).then(function(salt){
+		return bcrypt.hashAsync(password, salt);
 	});
 }
 
-module.exports = usersDB;
+module.exports = function(seq){
+	Users = seq.Users;
+	
+	return usersDB;
+}

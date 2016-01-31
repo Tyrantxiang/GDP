@@ -165,7 +165,8 @@ dbutils.readById = function(pass, fail, tableName, columnsArr, idVal){
 }
 
 dbutils.readLatestActive = function(pass, fail, tableName, selectColumns, partitionColumns, filterConds){
-	var innerTableName = "ranked";
+	var innerTableName = "ranked"
+		;
 
 	//get the unique concatonation of select columns and the filterconds columns
 	var neededColumns = selectColumns.concat(Object.keys(filterConds).filter(function (item) {

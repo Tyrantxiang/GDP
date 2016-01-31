@@ -1,0 +1,109 @@
+USER_DB
+==================================================================================
+
+createUser
+----------
+working
+fails unique				ERR_UNIQUE_VIOLATION
+fails non-null				ERR_VALIDATION_FAILED
+fails validation 			ERR_VALIDATION_FAILED
+fails extra column			ERR_UNDEFINED_COLUMN
+
+readUserById
+------------
+working
+fails non-existent id 		ERR_NO_MATCHING_ENTRY
+
+readUserByName
+--------------
+working
+fails non-existent name 	ERR_NO_MATCHING_ENTRY
+
+authenticateUser
+----------------
+working
+fails non-existent name 	ERR_NO_MATCHING_ENTRY
+fail wrong password			ERR_PASSWORD_INCORRECT
+
+updateUserDetails
+-----------------
+working
+fails user_id non-existent	ERR_NO_MATCHING_ENTRY
+fails unique				ERR_UNIQUE_VIOLATION
+fails non-null				ERR_VALIDATION_FAILED
+fails validation 			ERR_VALIDATION_FAILED
+fails extra column			ERR_UNDEFINED_COLUMN
+
+updateUserCurrency
+-----------------
+working
+fails user_id non-existent	ERR_NO_MATCHING_ENTRY
+fails unique				ERR_UNIQUE_VIOLATION
+fails non-null				ERR_VALIDATION_FAILED
+fails validation 			ERR_VALIDATION_FAILED
+fails extra column			ERR_UNDEFINED_COLUMN
+
+deleteUser
+----------
+working
+fails non-existent id 		<doesn't call 'fail' atm, just 'pass' with {rowsDeleted: 0}... not sure if should?>
+
+
+
+
+
+
+
+
+SESSION_DB
+==================================================================================
+
+createSession
+-------------
+working
+fails user_id null 			ERR_NOT_NULL_VIOLATION
+fails user_id non-existent 	ERR_FK_DOES_NOT_EXIST
+fails start non-null		ERR_VALIDATION_FAILED
+fails validation 			ERR_VALIDATION_FAILED
+fails extra column			ERR_UNDEFINED_COLUMN
+
+
+readSessionById
+----------------
+working
+fails non-existent id 		ERR_NO_MATCHING_ENTRY
+
+
+endSession
+-----------
+working
+fails non-existent id 		ERR_NO_MATCHING_ENTRY
+fails validation 			ERR_VALIDATION_FAILED
+
+
+deleteSession
+----------
+working
+fails non-existent id 		<doesn't call 'fail' atm, just 'pass' with {rowsDeleted: 0}... not sure if should?>
+
+
+
+
+
+
+PLAYS_DB
+==================================================================================
+
+createPlay = function(pass, fail, playObj)
+----------
+working
+fails value null			ERR_NOT_NULL_VIOLATION
+fails validation 			ERR_VALIDATION_FAILED
+fails extra column			ERR_UNDEFINED_COLUMN
+fails user_id non-existent	ERR_FK_DOES_NOT_EXIST
+
+
+
+readPlayById = function(pass, fail, id)
+getScores = function(pass, fail, filterConds, orderBy, limit)
+deletePlay = function(pass, fail, id)

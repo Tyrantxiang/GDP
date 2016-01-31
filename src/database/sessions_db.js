@@ -9,44 +9,44 @@
 */
 
 var sessionsDB = {}
-	, TABLE_NAME = "sessions"
-	, dbutils = require('./dbutils.js')
-	, validateDetails = require("../validateDetails.js")
+	, Sessions = undefined
+	//, validateDetails = require("../validateDetails.js")
 	;
 
 //Creates a new entry on the Sessions table
 sessionsDB.createSession = function(pass, fail, sessionObj) {
 	//Validates the sessionObj given
-	validateDetails(queryExecution, fail, sessionObj);
+	//validateDetails(queryExecution, fail, sessionObj);
 	
-	//After validation, persists the session obj
-	function queryExecution(){
-		dbutils.create(pass, fail, TABLE_NAME, sessionObj);
-	}
+	return Sessions.create(sessionObj).then(pass).catch(fail);
 }
 
 //Gets the session entry that matches the given
 sessionsDB.readSessionById = function(pass, fail, id){
-	dbutils.readById(pass, fail, TABLE_NAME, ["id", "user_id", "start_time", "end_time", "created", "modified"], id);
+	return Sessions.findById(id).then(pass).catch(fail);
 }
 
 //This updates a session entry to have the end_time of said session
 //When the session ends, this should be called
 sessionsDB.endSession = function(pass, fail, end_ts, id){
-	sessionsDB.readSessionById(validateTimes, fail, id);
-
-	function validateTimes(sessionObj){
-		validateDetails(queryExecution, fail, {start_time: sessionObj.start_time, end_time: end_ts});	
-	}
-
-	function queryExecution(){
-		dbutils.updateById(pass, fail, TABLE_NAME, {"end_time": end_ts}, id);
-	}
+	/*function validateTimes(sessionObj){
+	//	validateDetails(queryExecution, fail, {start_time: sessionObj.start_time, end_time: end_ts});	
+	}*/
+	
+	return Sessions.findById(id).then(function(session){
+		session.end_time = end_ts;
+		
+		return sessions.save();
+	}).then(pass).catch(fail);
 }
 
 //Deletes the entry that matches the id
 sessionsDB.deleteSession = function(pass, fail, id){
-	dbutils.deleteById(pass, fail, TABLE_NAME, id);
+	return Sessions.destroy({ where : { 'id' : id } }).then(pass).catch(fail);
 }
 
-module.exports = sessionsDB;
+module.exports = function(seq){
+	Sessions = seq.Sessions;
+	
+	return sessionsDB;
+}

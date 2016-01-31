@@ -1,0 +1,5 @@
+CREATE USER suser WITH PASSWORD 'UUmtEAstuwsy4Bhs';
+
+GRANT CREATE ON DATABASE sgames TO suser;
+
+ALTER USER suser SET search_path='sschema';

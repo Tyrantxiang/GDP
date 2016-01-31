@@ -127,7 +127,15 @@ function Hub(userId, comms){
                 }
             }
         },
-        function(){},
+        function(err){
+			var meta = config.hub.getItemMetaData(),
+                e = self.equipped,
+                slot, r;
+
+            for(slot in meta){
+                e[slot] = meta[slot].default;
+            }
+		},
         userId
     );
 
@@ -631,15 +639,13 @@ var commsEventListeners = {
                     fn(slot_items);
                     return;
                 }
-
                 var uSlotItems = slot_items.filter(function(i){
                     if(i.price == 0){
                         return true;
                     }
-                    var index = unlocked_items.indexOf(i.id.toString());
+                    var index = unlocked_items.indexOf(i.id);
                     return index >= 0;
                 });
-
                 fn(uSlotItems);
             });
         });
@@ -910,7 +916,7 @@ var commsEventListeners = {
         }else if(data.option_num === 1){
             fn({'error': 'Not implemented'});
 			return;
-        }else if(data.option_num === 2){				
+        }else if(data.option_num === 2){	
 			var total = {}, userId = this.userId;
 			var allMinigameIds = config.games.listAll().map(function(ele){
 				return ele.id;
@@ -925,7 +931,9 @@ var commsEventListeners = {
 				db.getScores(function(results){
 					total[ele] = results;
 					miniGameLatch();
-				}, function(err){ fn({err: "Error accessing database entries" }); }, filterConds, {column: "score", direction: "DESC"}, numOfScores)
+				}, function(err){
+					fn({err: "Error accessing database entries" });
+				}, filterConds, {column: "score", direction: "DESC"}, numOfScores)
 			});			
         }else if(data.option_num === 3){
             var filterConds = {user_id: this.userId, game_id: data.game_id};
@@ -1163,9 +1171,8 @@ var commsEventListeners = {
 
         // TODO use modifyCurrency and adjust that so it cannot go below zero
         db.readUserById(function(user){
-
+			
             if(item_price <= user.currency){
-
                 db.readUserById(function(user){
                     db.updateUserCurrency(doUnlock, function(err){
                         fn({error: err});

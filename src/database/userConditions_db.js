@@ -1,5 +1,3 @@
-
-
 'use strict';
 
 /*
@@ -11,46 +9,57 @@
 */
 
 var userCondsDB = {}
-	, TABLE_NAME = "user_conditions"
-	, dbutils = require('./dbutils.js')
-	, validateDetails = require("../validateDetails.js")
+	, UserConditions = undefined
+	//, validateDetails = require("../validateDetails.js")
 	;
 
 //Creates a user_condition entry
 userCondsDB.createUserCondition = function(pass, fail, condObj) {
 	//Validates the details given
-	validateDetails(queryExecution, fail, condObj);
+	//validateDetails(queryExecution, fail, condObj);
 	
-	//After validation, persists the play obj
-	function queryExecution(){
-		dbutils.create(pass, fail, TABLE_NAME, condObj);
-	}
+	//if active = false, delete
+	//if active = true, delete all old and then add
+	console.log("here");
+	return UserConditions.destroy({
+		where : {
+			user_id : condObj.user_id,
+			condition_id : condObj.condition_id
+		}
+	}).then(function(){
+		if(condObj.active) return UserConditions.create(condObj);
+		else return Promise.resolve();
+	}).then(pass).catch(fail);
 }
 
 //Gets the user_condition entry that matches the given id
 userCondsDB.readUserConditionById = function(pass, fail, id){
-	dbutils.readById(pass, fail, TABLE_NAME, ["id", "user_id", "condition_id", "active", "created"], id);
+	return UserConditions.findById(id).then(pass).catch(fail);
 }
 
 userCondsDB.getConditionsForUser = function(pass, fail, user_id){
-	dbutils.readLatestActive(resultsFormatting, fail, TABLE_NAME, 
-		["condition_id"], ["user_id, condition_id"], {active: true, user_id: user_id});
-
-	function resultsFormatting(results){
-		var idArray = []
-			;
-
-		results.forEach(function(cond){
-			idArray.push(cond.condition_id);
-		});
-
-		pass(idArray);
-	}
+	return UserConditions.findAll({
+		attributes : [
+			'condition_id'
+		], where : {
+			'user_id' : user_id,
+		}
+	}).map(function(ele){
+		return ele.condition_id;
+	}).then(pass).catch(fail);
 }
 
 //Deletes the entry that matches the id
 userCondsDB.deleteUserCondition = function(pass, fail, id){
-	dbutils.deleteById(pass, fail, TABLE_NAME, id);
+	return UserConditions.destroy({
+		where : {
+			id : id
+		}
+	}).then(pass).catch(fail);
 }
 
-module.exports = userCondsDB;
+module.exports = function(seq){
+	UserConditions = seq.UserConditions;
+	
+	return userCondsDB;
+}
