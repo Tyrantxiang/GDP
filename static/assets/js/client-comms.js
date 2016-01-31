@@ -556,6 +556,13 @@ window.comms = {
 						);
 	},
 
+	get_bag_ids : function(cb){
+		client_socket_call(	'get_bag_ids',
+							{},
+							cb
+						);
+	},
+
 	set_bag : function(carriables, cb){
 		client_socket_call(	'set_bag',
 							{carriables: carriables},

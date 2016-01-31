@@ -356,7 +356,7 @@
     };
 
     hub.getCarriablesInBag = function(cb){
-        comms.get_bag(function(data){
+        comms.get_bag_ids(function(data){
             cb(data);
         });
     };

@@ -695,13 +695,23 @@ var commsEventListeners = {
     },
 
     /**
-     * Gets all the carriables in the users bag
+     * Gets all the carriables in the users bag, in full config form
      *
      * @param {Object|null} data - The data passed from the client to the server
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_bag : function(data, fn){
         fn(this.bag.getDetailedBag());
+    },
+
+    /**
+     * Gets all the carriables in the users bag, as IDs
+     *
+     * @param {Object|null} data - The data passed from the client to the server
+     * @param {module:hub~commsEventListeners~commsCallback} fn
+     */
+    get_bag_ids : function(data, fn){
+        fn(this.bag.getCarriables());
     },
 
     /**
