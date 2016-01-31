@@ -34,11 +34,11 @@ var Users = sequelize.define('users', {
 	}, dob : {
 		type : Sequelize.DATE,
 		allowNull : false,
-		validate : {
+		/*validate : {
 			isDate : true,
-			isBefore : new Date(Date.now - (1000 * 60 * 60 * 24 * 365 * 10)), //older or equal to than 10 years
-			isAfter : new Date(Date.now - (1000 * 60 * 60 * 24 * 365 * 18)) //younger than 18 years
-		}
+			isBefore : new Date(Date.now - (1000 * 60 * 60 * 24 * 365 * 10)) //older or equal to than 10 years
+			//isAfter : new Date(Date.now - (1000 * 60 * 60 * 24 * 365 * 18)) //younger than 18 years
+		}*/
 	}, currency : {
 		type : Sequelize.INTEGER,
 		allowNull : false,
