@@ -10,7 +10,7 @@
 */
 
 var db = {}
-	, seq = require('./model.js')
+	, seq = require('./model.js')(false)
 	, databaseReq = [seq, require('./users_db.js')(seq)
 	, require('./sessions_db.js')(seq)
 	, require('./plays_db.js')(seq)

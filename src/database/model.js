@@ -1,4 +1,7 @@
 var Sequelize = require("sequelize");
+
+module.exports = function(resync){	
+
 var sequelize = new Sequelize('postgres://suser:UUmtEAstuwsy4Bhs@127.0.0.1:5432/sgames', {
 	logging: false,
 	define : {
@@ -195,11 +198,7 @@ Users.hasMany(UserInventory, {foreignKey : 'user_id'});
 UserEquipped.belongsTo(Users, {foreignKey: 'user_id', targetKey: 'id'});
 Users.hasMany(UserEquipped, {foreignKey : 'user_id'});
 
-
-//sequelize.sync({force : true});
-sequelize.sync();
-
-module.exports = {
+var returnValue = {
 	Users : Users,
 	Sessions : Sessions,
 	Plays : Plays,
@@ -207,4 +206,15 @@ module.exports = {
 	UserInventory : UserInventory,
 	UserEquipped : UserEquipped,
 	sequelize : sequelize
+};
+
+sequelize.sync({ force : !!resync }).then(function(){
+	if(!!resync){
+		console.log("Database rebuilt");
+		process.exit(0);
+	}
+});
+
+return returnValue;
+
 };
