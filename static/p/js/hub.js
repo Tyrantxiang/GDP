@@ -667,7 +667,7 @@
     hub.launchGame = function(gameId){
         // Get the minigame info
         comms.launch_minigame(gameId, function(data){
-            hub.getCarriablesInBag(function(bag){
+            comms.get_bag(function(bag){
                 if(data.err){
                     window.utils.addError(data.err);
                     return;
