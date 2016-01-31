@@ -30,15 +30,9 @@ databaseReq.forEach(function(req){
 
 
 db.init = function(pass, fail, settings) {
-	/*db.validateServerSettings(setConnString, fail, settings);
+	console.log(settings);
+	//db.validateServerSettings(setConnString, fail, settings);
 
-	function setConnString(){
-		db.setConnectionString(returnDB, fail, settings);
-	}
-
-	function returnDB(){
-		pass.call(null, db);
-	}*/
 	pass.call(null, db);
 
 	return db;
