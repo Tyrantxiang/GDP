@@ -12,7 +12,7 @@
 
 var validate = require("validate.js")
 	;
-validate.Promise = require('rsvp').Promise;
+validate.Promise = require('bluebird');
 
 //Date time validation functions
 validate.extend(validate.validators.datetime, {
