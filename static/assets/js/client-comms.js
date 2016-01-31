@@ -13,7 +13,7 @@ var token = null,
 	// The event listeners for the comms
 	eventListeners = {},
 
-	emptyFunction = function(){},
+	emptyFunction = function(a){console.log(a);},
 	emptyObject = {};
 
 /**
@@ -301,6 +301,7 @@ function socketOpen(){
  * @param {function} [cb] - Called when the server responds, with the response data
  */
 function client_socket_call(name, data, cb){
+	console.log('Socket call: ' + name);
 	socket.emit(name, data || emptyObject, cb || emptyFunction);
 }
 
