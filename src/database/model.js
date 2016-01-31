@@ -23,17 +23,30 @@ var Users = sequelize.define('users', {
 	}, username : {
 		type : Sequelize.STRING,
 		unique : true,
-		allowNull : false
+		allowNull : false,
+		validate : {
+			isAlphanumeric : true,
+			len : [1, 25]
+		}
 	}, saltedpw : {
 		type : Sequelize.STRING,
 		allowNull : false
 	}, dob : {
 		type : Sequelize.DATE,
-		allowNull : false
+		allowNull : false,
+		validate : {
+			isDate : true,
+			isBefore : new Date(Date.now - (1000 * 60 * 60 * 24 * 365 * 10)), //older or equal to than 10 years
+			isAfter : new Date(Date.now - (1000 * 60 * 60 * 24 * 365 * 18)) //younger than 18 years
+		}
 	}, currency : {
 		type : Sequelize.INTEGER,
 		allowNull : false,
-		defaultValue : 0
+		defaultValue : 0,
+		validate : {
+			isInt : true,
+			min : 0
+		}
 	}
 });
 
@@ -75,7 +88,10 @@ var Plays = sequelize.define('plays', {
 		allowNull : true
 	}, score : {
 		type : Sequelize.INTEGER,
-		allowNull : false
+		allowNull : false,
+		validate : {
+			isInt : true
+		}
 	}
 });
 
@@ -180,8 +196,6 @@ var UserEquipped = sequelize.define('user_equipped', {
 		allowNull : true
 	}
 });
-
-
 
 Sessions.belongsTo(Users, {foreignKey: 'user_id', targetKey: 'id'});
 Users.hasMany(Sessions, {foreignKey : 'user_id'});

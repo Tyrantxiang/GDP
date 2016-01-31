@@ -10,15 +10,10 @@
 
 var userEquippedDB = {}
 	, UserEquipped = undefined
-	//, validateDetails = require("../validateDetails.js")
 	;
 
 //Creates a user_equipped entry
-userEquippedDB.createUserEquipped = function(pass, fail, equippedObj) {
-	//Validates the details given
-	//validateDetails(queryExecution, fail, equippedObj);
-	
-	console.log(equippedObj);
+userEquippedDB.createUserEquipped = function(pass, fail, equippedObj) {	
 	return UserEquipped.destroy({
 		where : {
 			user_id : equippedObj.user_id,

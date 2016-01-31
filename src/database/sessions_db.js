@@ -10,14 +10,10 @@
 
 var sessionsDB = {}
 	, Sessions = undefined
-	//, validateDetails = require("../validateDetails.js")
 	;
 
 //Creates a new entry on the Sessions table
-sessionsDB.createSession = function(pass, fail, sessionObj) {
-	//Validates the sessionObj given
-	//validateDetails(queryExecution, fail, sessionObj);
-	
+sessionsDB.createSession = function(pass, fail, sessionObj) {	
 	return Sessions.create(sessionObj).then(pass).catch(fail);
 }
 

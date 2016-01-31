@@ -10,14 +10,10 @@
 
 var userInventoryDB = {}
 	, UserInventory = undefined
-	//, validateDetails = require("../validateDetails.js")
 	;
 
 //Creates a user_inventory entry
-userInventoryDB.createUserInventory = function(pass, fail, inventoryObj) {
-	//Validates the details given
-	//validateDetails(queryExecution, fail, inventoryObj);
-	
+userInventoryDB.createUserInventory = function(pass, fail, inventoryObj) {	
 	//if active = false, delete
 	//if active = true, delete all old and then add
 	return UserInventory.destroy({

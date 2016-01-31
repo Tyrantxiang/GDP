@@ -10,14 +10,10 @@
 
 var userCondsDB = {}
 	, UserConditions = undefined
-	//, validateDetails = require("../validateDetails.js")
 	;
 
 //Creates a user_condition entry
 userCondsDB.createUserCondition = function(pass, fail, condObj) {
-	//Validates the details given
-	//validateDetails(queryExecution, fail, condObj);
-	
 	//if active = false, delete
 	//if active = true, delete all old and then add
 	console.log("here");

@@ -26,33 +26,9 @@ validate.extend(validate.validators.datetime, {
 
 //Constraints: see http://validatejs.org/
 var constraints = {
-	username : {
-		format : {
-			pattern : "^[a-z0-9]+$"
-			, flags : "i"
-			, message : "can only contain a-z and 0-9"
-		}
-		, length : {
-			minimum: 1
-			, maximum : 25
-		}
-	}
-	, password : {
+	password : {
 		length : {
 			minimum : 6 
-		}
-	}
-	, dob : {
-		datetime : {
-			get latest () {
-			    return new Date(Date.now() - (1000 * 60 * 60 * 24 * 365 * 10));
-			}
-		}
-	}
-	, currency : {
-		numericality : {
-			onlyInteger: true
-			, greaterThanOrEqualTo: 0
 		}
 	}
 	, start_time : {
@@ -65,11 +41,6 @@ var constraints = {
 			earliest : "start_time"
 			, get latest () { return new Date() }
 		} 
-	}
-	, score : {
-		numericality : {
-			onlyInteger: true
-		}
 	}
 }
 

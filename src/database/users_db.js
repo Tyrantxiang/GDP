@@ -11,15 +11,11 @@
 var usersDB = {}
 	, Users = undefined
 	, bcrypt = require('bluebird').promisifyAll(require('bcrypt'))
-	//, validateDetails = require("../validateDetails.js")
 	;
 
 //Creates an entry on the user table
 // Includes validation of details and password salting
-usersDB.createUser = function(pass, fail, userObj) {
-	//Validates the details given
-	//validateDetails(saltPassword, fail, userObj);
-		
+usersDB.createUser = function(pass, fail, userObj) {		
 	return createSaltedPassword(userObj.password).then(function queryExecution(saltedpw){
 		delete userObj.password;
 		userObj.saltedpw = saltedpw;
@@ -83,10 +79,7 @@ usersDB.checkUsernameExists = function(pass, fail, username){
 }
 
 //Updates all user details provided in the updatedUserObj
-usersDB.updateUserDetails = function(pass, fail, updatedUserObj, id){
-	//Validates the details given
-	//validateDetails(saltPasswordIfExists, fail, updatedUserObj);
-	
+usersDB.updateUserDetails = function(pass, fail, updatedUserObj, id){	
 	if(updatedUserObj){
 		return createSaltedPassword(updatedUserObj.password).then(function(saltedpw){
 			delete updatedUserObj.password;
@@ -101,7 +94,6 @@ usersDB.updateUserDetails = function(pass, fail, updatedUserObj, id){
 
 //Updates only currency for a user entry
 usersDB.updateUserCurrency = function(pass, fail, newCurrency, id){
-	//validateDetails(queryExecution, fail, {currency: newCurrency});
 	return Users.update({
 		'currency': newCurrency
 	}, {

@@ -11,13 +11,9 @@
 var playsDB = {}
 	, Plays = undefined
 	, Users = undefined
-	//, validateDetails = require("../validateDetails.js")
 	;
 
-playsDB.createPlay = function(pass, fail, playObj) {
-	//Validates the details given
-	//validateDetails(queryExecution, fail, playObj);
-	
+playsDB.createPlay = function(pass, fail, playObj) {	
 	return Plays.create(playObj).then(pass).catch(fail);
 }
 
