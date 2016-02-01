@@ -36,7 +36,7 @@ var Users = sequelize.define('users', {
 		allowNull : false,
 		validate : {
 			isDate : true,
-			isBefore : new Date(Date.now - (1000 * 60 * 60 * 24 * 365 * 10)) //older or equal to than 10 years
+			//isBefore : new Date(Date.now - (1000 * 60 * 60 * 24 * 365 * 10)) //older or equal to than 10 years
 			//isAfter : new Date(Date.now - (1000 * 60 * 60 * 24 * 365 * 18)) //younger than 18 years
 		}
 	}, currency : {
@@ -247,21 +247,6 @@ sequelize.sync({ force : !!resync }).then(function(){
 		console.log("Database rebuilt");
 		process.exit(0);
 	}
-}).then(function(){
-	var playObj = {
-		user_id : 1,
-		game_id : 1001,
-		start_time : new Date(10),
-		end_time : new Date(15),
-		score : 0
-	};
-	
-	var play = Plays.build(playObj);
-	play.validate().then(function(a){
-		console.log(a);
-	}).catch(function(a){
-		console.log("ghgfd");
-	});
 });
 
 return returnValue;
