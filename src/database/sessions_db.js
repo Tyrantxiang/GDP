@@ -15,8 +15,8 @@ var sessionsDB = {}
 //Creates a new entry on the Sessions table
 sessionsDB.createSession = function(pass, fail, sessionObj) {		
 	var session = Sessions.build(sessionObj);
-	play.validate().then(function(isNotValid){
-		if(isNotValid()) throw new Error(isNotValid.message);
+	session.validate().then(function(isNotValid){
+		if(isNotValid) throw new Error(isNotValid.message);
 		else return session.save();
 	}).then(pass).catch(fail);
 }

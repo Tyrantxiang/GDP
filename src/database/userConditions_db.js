@@ -16,7 +16,6 @@ var userCondsDB = {}
 userCondsDB.createUserCondition = function(pass, fail, condObj) {
 	//if active = false, delete
 	//if active = true, delete all old and then add
-	console.log("here");
 	return UserConditions.destroy({
 		where : {
 			user_id : condObj.user_id,

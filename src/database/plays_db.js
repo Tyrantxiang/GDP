@@ -16,7 +16,7 @@ var playsDB = {}
 playsDB.createPlay = function(pass, fail, playObj) {	
 	var play = Plays.build(playObj);
 	play.validate().then(function(isNotValid){
-		if(isNotValid()) throw new Error(isNotValid.message);
+		if(isNotValid) throw new Error(isNotValid.message);
 		else return play.save();
 	}).then(pass).catch(fail);
 }

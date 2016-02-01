@@ -614,14 +614,12 @@ var commsEventListeners = {
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_user_unlocked_items : function(data, fn){
-        db.getInventoryForUser(
-            function(results){
-                fn(results);
-            }, function(err){
-                fn({err: err});
-            },
-            this.userId
-        );
+        db.getInventoryForUser(this.userId
+        ).then(function(results){
+			fn(results);
+		}).catch(function(err){
+			fn({err: err});
+		});
     },
 
     /**

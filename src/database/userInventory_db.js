@@ -32,7 +32,7 @@ userInventoryDB.readUserInventoryById = function(pass, fail, id){
 	return UserInventory.findById(id).then(pass).catch(fail);
 }
 
-userInventoryDB.getInventoryForUser = function(pass, fail, user_id){	
+userInventoryDB.getInventoryForUser = function(user_id){	
 	return UserInventory.findAll({
 		attributes : [
 			'item_id'
@@ -41,7 +41,7 @@ userInventoryDB.getInventoryForUser = function(pass, fail, user_id){
 		}
 	}).map(function(result){
 		return result.item_id;
-	}).then(pass).catch(fail);
+	});
 }
 
 //Deletes the entry that matches the id
