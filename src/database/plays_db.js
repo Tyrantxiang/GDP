@@ -14,7 +14,11 @@ var playsDB = {}
 	;
 
 playsDB.createPlay = function(pass, fail, playObj) {	
-	return Plays.create(playObj).then(pass).catch(fail);
+	var play = Plays.build(playObj);
+	play.validate().then(function(isNotValid){
+		if(isNotValid()) throw new Error(isNotValid.message);
+		else return play.save();
+	}).then(pass).catch(fail);
 }
 
 //Gets the play entry that matches the given id

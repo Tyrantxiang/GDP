@@ -13,8 +13,12 @@ var sessionsDB = {}
 	;
 
 //Creates a new entry on the Sessions table
-sessionsDB.createSession = function(pass, fail, sessionObj) {	
-	return Sessions.create(sessionObj).then(pass).catch(fail);
+sessionsDB.createSession = function(pass, fail, sessionObj) {		
+	var session = Sessions.build(sessionObj);
+	play.validate().then(function(isNotValid){
+		if(isNotValid()) throw new Error(isNotValid.message);
+		else return session.save();
+	}).then(pass).catch(fail);
 }
 
 //Gets the session entry that matches the given

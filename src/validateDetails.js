@@ -14,16 +14,6 @@ var validate = require("validate.js")
 	;
 validate.Promise = require('bluebird');
 
-//Date time validation functions
-validate.extend(validate.validators.datetime, {
-	parse: function(value, options) {
-		return new Date(value);
-	},
-	format: function(value, options) {
-		return value.toISOString();
-	}
-});
-
 //Constraints: see http://validatejs.org/
 var constraints = {
 	password : {
@@ -31,41 +21,9 @@ var constraints = {
 			minimum : 6 
 		}
 	}
-	, start_time : {
-		datetime : {
-			get latest () { return new Date() }
-		}
-	}
-	, end_time : {
-		datetime : {
-			earliest : "start_time"
-			, get latest () { return new Date() }
-		} 
-	}
 }
 
 module.exports = function(pass, fail, obj){
-	//If end_time exists, validate against start_time to make sure it is later!
-	if(obj.end_time){
-		//Error if start_time doesn't exist to compare against
-		if(!obj.start_time) {
-			return handleFail({
-					end_time : "A start_time property must be provided, so that end_time can be compared against it."
-				});
-		} 
-
-		//Error if start_time is not before end_time
-		if(obj.end_time < obj.start_time) {
-			return handleFail({
-					end_time : [
-						"end_time("+obj.end_time.toISOString()+")"
-						, "must not be earlier than given"
-						, "start_time("+obj.start_time.toISOString()+")"
-					].join(" ")
-				});
-		}
-	}
-
 	//Asynchronously call the validation
 	validate.async(obj, constraints).then(pass, handleFail);
 
