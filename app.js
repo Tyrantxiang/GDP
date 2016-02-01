@@ -137,10 +137,12 @@ function startApp(db){
     app.post("/user/sign_up", userapi.sign_up);
     
 	//Create admin user
-	db.checkUsernameExists(function(exists){
-		if(exists) return;
-		else db.createUser(console.log, console.log, { username : "admin", password : "changeme", dob : new Date(946684800000) });
-	}, console.log, 'admin');
+	db.checkUsernameExists('admin').then(function(exists){
+		if(exists) return Promise.resolve();
+		else return db.createUser({ username : "admin", password : "changeme", dob : new Date(946684800000) });
+	}).then(function(a){
+		if(a) console.log(a);
+	}).catch(console.log);
 
 	//Superuser http API routes
     // These require uploads, which needs to be the first middleware

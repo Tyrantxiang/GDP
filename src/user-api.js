@@ -6,6 +6,8 @@
  * @module user-api
  */
 
+var Promise = require('bluebird');
+ 
 var config;
 function setConfig(cfg){
     if(!cfg && typeof cfg !== Object){
@@ -83,7 +85,7 @@ function isUsernameValid(username, cb){
         }
 
         // Already in use
-        db.checkUsernameExists(function(exists){
+        db.checkUsernameExists(username).then(function(exists){
             var o = {
                 valid : !exists
             };
@@ -91,7 +93,7 @@ function isUsernameValid(username, cb){
                 o.message = "Username already exists";
             }
             cb(o);
-        }, null, username);
+        }).catch(function(){});
     }else{
         cb({
             valid : false,
@@ -218,55 +220,42 @@ var routes = {
                     });
                     var valid = validations.every(resultIsValid);
                     if(valid){
-                        db.createUser(
-                            // Pass
-                            function(user_result){
-                                var l = latch(conditions.length, function(){
-                                    res.json({
-                                        error : false,
-                                        username : username,
-                                        dob : dob
-                                    });
-                                });
-
-                                conditions.forEach(function(c){
-                                    db.createUserCondition(
-                                        //Pass
-                                        function(c_result){
-                                            l();
-                                        },
-                                        function(error){
-                                            //Silently handle error for now
-                                            //TODO: Don't ignore this error
-                                            console.error(error);
-                                            l();
-                                        },
-                                        {user_id : user_result.id, condition_id: c, active: true}
-                                    );
-                                });
-                            },
-                            // Fail
-                            function(error){
-                                res.status(400).json({
-                                    error : error
-                                });
-                            },
-                            { username : username, password : password, dob : dob }
-                        );
+                        db.createUser({ username : username, password : password, dob : dob }).then(function(user_result){
+							var response = function(){
+								res.json({
+									error : false,
+									username : username,
+									dob : dob
+								});
+							};
+							
+							return Promise.map(conditions, function(c){
+								console.log(c);
+								return db.createUserCondition({user_id : user_result.id, condition_id: c, active: true});
+							}).then(function(){
+								response();
+							}).catch(function(err){
+								console.log(err);
+								//TODO: Don't silently ignore this error
+								response();
+							});
+						}).catch(function(error){
+							console.log(error);
+							res.status(400).json({
+								error : error
+							});
+                        });
                     }else{
                         res.status(400).json({
                             error : "some stuff not valid",
                             validations : validations
                         });
                     }
-
-
                 });
             });
         });
 
     }
-
 };
 
 

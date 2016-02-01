@@ -111,56 +111,47 @@ function Hub(userId, comms){
 
 
     // Get the equppied items here
-    db.getEquippedForUser(
+    db.getEquippedForUser(userId).then(function(results){
+		var meta = config.hub.getItemMetaData(),
+			e = self.equipped,
+			slot, r;
 
-        function(results){
-            var meta = config.hub.getItemMetaData(),
-                e = self.equipped,
-                slot, r;
+		for(slot in meta){
+			r = results[slot]
+			if(r && config.items.exists(results[slot])){
+				e[slot] = r;
+			}else{
+				e[slot] = meta[slot].default;
+			}
+		}
+	}).catch(function(err){
+		var meta = config.hub.getItemMetaData(),
+			e = self.equipped,
+			slot, r;
 
-            for(slot in meta){
-                r = results[slot]
-                if(r && config.items.exists(results[slot])){
-                    e[slot] = r;
-                }else{
-                    e[slot] = meta[slot].default;
-                }
-            }
-        },
-        function(err){
-			var meta = config.hub.getItemMetaData(),
-                e = self.equipped,
-                slot, r;
-
-            for(slot in meta){
-                e[slot] = meta[slot].default;
-            }
-		},
-        userId
-    );
+		for(slot in meta){
+			e[slot] = meta[slot].default;
+		}
+	});
 
     // Get the user data from the db
-    db.createSession(function(){},
-                        function(){},
-                            {userId: userId, start_time: this.connectedTime.toISOString()}
-                    );
+    db.createSession({userId: userId, start_time: this.connectedTime.toISOString()}).then(function(){}).catch(function(){});
 
     //load the users statuses here
-    db.getConditionsForUser(function(results){
-                for(var i=0; i<results.length; i++){
-                    //loop over all statuses and start
-                    var statuses = config.conditions.getConfig(results[i]).statuses;
-                    statuses.forEach(function(status){
-                        if(config.statuses.exists(status)){
-                            var currentStatus = config.statuses.getConfig(status);
-                            self.statuses[currentStatus.id] = new Status(currentStatus);
-                        }
-                    });
-                }
-            }, function(){
+    db.getConditionsForUser(this.userId).then(function(results){
+		for(var i=0; i<results.length; i++){
+			//loop over all statuses and start
+			var statuses = config.conditions.getConfig(results[i]).statuses;
+			statuses.forEach(function(status){
+				if(config.statuses.exists(status)){
+					var currentStatus = config.statuses.getConfig(status);
+					self.statuses[currentStatus.id] = new Status(currentStatus);
+				}
+			});
+		}
+	}).catch(function(){
 
-            },
-            this.userId);
+	});
 
     /** A function that generates images for given parts */
     this.imgMaker = require("./imageCompositer")(300);
@@ -185,7 +176,7 @@ Hub.prototype.exit = function(){
     // Save session data in db
     var disconnectTime = new Date();
 
-    db.endSession(function(){}, function(){}, disconnectTime.toISOString(), this.userId);
+    db.endSession(disconnectTime.toISOString(), this.userId).then(function(){}).catch(function(){});
 };
 
 
@@ -251,18 +242,14 @@ Hub.prototype.updateEquippedItems = function(items, cb){
     // Add the user_id to the object for the database call
     newItems.user_id = this.userId;
 
-    db.createUserEquipped(
-        function(results){
-            // Delete the user_id, as it is not an item!
-            delete newItems.user_id;
-            h.equipped = newItems;
-            cb(newItems);
-        },
-        function(err){
-            cb({err: err});
-        },
-        newItems
-    );
+    db.createUserEquipped(newItems).then(function(results){
+		// Delete the user_id, as it is not an item!
+		delete newItems.user_id;
+		h.equipped = newItems;
+		cb(newItems);
+	}).catch(function(err){
+		cb({err: err});
+	});
 };
 
 
@@ -407,23 +394,19 @@ Hub.prototype.generateAvatarImageFromEquippedItems = function(cb){
 Hub.prototype.modifyCurrency = function(modify, cb){
     var userId = this.userId;
 
-    db.readUserById(function(user){
-
+    db.readUserById(userId).then(function(user){
         var newVal = parseInt(user.currency) + parseInt(modify);
-        db.updateUserCurrency(
-            function(){
-                cb({
-                    success: true,
-                    currency: newVal
-                });
-            },
-            function(err){
-                cb({error: err});
-            }, newVal, userId);
-
-    }, function(err){
+        db.updateUserCurrency(newVal, userId).then(function(){
+			cb({
+				success: true,
+				currency: newVal
+			});
+		}).catch(function(err){
+			cb({error: err});
+		});
+    }).catch(function(err){
         cb({error: err});
-    }, userId);
+    });
 };
 
 
@@ -614,8 +597,7 @@ var commsEventListeners = {
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_user_unlocked_items : function(data, fn){
-        db.getInventoryForUser(this.userId
-        ).then(function(results){
+        db.getInventoryForUser(this.userId).then(function(results){
 			fn(results);
 		}).catch(function(err){
 			fn({err: err});
@@ -658,7 +640,6 @@ var commsEventListeners = {
     get_user_equipped_items : function(data, fn){
         fn(this.getEquippedItems());
     },
-
 
     /**
      * Gets the items this user currently has equipped of a given type
@@ -886,19 +867,14 @@ var commsEventListeners = {
             this.gameStartTime = undefined;
 
             //update the users currency
-            /*db.readUserById(function(result){
-                                db.updateUserCurrency(function(){}, function(){}, result.currency+data.currency, this.user_id);
-                            },
-                            function(){},
-                            this.user_id
-			);*/
             this.modifyCurrency(data.currency, function(){});
 
             // Save score in database
-            db.createPlay(  function(){ fn(); },
-                            function(err){ fn({err: err}); },
-                            playObj
-                        );
+            db.createPlay(playObj).then(function(){
+				fn();
+			}).catch(function(err){
+				fn({err: err});
+			});
         }else{
             fn({
                 err : "Game ID supplied does not match the server's"
@@ -936,20 +912,21 @@ var commsEventListeners = {
 			allMinigameIds.forEach(function(ele){
 				var filterConds = {user_id: userId, game_id: ele};
 				
-				db.getScores(function(results){
+				db.getScores(filterConds, {column: "score", direction: "DESC"}, numOfScores).then(function(results){
 					total[ele] = results;
 					miniGameLatch();
-				}, function(err){
+				}).catch(function(err){
 					fn({err: "Error accessing database entries" });
-				}, filterConds, {column: "score", direction: "DESC"}, numOfScores)
-			});			
+				});
+			});		
         }else if(data.option_num === 3){
             var filterConds = {user_id: this.userId, game_id: data.game_id};
 			
-			db.getScores(function(results){
+			db.getScores(filterConds, {column: "score", direction: "DESC"}, numOfScores).then(function(results){
 					fn(results);
-			}, function(err){ fn({err: "Error accessing database entries" }); },
-			filterConds, {column: "score", direction: "DESC"}, numOfScores);
+			}).catch(function(err){
+				fn({err: "Error accessing database entries" });
+			});
 			
         }else{
             fn({err: "Invalid score option selected"});
@@ -1145,11 +1122,11 @@ var commsEventListeners = {
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_currency : function(data, fn){
-        db.readUserById(function(user){
+        db.readUserById(this.userId).then(function(user){
             fn({currency: user.currency});
-        }, function(err){
+        }).catch(function(err){
             fn({error: err});
-        }, this.userId);
+        });
     },
 
     /**
@@ -1170,33 +1147,31 @@ var commsEventListeners = {
             item_price = config.items.getConfig(data.item_id).price;
 
         function doUnlock(){
-            db.createUserInventory(function(obj){
+            db.createUserInventory(inventoryObj).then(function(obj){
                 fn({success : true});
-            }, function(err){
+            }).catch(function(err){
                 fn({error: err});
-            }, inventoryObj);
+            });
         }
 
         // TODO use modifyCurrency and adjust that so it cannot go below zero
-        db.readUserById(function(user){
-			
+        db.readUserById(userId).then(function(user){
             if(item_price <= user.currency){
-                db.readUserById(function(user){
-                    db.updateUserCurrency(doUnlock, function(err){
+                db.readUserById(userId).then(function(user){
+                    db.updateUserCurrency(user.currency-item_price, userId).then(doUnlock
+					).catch(function(err){
                         fn({error: err});
-                    }, user.currency-item_price, userId);
-                }, function(err){
+                    });
+                }).catch(function(err){
                     fn({error: err});
-                }, userId);
-
+                });
             }else{
                 fn({'error' : 'Not enough currency'});
             }
 
-        }, function(err){
+        }).catch(function(err){
             fn({'error': err});
-        }, userId);
-
+        });
     }
 };
 

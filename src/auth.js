@@ -67,8 +67,7 @@ function authenticate(req, res){
         password = req.body.password;
 
         // Authenticate and get userId
-        db.authenticateUser(authenticated, failed, username, password);
-
+        db.authenticateUser(username, password).then(authenticated).catch(failed);
     }else{
         failed();
     }

@@ -13,12 +13,12 @@ var playsDB = {}
 	, Users = undefined
 	;
 
-playsDB.createPlay = function(pass, fail, playObj) {	
+playsDB.createPlay = function(playObj) {	
 	var play = Plays.build(playObj);
-	play.validate().then(function(isNotValid){
+	return play.validate().then(function(isNotValid){
 		if(isNotValid) throw new Error(isNotValid.message);
 		else return play.save();
-	}).then(pass).catch(fail);
+	});
 }
 
 //Gets the play entry that matches the given id
@@ -46,7 +46,7 @@ orderBy = {
 limit = 10
 ======> LIMIT 10
 */
-playsDB.getScores = function(pass, fail, filterConds, orderBy, limit){
+playsDB.getScores = function(filterConds, orderBy, limit){
 	var filter = {
 		attributes : ['id', 'user_id', 'game_id', 'start_time', 'end_time', 'score', 'created'],
 		include : [{
@@ -77,7 +77,7 @@ playsDB.getScores = function(pass, fail, filterConds, orderBy, limit){
 		}
 	}
 		
-	return Plays.findAll(filter).then(pass).catch(fail);
+	return Plays.findAll(filter);
 }
 
 //Deletes the entry that matches the id

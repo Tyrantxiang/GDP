@@ -69,7 +69,7 @@ var Sessions = sequelize.define('sessions', {
 }, {
 	validate : {
 		endTimeAfterStartTime : function(){
-			if(!this.end_time){
+			if(this.end_time){
 				if(new Date(this.start_time).getTime() > new Date(this.end_time).getTime()){
 					throw new Error('Start time is after end time!');
 				}
@@ -247,6 +247,12 @@ sequelize.sync({ force : !!resync }).then(function(){
 		console.log("Database rebuilt");
 		process.exit(0);
 	}
+}).then(function(){
+	return Users.count({
+		where : {
+			'username' : 'admin'
+		}
+	});
 });
 
 return returnValue;

@@ -13,14 +13,14 @@ var userEquippedDB = {}
 	;
 
 //Creates a user_equipped entry
-userEquippedDB.createUserEquipped = function(pass, fail, equippedObj) {	
+userEquippedDB.createUserEquipped = function(equippedObj) {	
 	return UserEquipped.destroy({
 		where : {
 			user_id : equippedObj.user_id,
 		}
 	}).then(function(){
 		return UserEquipped.create(equippedObj);
-	}).then(pass).catch(fail);
+	});
 }
 
 //Gets the user_equipped entry that matches the given id
@@ -30,12 +30,12 @@ userEquippedDB.readUserEquippedById = function(pass, fail, id){
 
 //Returns all the columns for the matching Equipped entry
 //Doing '*' here because it is one less place something needs to be changed when a new slot is added
-userEquippedDB.getEquippedForUser = function(pass, fail, user_id){	
+userEquippedDB.getEquippedForUser = function(user_id){	
 	return UserEquipped.findOne({
 		where : {
 			'user_id' : user_id
 		}
-	}).then(pass).catch(fail);
+	});
 }
 
 //Deletes the entry that matches the id

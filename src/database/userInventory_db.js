@@ -13,7 +13,7 @@ var userInventoryDB = {}
 	;
 
 //Creates a user_inventory entry
-userInventoryDB.createUserInventory = function(pass, fail, inventoryObj) {	
+userInventoryDB.createUserInventory = function(inventoryObj) {	
 	//if active = false, delete
 	//if active = true, delete all old and then add
 	return UserInventory.destroy({
@@ -24,7 +24,7 @@ userInventoryDB.createUserInventory = function(pass, fail, inventoryObj) {
 	}).then(function(){
 		if(inventoryObj.active) return UserInventory.create(inventoryObj);
 		else return Promise.resolve();
-	}).then(pass).catch(fail);
+	});
 }
 
 //Gets the user_inventory entry that matches the given id

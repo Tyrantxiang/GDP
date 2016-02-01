@@ -15,24 +15,24 @@ var usersDB = {}
 
 //Creates an entry on the user table
 // Includes validation of details and password salting
-usersDB.createUser = function(pass, fail, userObj) {		
+usersDB.createUser = function(userObj) {		
 	return createSaltedPassword(userObj.password).then(function queryExecution(saltedpw){
 		delete userObj.password;
 		userObj.saltedpw = saltedpw;
 		
 		return Users.create(userObj);
-	}).then(pass).catch(fail);
+	});
 }
 
 //Reads a user entry given an id
-usersDB.readUserById = function(pass, fail, id){
+usersDB.readUserById = function(id){
 	return Users.findOne({
 		where : {
 			'id' : id
 		}, attributes : {
 			exclude : ['saltedpw']
 		}
-	}).then(pass).catch(fail);
+	});
 }
 
 //Reads a user entry given a username
@@ -48,34 +48,35 @@ usersDB.readUserByName = function(pass, fail, username){
 
 //Authenticates a user given a username and password
 // Verifies the password is correct against the stored saltedpassword
-usersDB.authenticateUser = function(pass, fail, username, givenpw){
+usersDB.authenticateUser = function(username, givenpw){
 	return Users.findOne({
 		where : {
 			username : username
 		}
-	}).then(function(userObj){
-		if(!userObj) 
+	}).bind({}).then(function(userObj){
+		if(!userObj)
 			throw Error("User does not exist");
 		
-		return bcrypt.compareAsync(givenpw, userObj.saltedpw).then(function(passCorrect){
-			if(!passCorrect && (userObj.saltedpw!==givenpw))
-				throw new Error('Password is incorrect for user '+username.toString());
-
-			delete userObj.saltedpw;
-			return Promise.resolve(userObj);
-		});
-	}).then(pass).catch(fail);
+		this.id = userObj.id;
+		
+		return bcrypt.compareAsync(givenpw, userObj.saltedpw);
+	}).then(function(passCorrect){		
+		if(!passCorrect)
+			throw new Error('Password is incorrect for user '+username.toString());
+		
+		return Promise.resolve(this);
+	});
 }
 
 // This will always succed, as a "fail" is it not existing, which actually means it doesn't exist
-usersDB.checkUsernameExists = function(pass, fail, username){
+usersDB.checkUsernameExists = function(username){
 	return Users.count({
 		where : {
-			username : username
+			'username' : username
 		}
 	}).then(function(count){
 		return Promise.resolve(!!count);
-	}).then(pass).catch(fail);
+	});
 }
 
 //Updates all user details provided in the updatedUserObj
@@ -93,14 +94,14 @@ usersDB.updateUserDetails = function(pass, fail, updatedUserObj, id){
 }
 
 //Updates only currency for a user entry
-usersDB.updateUserCurrency = function(pass, fail, newCurrency, id){
+usersDB.updateUserCurrency = function(newCurrency, id){
 	return Users.update({
 		'currency': newCurrency
 	}, {
 		where : {
 			'id' : id
 		}
-	}).then(pass).catch(fail);
+	});
 }
 
 //Deletes a user entry given an id
