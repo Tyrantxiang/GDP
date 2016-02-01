@@ -28,8 +28,8 @@ userCondsDB.createUserCondition = function(condObj) {
 }
 
 //Gets the user_condition entry that matches the given id
-userCondsDB.readUserConditionById = function(pass, fail, id){
-	return UserConditions.findById(id).then(pass).catch(fail);
+userCondsDB.readUserConditionById = function(id){
+	return UserConditions.findById(id);
 }
 
 userCondsDB.getConditionsForUser = function(user_id){
@@ -45,12 +45,12 @@ userCondsDB.getConditionsForUser = function(user_id){
 }
 
 //Deletes the entry that matches the id
-userCondsDB.deleteUserCondition = function(pass, fail, id){
+userCondsDB.deleteUserCondition = function(id){
 	return UserConditions.destroy({
 		where : {
 			id : id
 		}
-	}).then(pass).catch(fail);
+	});
 }
 
 module.exports = function(seq){

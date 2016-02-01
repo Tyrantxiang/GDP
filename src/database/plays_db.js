@@ -22,8 +22,8 @@ playsDB.createPlay = function(playObj) {
 }
 
 //Gets the play entry that matches the given id
-playsDB.readPlayById = function(pass, fail, id){
-	return Plays.findById(id).then(pass).catch(fail);
+playsDB.readPlayById = function(id){
+	return Plays.findById(id);
 }
 
 /*
@@ -81,8 +81,8 @@ playsDB.getScores = function(filterConds, orderBy, limit){
 }
 
 //Deletes the entry that matches the id
-playsDB.deletePlay = function(pass, fail, id){
-	return Plays.destroy({ where : { 'id' : id } }).then(pass).catch(fail);
+playsDB.deletePlay = function(id){
+	return Plays.destroy({ where : { 'id' : id } });
 }
 
 module.exports = function(seq){

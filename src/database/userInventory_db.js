@@ -28,8 +28,8 @@ userInventoryDB.createUserInventory = function(inventoryObj) {
 }
 
 //Gets the user_inventory entry that matches the given id
-userInventoryDB.readUserInventoryById = function(pass, fail, id){
-	return UserInventory.findById(id).then(pass).catch(fail);
+userInventoryDB.readUserInventoryById = function(id){
+	return UserInventory.findById(id);
 }
 
 userInventoryDB.getInventoryForUser = function(user_id){	
@@ -45,12 +45,12 @@ userInventoryDB.getInventoryForUser = function(user_id){
 }
 
 //Deletes the entry that matches the id
-userInventoryDB.deleteUserInventory = function(pass, fail, id){
+userInventoryDB.deleteUserInventory = function(id){
 	return UserInventory.destroy({
 		where : {
-			id : id
+			'id' : id
 		}
-	}).then(pass).catch(fail);
+	});
 }
 
 module.exports = function(seq){

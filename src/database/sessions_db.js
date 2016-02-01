@@ -24,17 +24,13 @@ sessionsDB.createSession = function(sessionObj) {
 }
 
 //Gets the session entry that matches the given
-sessionsDB.readSessionById = function(pass, fail, id){
-	return Sessions.findById(id).then(pass).catch(fail);
+sessionsDB.readSessionById = function(id){
+	return Sessions.findById(id);
 }
 
 //This updates a session entry to have the end_time of said session
 //When the session ends, this should be called
-sessionsDB.endSession = function(end_ts, userid){
-	/*function validateTimes(sessionObj){
-	//	validateDetails(queryExecution, fail, {start_time: sessionObj.start_time, end_time: end_ts});	
-	}*/
-	
+sessionsDB.endSession = function(end_ts, userid){	
 	return Sessions.findById(userid).then(function(session){
 		session.end_time = end_ts;
 		
@@ -46,8 +42,12 @@ sessionsDB.endSession = function(end_ts, userid){
 }
 
 //Deletes the entry that matches the id
-sessionsDB.deleteSession = function(pass, fail, id){
-	return Sessions.destroy({ where : { 'id' : id } }).then(pass).catch(fail);
+sessionsDB.deleteSession = function(id){
+	return Sessions.destroy({ 
+		where : { 
+			'id' : id 
+		}
+	});
 }
 
 module.exports = function(seq){

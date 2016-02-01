@@ -120,17 +120,17 @@ function express_middleware(req, res, next){
  * @type {express_middleware}
  */
 function admin_check(req, res, next){
-    db.readUserByName(function(user){
+    db.readUserByName('admin').then(function(user){
         var id = req.userId;
 
         if(user.id === id){
             next();
         }else{
-            res.status(403).json({ error : true, message : "Unauthorized" });
+			throw new Error('Unauthorized');
         }
-    }, function(err){
+    }).catch(function(err){
         res.status(403).json({ error : true, message : err });
-    }, "admin");
+    });
 }
 
 

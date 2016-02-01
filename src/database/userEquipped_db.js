@@ -24,8 +24,9 @@ userEquippedDB.createUserEquipped = function(equippedObj) {
 }
 
 //Gets the user_equipped entry that matches the given id
-userEquippedDB.readUserEquippedById = function(pass, fail, id){	
-	return UserEquipped.findById(id).then(pass).catch(fail);
+userEquippedDB.readUserEquippedById = function(id){	
+	return UserEquipped.findById(id);
+	return UserEquipped.findById(id);
 }
 
 //Returns all the columns for the matching Equipped entry
@@ -39,12 +40,12 @@ userEquippedDB.getEquippedForUser = function(user_id){
 }
 
 //Deletes the entry that matches the id
-userEquippedDB.deleteUserEquipped = function(pass, fail, id){
+userEquippedDB.deleteUserEquipped = function(id){
 	return UserEquipped.destroy({
 		where : {
-			id : id
+			'id' : id
 		}
-	}).then(pass).catch(fail);
+	});
 }
 
 module.exports = function(seq){

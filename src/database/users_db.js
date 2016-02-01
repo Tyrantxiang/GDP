@@ -36,14 +36,14 @@ usersDB.readUserById = function(id){
 }
 
 //Reads a user entry given a username
-usersDB.readUserByName = function(pass, fail, username){		
+usersDB.readUserByName = function(username){		
 	return Users.findOne({
 		where : {
 			'username' : username
 		}, attributes : {
 			exclude : ['saltedpw']
 		}
-	}).then(pass).catch(fail);
+	});
 }
 
 //Authenticates a user given a username and password
@@ -51,7 +51,7 @@ usersDB.readUserByName = function(pass, fail, username){
 usersDB.authenticateUser = function(username, givenpw){
 	return Users.findOne({
 		where : {
-			username : username
+			'username' : username
 		}
 	}).bind({}).then(function(userObj){
 		if(!userObj)
@@ -80,16 +80,16 @@ usersDB.checkUsernameExists = function(username){
 }
 
 //Updates all user details provided in the updatedUserObj
-usersDB.updateUserDetails = function(pass, fail, updatedUserObj, id){	
+usersDB.updateUserDetails = function(updatedUserObj, id){	
 	if(updatedUserObj){
 		return createSaltedPassword(updatedUserObj.password).then(function(saltedpw){
 			delete updatedUserObj.password;
 			updatedUserObj.saltedpw = saltedpw;
 			
 			return Users.update(updatedUserObj, { where : { 'id' : id } });
-		}).then(pass).catch(fail);
+		});
 	}else{
-		return Users.update(updatedUserObj, { where : { 'id' : id } }).then(pass).catch(fail);
+		return Users.update(updatedUserObj, { where : { 'id' : id } });
 	}
 }
 
@@ -105,12 +105,12 @@ usersDB.updateUserCurrency = function(newCurrency, id){
 }
 
 //Deletes a user entry given an id
-usersDB.deleteUser = function(pass, fail, id){
+usersDB.deleteUser = function(id){
 	return Users.destroy({
 		where : {
-			id : id
+			'id' : id
 		}
-	}).then(pass).catch(fail);
+	});
 }
 
 /*
