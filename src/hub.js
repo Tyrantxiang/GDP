@@ -1356,7 +1356,7 @@ var exportFunctions = {
             }
         }).catch(function(err){
             var meta = config.hub.getItemMetaData(),
-                e = self.equipped,
+                e = equipped,
                 slot, r;
 
             for(slot in meta){
