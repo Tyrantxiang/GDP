@@ -3,18 +3,28 @@
 
 	"databases" : {
 		"main" : {
-			"hostname" : "localhost"
+			"hostname" : "127.0.0.1"
 			, "username" : "suser"
 			, "password" : "UUmtEAstuwsy4Bhs"
 			, "database" : "sgames"
+			, "port" : "5432"
 			, "schema" : "sschema"
 		}		
 		, "test" : {
-			"hostname" : "localhost"
+			"hostname" : "127.0.0.1"
 			, "username" : "testuser"
 			, "password" : "testpass"
 			, "database" : "testdb"
+			, "port" : "5432"
 			, "schema" : "test"
+		}
+		, "build" : {
+			"hostname" : "127.0.0.1"
+			, "username" : "postgres"
+			, "password" : "password"
+			, "database" : "postgres"
+			, "port" : "5432"
+			, "schema" : "public"
 		}
 	}
 }

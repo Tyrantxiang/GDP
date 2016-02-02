@@ -8,9 +8,11 @@
  *
  * @authors Joe Ringham
 */
+var db = {};
 
-var db = {}
-	, seq = require('./model.js')(false)
+db.init = function(pass, fail, settings) {
+	
+	var seq = require('./model.js')(settings, false)
 	, databaseReq = [seq, require('./users_db.js')(seq)
 	, require('./sessions_db.js')(seq)
 	, require('./plays_db.js')(seq)
@@ -19,19 +21,16 @@ var db = {}
 	, require('./userEquipped_db.js')(seq) ]
 	;
 
-//Maps all functions in different modules into this one interface
-databaseReq.forEach(function(req){
-	for(var func in req){
-		if(req.hasOwnProperty(func)){
-			db[func] = req[func];
+	//Maps all functions in different modules into this one interface
+	databaseReq.forEach(function(req){
+		for(var func in req){
+			if(req.hasOwnProperty(func)){
+				db[func] = req[func];
+			}
 		}
-	}
-});
-
-
-db.init = function(pass, fail, settings) {
+	});
+	
 	console.log(settings);
-	//db.validateServerSettings(setConnString, fail, settings);
 
 	pass.call(null, db);
 

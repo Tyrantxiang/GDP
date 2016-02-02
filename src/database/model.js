@@ -1,15 +1,29 @@
 var Sequelize = require("sequelize");
 
-module.exports = function(resync){	
+module.exports = function(settings){
 
-var sequelize = new Sequelize('postgres://suser:UUmtEAstuwsy4Bhs@127.0.0.1:5432/sgames', {
+var connectionString = [
+						'postgres://',
+						settings.username,
+						':',
+						settings.password,
+						'@',
+						settings.hostname,
+						':',
+						settings.port,
+						'/',
+						settings.database
+					].join('');
+
+var sequelize = new Sequelize(connectionString, {
 	logging: false,
 	define : {
 			timestamps : true,
 			freezeTableName : true,
-			schema : "sschema",
-			createdAt : "created",
-			updatedAt : "modified",
+			schema : settings.schema,
+			searchPath : 'sschema',
+			createdAt : 'created',
+			updatedAt : 'modified',
 			paranoid : true
 	}
 });
@@ -232,6 +246,8 @@ Users.hasMany(UserInventory, {foreignKey : 'user_id'});
 UserEquipped.belongsTo(Users, {foreignKey: 'user_id', targetKey: 'id'});
 Users.hasMany(UserEquipped, {foreignKey : 'user_id'});
 
+var syncPromise = sequelize.sync({ force : false });
+
 var returnValue = {
 	Users : Users,
 	Sessions : Sessions,
@@ -239,21 +255,11 @@ var returnValue = {
 	UserConditions : UserConditions,
 	UserInventory : UserInventory,
 	UserEquipped : UserEquipped,
-	sequelize : sequelize
+	sequelize : sequelize,
+	syncPromise : syncPromise
 };
 
-sequelize.sync({ force : !!resync }).then(function(){
-	if(!!resync){
-		console.log("Database rebuilt");
-		process.exit(0);
-	}
-}).then(function(){
-	return Users.count({
-		where : {
-			'username' : 'admin'
-		}
-	});
-});
+sequelize.sync({ force : false });
 
 return returnValue;
 
