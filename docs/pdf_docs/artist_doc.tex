@@ -33,25 +33,27 @@ Below are general guidelines for images that are to be used in the framework:
 
 The names of the items in the following table are defined from what the default image is. The objects don't have to explicitly be of the same type, e.g. a trampoline could easily be used instead of a swing. However, please make sure that the image fits the themes, and make sense in the context. This is especially important for the iteractive items (shown by the * marker in the table); ensure their purpose is clear.
 
+The images are layered onto the hub in a defined order, and so some sections of the sprites may be obscured by layers above. The current order for the layering is shown in the table below, with 1 being the bottom layer.
+
 \begin{table}[H]
 	\centering
-	\begin{tabular}{|c|c|l|}
+	\begin{tabular}{|c|l|c|l|}
 		\hline
-		Item  		& Dimensions	& Function \\ \hline
-		Backpack*	& X x Y			& Bag packing for carriables. \\
-		Desk		& X x Y			& N/A \\
-		Garden		& X x Y			& N/A \\
-		House		& X x Y			& N/A \\
-		Laptop*		& X x Y			& Shop for custom items. \\
-		Mirror*		& X x Y			& Avatar customisation. \\
-		Paintbrush*	& X x Y			& Hub customisation. \\
-		Path*		& X x Y			& Mini-game selection. \\
-		Sofa		& X x Y			& N/A \\
-		Stairs*		& X x Y			& Sleep for health recovery. \\
-		Swing		& X x Y			& N/A \\
-		Tree		& X x Y			& N/A \\
-		Trophy*		& X x Y			& Highscores. \\
-		TV			& X x Y 		& N/A \\ \hline
+		Layer &	Item  		& Dimensions	& Function \\ \hline
+		1 &		Tree		& X x Y			& N/A \\
+		2 &		Swing		& X x Y			& N/A \\
+		3 &		House		& X x Y			& N/A \\
+		4 &		TV			& X x Y 		& N/A \\
+		5 &		Desk		& X x Y			& N/A \\
+		6 &		Sofa		& X x Y			& N/A \\
+		7 &		Garden		& X x Y			& N/A \\
+		8 &		Stairs*		& X x Y			& Sleep for health recovery. \\
+		9 &		Trophy*		& X x Y			& Highscores. \\
+		10 &	Mirror*		& X x Y			& Avatar customisation. \\
+		11 &	Laptop*		& X x Y			& Shop for custom items. \\
+		12 &	Backpack*	& X x Y			& Bag packing for carriables. \\
+		13 &	Paintbrush*	& X x Y			& Hub customisation. \\
+		14 &	Path*		& X x Y			& Mini-game selection. \\ \hline
 	\end{tabular}
 	\caption{Hub Sprite Dimensions}
 	\label{tab:hub_dimensions}
