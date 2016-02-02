@@ -48,6 +48,7 @@ function latch(num, complete){
 }
 
 
+var Promise = require("bluebird");
 
 
 /**
@@ -64,7 +65,7 @@ function latch(num, complete){
  * @param {int} userId  - The ID for the user this hub is associated with (see {@link Hub#userId})
  * @param {module:comms~Comms} comms - The {@link module:comms~Comms|Comms} object that created the Hub
  */
-function Hub(userId, comms){
+function Hub(userId, equipped, statuses, connectedTime, comms){
     if(!userId || !comms){
         throw new Error("UserId and comms must be defined");
     }
@@ -95,11 +96,11 @@ function Hub(userId, comms){
 
     /** Time they logged on (this object was created)
      @type {Date} */
-    this.connectedTime = new Date();
+    this.connectedTime = connectedTime;
 
     /** The statuses of a user
      @type Object.<int, module:hub~Status> */
-    this.statuses = {};
+    this.statuses = statuses;
     /** The user's current health */
     this.health = 100;
 
@@ -107,51 +108,8 @@ function Hub(userId, comms){
     this.avatarImage = null;
 
     /** The currently equipped items for the user */
-    this.equipped = {};
+    this.equipped = equipped;
 
-
-    // Get the equppied items here
-    db.getEquippedForUser(userId).then(function(results){
-        var meta = config.hub.getItemMetaData(),
-            e = self.equipped,
-            slot, r;
-
-        for(slot in meta){
-            r = results[slot]
-            if(r && config.items.exists(results[slot])){
-                e[slot] = r;
-            }else{
-                e[slot] = meta[slot].default;
-            }
-        }
-    }).catch(function(err){
-        var meta = config.hub.getItemMetaData(),
-            e = self.equipped,
-            slot, r;
-
-        for(slot in meta){
-            e[slot] = meta[slot].default;
-        }
-    });
-
-    // Get the user data from the db
-    db.createSession({userId: userId, start_time: this.connectedTime.toISOString()}).then(function(){}).catch(function(){});
-
-    //load the users statuses here
-    db.getConditionsForUser(this.userId).then(function(results){
-        for(var i=0; i<results.length; i++){
-            //loop over all statuses and start
-            var statuses = config.conditions.getConfig(results[i]).statuses;
-            statuses.forEach(function(status){
-                if(config.statuses.exists(status)){
-                    var currentStatus = config.statuses.getConfig(status);
-                    self.statuses[currentStatus.id] = new Status(currentStatus);
-                }
-            });
-        }
-    }).catch(function(){
-
-    });
 
     /** A function that generates images for given parts */
     this.imgMaker = require("./imageCompositer")(300);
@@ -1377,13 +1335,74 @@ var exportFunctions = {
      * @param {module:comms~Comms} comms  - The comms object for this user
      * @return {module:hub~Hub} The created hub instance
      */
-    create : function (userId, comms){
-        var h = new Hub(userId, comms);
+    create : function (userId, comms, cb){
+        var equipped = {},
+            stats = {};
 
-        // Set up the hub event listeners for the comms module, bind them to the hub
-        comms.setEventListeners(commsEventListeners, h);
 
-        return h;
+        // Get the equppied items
+        db.getEquippedForUser(userId).then(function(results){
+            var meta = config.hub.getItemMetaData(),
+                e = equipped,
+                slot, r;
+
+            for(slot in meta){
+                r = results[slot]
+                if(r && config.items.exists(results[slot])){
+                    e[slot] = r;
+                }else{
+                    e[slot] = meta[slot].default;
+                }
+            }
+        }).catch(function(err){
+            var meta = config.hub.getItemMetaData(),
+                e = self.equipped,
+                slot, r;
+
+            for(slot in meta){
+                e[slot] = meta[slot].default;
+            }
+        }).finally(function(){
+            // Do in the finally block as the promise always actually runs
+
+            // Get the user data from the db
+            var connectedTime = new Date(),
+                sessionPromise = db.createSession({
+                    user_id: userId,
+                    start_time: connectedTime.toISOString()
+                });
+
+            //load the users statuses here
+            var statusPromise = db.getConditionsForUser(userId).then(function(results){
+                for(var i=0; i<results.length; i++){
+                    //loop over all statuses and start
+                    var statuses = config.conditions.getConfig(results[i]).statuses;
+                    statuses.forEach(function(status){
+                        if(config.statuses.exists(status)){
+                            var currentStatus = config.statuses.getConfig(status);
+                            stats[currentStatus.id] = new Status(currentStatus);
+                        }
+                    });
+                }
+            });
+
+
+
+            Promise.join(sessionPromise, statusPromise).then(function(){
+                //console.log(userId, equipped, stats, connectedTime, comms)
+                var h = new Hub(userId, equipped, stats, connectedTime, comms);
+
+                // Set up the hub event listeners for the comms module, bind them to the hub
+                comms.setEventListeners(commsEventListeners, h);
+
+                cb(h);
+            }).catch(function(err){
+                cb({error : err});
+            });
+
+        });
+
+        //return h;
     }
 };
 

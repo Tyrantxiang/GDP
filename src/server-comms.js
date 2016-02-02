@@ -82,12 +82,13 @@ module.exports = function (server, auth, config, hub){
     io.on("connection", function (socket){
         console.log("      uid " + socket.userId + ": socket created");
         // On connection create a new Comms class and let that deal with creating bindings and sending data
-        var h = hub.create(socket.userId, new Comms(socket));
+        hub.create(socket.userId, new Comms(socket), function(h){
 
-        // Exit the hub on disconnect, so it can clean itself up gracefully
-        socket.on("disconnect", function (){
-            console.log("      uid " + socket.userId + ": socket disconnect");
-            h.exit();
+            // Exit the hub on disconnect, so it can clean itself up gracefully
+            socket.on("disconnect", function (){
+                console.log("      uid " + socket.userId + ": socket disconnect");
+                h.exit();
+            });
         });
 		
     });
