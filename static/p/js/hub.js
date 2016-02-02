@@ -953,7 +953,7 @@
         };
 
         proto.getAssetURL = function(asset){
-            return this.assetBaseURL + "/" + asset;
+            return this.assetBaseURL + asset;
         };
 
     })(GameAPI.prototype);
