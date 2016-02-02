@@ -1,4 +1,5 @@
 \documentclass[a4paper,12pt]{article}
+\usepackage{float}
 \input{structure.tex} % Input the structure.tex file which specifies the document layout and style
 
 %----------------------------------------------------------------------------------------
@@ -14,18 +15,66 @@
 %----------------------------------------------------------------------------------------
 \section{Overview}
 
-The Superuser Inteface allows easy creation of new configurations which the game can use.
-The diffrerent types of configurations include:
+The framework has been designed with extensibility in mind, and this concept has of course also been applied to the development of our front-end. This documentation is therefore aimed at artists and designers who create artwork for the framework.
+
+\section{Adding Graphics}
+
+\subsection{Requirements/Guidelines}
+Below are general guidelines for images that are to be used in the framework:
+
 \begin{itemize}
-	\item New carriable items (medicine, food, etc)
-	\item New conditions (diabetes, renal failure etc)
-	\item New status effects that are linked to conditions (bloodsugar etc)
-	\item New customization items (new avatar items or house items)
-	\item New minigames the users can play
+	\item The image must have a transparent background.
+	\item The image must be in .png format.
+	\item The image must look suitable for the background of the hub, please ensure that it fits in (e.g. the image should be angled correctly and a sensible scale).
+	\item The image must fit the dimensions outlined below.
 \end{itemize}
 
-The purpose of the interface is to both allow quick access to the addition and removal of the objects without
-direct access to the server, but also to allow those without the technical knowledge to navigate the server the
-ability to still add their own ideas.
+\subsection{Hub Items}
+
+The names of the items in the following table are defined from what the default image is. The objects don't have to explicitly be of the same type, e.g. a trampoline could easily be used instead of a swing. However, please make sure that the image fits the themes, and make sense in the context. This is especially important for the iteractive items (shown by the * marker in the table); ensure their purpose is clear.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c|c|l|}
+		\hline
+		Item  		& Dimensions	& Function \\ \hline
+		Backpack*	& X x Y			& Bag packing for carriables. \\
+		Desk		& X x Y			& N/A \\
+		Garden		& X x Y			& N/A \\
+		House		& X x Y			& N/A \\
+		Laptop*		& X x Y			& Shop for custom items. \\
+		Mirror*		& X x Y			& Avatar customisation. \\
+		Paintbrush*	& X x Y			& Hub customisation. \\
+		Path*		& X x Y			& Mini-game selection. \\
+		Sofa		& X x Y			& N/A \\
+		Stairs*		& X x Y			& Sleep for health recovery. \\
+		Swing		& X x Y			& N/A \\
+		Tree		& X x Y			& N/A \\
+		Trophy*		& X x Y			& Highscores. \\
+		TV			& X x Y 		& N/A \\ \hline
+	\end{tabular}
+	\caption{Hub Sprite Dimensions}
+	\label{tab:hub_dimensions}
+\end{table}
+
+\subsection{Avatar Items}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c|c|}
+		\hline
+		Item  & Dimensions \\ \hline
+		Eyes  & X x Y      \\
+		Head  & X x Y      \\
+		Skin  & X x Y      \\
+		Shirt & X x Y      \\ \hline
+	\end{tabular}
+	\caption{Avatar Sprite Dimensions}
+	\label{tab:avatar_dimensions}
+\end{table}
+
+\subsection{Carriable items}
+
+The images will be completely square when displayed, so ensure any designed images are square and please use transparency to fill in any excess space.
 
 \end{document}
