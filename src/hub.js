@@ -355,9 +355,11 @@ Hub.prototype.generateAvatarImage = function(items, cb){
 
 
 
-    // Generate
+    // Add other items and generate
+    if(eyes){
+        urls[itemMeta.eyes.zIndex] = eyes;
+    }
     urls.splice(1, 0, mouth);
-    if(eyes) urls.splice(1, 0, eyes);
     urls.splice(1, 0, healthImg);
 
     cb(this.imgMaker(urls));
