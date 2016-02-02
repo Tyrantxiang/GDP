@@ -32,7 +32,9 @@ db.init = function(pass, fail, settings) {
 	
 	console.log(settings);
 
-	pass.call(null, db);
+	seq.syncPromise.then(function(){
+		pass.call(null, db);
+	});
 
 	return db;
 }
