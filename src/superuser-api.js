@@ -62,12 +62,14 @@ function sendError(res, message){
  */
 function getRandomUnusedId(configObj){
 	var newId;
+	
 	while(!newId){
 		var currentId = Math.floor(Math.random() * 32767);
 		
-		if(configObj.getConfig(currentId) === null){
+		if(!configObj.getConfig(currentId)){
 			newId = currentId;
 		}
+		
 	}
 	return newId;
 }
@@ -430,6 +432,7 @@ var routes = {
      * @type {express_route}
      */
 	add_store_item : createRoute(["name", "description", "slot", "price"], function(req, res){
+		
 		//the validate.js constraints of all the properties
 		var constraints = {
 			slot : {
@@ -444,6 +447,7 @@ var routes = {
 		};
 		
 		var properties = ["name", "description", "slot", "price"];
+		req.body.price = parseInt(req.body.price);
 		
 		//perform validation
 		var allValid = validate(req.body, constraints);
@@ -457,8 +461,8 @@ var routes = {
 		for(i=0; i<properties.length; i++){
 			obj[properties[i]] = req.body[properties[i]];
 		}
-		obj.id = getRandomUnusedId(config.items);	
-		createFiles(req.file.path, "items/" + obj.id.toString(), obj, undefined);
+		obj.id = getRandomUnusedId(config.items);
+		createFiles(req.file.path, "items/" + req.body.slot + "/" + obj.id.toString(), obj, undefined);
 		
 		res.json({"success": true});
 	}),

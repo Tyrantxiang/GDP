@@ -163,6 +163,10 @@ function superuserSetup(token){
 		});
 		attachOptions($('#add_store_item_slot'), dataArr);
 	});
+	
+	$('#add_store_item_submit').click(function(e){
+		$('#add_store_item').submit();
+	});
 })();
 
 //Remove store item
