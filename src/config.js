@@ -396,7 +396,7 @@ function configReaderFactory(directory){
                         // Report error here
                         console.error("          Error reading config: " + path.join(dir, configFileName));
                         console.error("          ", e);
-                        uploadConfig(dir);
+                        unloadConfig(dir);
                     }
                 });
             }else{
