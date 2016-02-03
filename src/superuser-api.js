@@ -133,7 +133,7 @@ function deleteFolderRecursive(path) {
 				fs.unlinkSync(curPath);
 			}
 		});
-		fs.rmdirSync(path);
+		//fs.rmdirSync(path);
 	}
 }
 
@@ -151,6 +151,7 @@ function createRoute(properties, cb){
 		if(!invalid){
 			cb(req, res);
 		}else{
+			console.log(req.body);
 			console.log("Error in validation:" + invalid);
 			sendError(res, "Request body not valid - missing: " + invalid);
 		}
@@ -258,7 +259,7 @@ var routes = {
 	 * @var
      * @type {express_route}
      */
-	add_status : createRoute(["name", "min_val", "max_val", "healthy_min", "healthy_max", "isNumber", "words"], function(req, res){
+	add_status : createRoute(["name", "min_val", "max_val", "healthy_min", "healthy_max", "words"], function(req, res){
 		//the validate.js constraints of all the properties
 		var constraints = {
 			name : {
@@ -290,6 +291,7 @@ var routes = {
 		};
 		
 		//define the variables used in this function
+		if(!req.body.isNumber) req.body.isNumber = true;//!req.body.words;
 		var properties = ["name", "min_val", "max_val", "healthy_min", "healthy_max", "isNumber", "words"];
 		
 		//validate
@@ -297,10 +299,14 @@ var routes = {
 		var wordsValid = req.body.isNumber || Object.keys(req.body.words).every(ele => validate.isInteger(ele));
 		var valsValid = () => {
 			var a = req.body;
-			var valsOk = (a.min_val <= a.healthy_min) && (a.healthy_min < a.healthy_max) && (a.healthy_max < a.max_val);
+			var valsOk = (parseInt(a.min_val) <= parseInt(a.healthy_min)) 
+							&& (parseInt(a.healthy_min) < parseInt(a.healthy_max)) 
+							&& (parseInt(a.healthy_max) < parseInt(a.max_val));
 			return valsOk;
 		};
 		if(!(allValid && wordsValid && valsValid())){
+			console.log(allValid, wordsValid, valsValid());
+			console.log(req.body);
 			sendError(res, "Validation failed");
 			return;
 		}
@@ -313,7 +319,7 @@ var routes = {
 		}
 		obj.id = id;
 		
-		createFiles(req.file.path, "/statuses/" + id.toString(), obj, undefined);
+		createFiles(undefined, "/statuses/" + id.toString(), obj, undefined);
 		
 		res.json({"success": true});
 	}),

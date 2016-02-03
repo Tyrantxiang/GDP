@@ -146,7 +146,7 @@ function startApp(db){
 
 	//Superuser http API routes
     // These require uploads, which needs to be the first middleware
-    app.use(["/superuser/add_bag_item", "/superuser/add_status", "/superuser/add_store_item"], upload_multer.single("sprite"));
+    app.use(["/superuser/add_bag_item", "/superuser/add_store_item"], upload_multer.single("sprite"));
 
     // Add auth to the routes
     app.use("/superuser", auth.express_middleware, auth.admin_check);

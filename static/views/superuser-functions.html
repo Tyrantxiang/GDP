@@ -74,7 +74,7 @@
 	<div style="display: none;">
 		<!-- Words only if isNumber is false. Words is a JSON object with number keys to the word associated with that status value -->
 		<h3>Add status</h3>
-		<form id="add_status" action="/superuser/add_status" enctype="multipart/form-data">
+		<form id="add_status" action="/superuser/add_status">
 			<div>
 				<label for="add_status_name">Name:</label>
 				<div class="col-sm-10">
@@ -106,17 +106,11 @@
 				</div>
 			</div>
 			<div>
-				<label for="add_status_sprite">Sprite file:</label>
-				<div class="col-sm-10" >
-					<input id="add_status_sprite" type="file" name="sprite" accept="image/png"/>
-				</div>
-			</div>
-			<div>
 				<label for="add_status_numbers">Use word labels?:</label>
 				<div class="col-sm-10">
 					<div class="checkbox">
 					  <label>
-						<input type="checkbox" id="add_status_numbers" value="1" disabled>
+						<input type="checkbox" id="add_status_numbers" value="1" name="isNumber" readonly>
 					  </label>
 					</div>
 				</div>
@@ -125,12 +119,12 @@
 			<div style="display: none">
 				<label for="add_status_name">Word labels:</label>
 				<div class="col-sm-10" id="add_status_div">
-					TODO
+					<input type="hidden" name="words" value="0">
 				</div>
 			</div>
 			<div>
 				<div class="col-sm-offset-2 col-sm-10">
-					<button id="add_status_submit" type="button" class="btn btn-default">Submit</button>
+					<button id="add_status_submit" type="submit" class="btn btn-default">Submit</button>
 				</div>
 			</div>
 		</form>
@@ -147,7 +141,7 @@
 			</div>
 			<div>
 				<div class="col-sm-offset-2 col-sm-10">
-					<button id="remove_status_submit" type="button" class="btn btn-default">Submit</button>
+					<button id="remove_status_submit" type="submit" class="btn btn-default">Submit</button>
 				</div>
 			</div>
 		</form>
@@ -195,7 +189,7 @@
 			</div>
 			<div>
 				<div class="col-sm-offset-2 col-sm-10">
-					<button id="remove_condition_submit" type="button" class="btn btn-default">Submit</button>
+					<button id="remove_condition_submit" type="submit" class="btn btn-default">Submit</button>
 				</div>
 			</div>
 		</form>
