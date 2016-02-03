@@ -93,17 +93,6 @@ usersDB.updateUserDetails = function(updatedUserObj, id){
 	}
 }
 
-//Updates only currency for a user entry
-usersDB.updateUserCurrency = function(newCurrency, id){
-	return Users.update({
-		'currency': newCurrency
-	}, {
-		where : {
-			'id' : id
-		}
-	});
-}
-
 //Deletes a user entry given an id
 usersDB.deleteUser = function(id){
 	return Users.destroy({

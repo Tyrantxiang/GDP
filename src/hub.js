@@ -352,19 +352,14 @@ Hub.prototype.generateAvatarImageFromEquippedItems = function(cb){
  * @param {function} cb - Called on success or failure
  */
 Hub.prototype.modifyCurrency = function(modify, cb){
-    var userId = this.userId;
-
-    db.readUserById(userId).then(function(user){
-        var newVal = parseInt(user.currency) + parseInt(modify);
-        db.updateUserCurrency(newVal, userId).then(function(){
-            cb({
-                success: true,
-                currency: newVal
-            });
-        }).catch(function(err){
-            cb({error: err});
-        });
-    }).catch(function(err){
+	
+    db.modifyUserCurrency(parseInt(modify), this.userId).then(function(currencyObj){
+		console.log(currencyObj.currency);
+		cb({
+			success: true,
+			currency: currencyObj.currency
+		});
+	}).catch(function(err){
         cb({error: err});
     });
 };
@@ -1082,15 +1077,16 @@ var commsEventListeners = {
      * @param {module:hub~commsEventListeners~commsCallback} fn
      */
     get_currency : function(data, fn){
-        db.readUserById(this.userId).then(function(user){
-            fn({currency: user.currency});
+        db.readUserCurrency(this.userId).then(function(curr){
+			console.log(curr);
+            fn({currency: curr.currency});
         }).catch(function(err){
             fn({error: err});
         });
     },
 
     /**
-     * Get the amount of currency a user has
+     * Unlock an item for the user
      *
      * @param {Object|null} data - The data passed from the client to the server
      * @param {int}    data.item_id - The ID number of the item to unlock
@@ -1107,33 +1103,21 @@ var commsEventListeners = {
 
                 item_price = config.items.getConfig(data.item_id).price;
 
-            function doUnlock(){
-                db.createUserInventory(inventoryObj).then(function(obj){
-                    fn({success : true});
-                }).catch(function(err){
-                    fn({error: err});
-                });
-            }
-
-            // TODO use modifyCurrency and adjust that so it cannot go below zero
-            db.readUserById(userId).then(function(user){
-                if(item_price <= user.currency){
-                    db.readUserById(userId).then(function(user){
-                        db.updateUserCurrency(user.currency-item_price, userId)
-                            .then(doUnlock)
-                            .catch(function(err){
-                                fn({error: err});
-                            });
-                    }).catch(function(err){
-                        fn({error: err});
-                    });
+            // TODO use modifyCurrency and adjust that so it cannot go below zero			
+			db.readUserCurrency(userId).then(function(currencyObj){
+				if(item_price <= currencyObj.currency){
+					return db.modifyUserCurrency(0-item_price, userId).then(function(){
+						return db.createUserInventory(inventoryObj);
+					}).then(function(){
+						fn({success : true});
+					});
                 }else{
-                    fn({error : "Not enough currency"});
+                    throw new Error("Not enough currency");
                 }
-
-            }).catch(function(err){
+			}).catch(function(err){
                 fn({error: err});
             });
+			
         }else{
             fn({error: "Item does not exist"});
         }
@@ -1268,9 +1252,6 @@ Status.prototype.getMultiplier = function(){
 
     return (value_difference / unhealthy_range);
 };
-
-
-
 /** Serialises this class into an object that can be sent to the client (via JSON)
  *
  * @return {Object}

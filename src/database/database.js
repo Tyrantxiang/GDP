@@ -18,7 +18,8 @@ db.init = function(pass, fail, settings) {
 	, require('./plays_db.js')(seq)
 	, require('./userConditions_db.js')(seq)
 	, require('./userInventory_db.js')(seq)
-	, require('./userEquipped_db.js')(seq) ]
+	, require('./userEquipped_db.js')(seq)
+	, require('./userCurrency_db.js')(seq) ]
 	;
 
 	//Maps all functions in different modules into this one interface
@@ -29,11 +30,12 @@ db.init = function(pass, fail, settings) {
 			}
 		}
 	});
-	
-	console.log(settings);
 
 	seq.syncPromise.then(function(){
-		pass.call(null, db);
+		pass(db);
+	/*}).catch(function(err){
+		console.log("rip");
+		console.log(err);*/
 	});
 
 	return db;

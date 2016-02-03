@@ -21,7 +21,7 @@ var sequelize = new Sequelize(connectionString, {
 			timestamps : true,
 			freezeTableName : true,
 			schema : settings.schema,
-			searchPath : 'sschema',
+			searchPath : settings.schema,
 			createdAt : 'created',
 			updatedAt : 'modified',
 			paranoid : true
@@ -52,14 +52,6 @@ var Users = sequelize.define('users', {
 			isDate : true,
 			//isBefore : new Date(Date.now - (1000 * 60 * 60 * 24 * 365 * 10)) //older or equal to than 10 years
 			//isAfter : new Date(Date.now - (1000 * 60 * 60 * 24 * 365 * 18)) //younger than 18 years
-		}
-	}, currency : {
-		type : Sequelize.INTEGER,
-		allowNull : false,
-		defaultValue : 0,
-		validate : {
-			isInt : true,
-			min : 0
 		}
 	}
 });
@@ -231,6 +223,24 @@ var UserEquipped = sequelize.define('user_equipped', {
 	}
 });
 
+var UserCurrency = sequelize.define('user_currency', {
+	id : {
+		type : Sequelize.INTEGER,
+		primaryKey: true,
+		autoIncrement: true
+	}, user_id : {
+		type : Sequelize.INTEGER,
+		allowNull : false
+	}, currency : {
+		type : Sequelize.INTEGER,
+		allowNull : false,
+		validate : {
+			isInt : true,
+			min : 0
+		}
+	}
+});
+
 Sessions.belongsTo(Users, {foreignKey: 'user_id', targetKey: 'id'});
 Users.hasMany(Sessions, {foreignKey : 'user_id'});
 
@@ -246,6 +256,9 @@ Users.hasMany(UserInventory, {foreignKey : 'user_id'});
 UserEquipped.belongsTo(Users, {foreignKey: 'user_id', targetKey: 'id'});
 Users.hasMany(UserEquipped, {foreignKey : 'user_id'});
 
+UserCurrency.belongsTo(Users, {foreignKey: 'user_id', targetKey: 'id'});
+Users.hasMany(UserCurrency, {foreignKey : 'user_id'});
+
 var syncPromise = sequelize.sync({ force : false });
 
 var returnValue = {
@@ -255,11 +268,10 @@ var returnValue = {
 	UserConditions : UserConditions,
 	UserInventory : UserInventory,
 	UserEquipped : UserEquipped,
+	UserCurrency : UserCurrency,
 	sequelize : sequelize,
 	syncPromise : syncPromise
 };
-
-sequelize.sync({ force : false });
 
 return returnValue;
 
