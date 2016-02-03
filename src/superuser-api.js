@@ -557,7 +557,7 @@ var dataRoutes = {
      */
 	get_all_statuses : function(req, res){
 		var allStatuses = config.statuses.listAll();
-		allStatuses.push({id: "hp", name : "hp"});
+		if(req.body.withHp) allStatuses.push({id: "hp", name : "hp"});
 		
 		res.status(200).json(allStatuses);
 	},

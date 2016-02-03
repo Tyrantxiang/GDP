@@ -39,7 +39,7 @@ function superuserSetup(token){
 	
 //Add carriable	
 (function(){
-	$.post("/superuser/get_all_statuses", {token : token}, function(data){
+	$.post("/superuser/get_all_statuses", {token : token, withHp : true}, function(data){
 		
 		var addNewCarriableEffect = function(){
 			var div = $('<div>').addClass("form-group").addClass("row");
@@ -64,7 +64,9 @@ function superuserSetup(token){
 		e.preventDefault();
 		
 		var allEffects = $('#add_carriable_effects').children().map(function(){
-			var id = parseInt($(this).find(':selected').attr("value"));
+			var id = $(this).find(':selected').attr("value");
+			var id = $(this).find(':selected').attr("value");
+			id = id==="hp"?"hp":parseInt(id);
 			var val = parseInt($(this).find("input").val());
 			
 			return {id : id, amount : val};
