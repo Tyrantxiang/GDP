@@ -10,6 +10,7 @@
 
 var fs = require("fs");
 var validate = require("validate.js");
+var path = require("path");
 
 var config;
 function setConfig(cfg){
@@ -126,7 +127,7 @@ function isJsonString(str) {
 function deleteFolderRecursive(path) {
 	if(fs.existsSync(path)){
 		fs.readdirSync(path).forEach(function(file, index){
-			var curPath = path + "/" + file;
+			var curPath = path.join(path, file);
 			if(fs.lstatSync(curPath).isDirectory()){
 				deleteFolderRecursive(curPath);
 			}else{
@@ -214,7 +215,7 @@ var routes = {
 			obj[properties[i]] = req.body[properties[i]];
 		}
 		obj.id = getRandomUnusedId(config.carriables);	
-		createFiles(req.file.path, "carriables\\" + obj.id.toString(), obj, undefined);
+		createFiles(req.file.path, path.join("carriables", obj.id.toString()), obj, undefined);
 
 		res.json({"success": true});
 	}),
@@ -315,7 +316,7 @@ var routes = {
 		}
 		obj.id = id;
 		
-		createFiles(undefined, "/statuses/" + id.toString(), obj, undefined);
+		createFiles(undefined, path.join("statuses", id.toString()), obj, undefined);
 		
 		res.json({"success": true});
 	}),
@@ -391,7 +392,7 @@ var routes = {
 			obj[properties[i]] = req.body[properties[i]];
 		}
 		obj.id = id;
-		createFiles(undefined, "/conditions/" + id.toString(), obj, undefined);
+		createFiles(undefined, path.join("conditions", id.toString()), obj, undefined);
 		
 		res.json({"success": true});
 	}),
@@ -464,7 +465,7 @@ var routes = {
 			obj[properties[i]] = req.body[properties[i]];
 		}
 		obj.id = getRandomUnusedId(config.items);
-		createFiles(req.file.path, "items/" + req.body.slot + "/" + obj.id.toString(), obj, undefined);
+		createFiles(req.file.path, path.join("items", req.body.slot, obj.id.toString()), obj, undefined);
 		
 		res.json({"success": true});
 	}),
