@@ -140,7 +140,7 @@
                 if(self.avatarImage.src !== d.avatarImage){
                     self.avatarImage = base64ToImg(d.avatarImage);
                 }
-                cb.call(self, d.health, this.avatarImage, d.symptoms);
+                cb.call(self, d.health, self.avatarImage, d.symptoms);
             });
         };
 
@@ -160,7 +160,7 @@
         };
 
         this.getAssetURL = function(asset){
-            return dispatcher.windowOrigin + baseAssetURL + "/" + asset;
+            return dispatcher.windowOrigin + baseAssetURL + asset;
         };
     }
 
