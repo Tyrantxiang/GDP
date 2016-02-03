@@ -134,7 +134,9 @@ Hub.prototype.exit = function(){
     // Save session data in db
     var disconnectTime = new Date();
 
-    db.endSession(disconnectTime.toISOString(), this.userId).then(function(){}).catch(function(){});
+    db.endSession(disconnectTime, this.userId).catch(function(err){
+		console.log(err.toString());
+	});
 };
 
 
@@ -1343,14 +1345,14 @@ var exportFunctions = {
             for(slot in meta){
                 e[slot] = meta[slot].default;
             }
-        }).finally(function(){
+        }).then(function(){
             // Do in the finally block as the promise always actually runs
 
             // Get the user data from the db
             var connectedTime = new Date(),
                 sessionPromise = db.createSession({
                     user_id: userId,
-                    start_time: connectedTime.toISOString()
+                    start_time: connectedTime
                 });
 
             //load the users statuses here

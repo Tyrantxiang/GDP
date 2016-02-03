@@ -31,13 +31,14 @@ sessionsDB.readSessionById = function(id){
 //This updates a session entry to have the end_time of said session
 //When the session ends, this should be called
 sessionsDB.endSession = function(end_ts, userid){	
-	return Sessions.findById(userid).then(function(session){
+	return Sessions.findOne({
+		where : {
+			user_id : userid
+		}, order : [['id', 'DESC']]
+	}).then(function(session){
 		session.end_time = end_ts;
 		
-		var isNotValid = session.validate();
-		
-		if(isNotValid) throw new Error(isNotValid.message);
-		else return session.save();
+		return session.save();
 	});
 }
 

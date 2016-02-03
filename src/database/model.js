@@ -259,7 +259,9 @@ Users.hasMany(UserEquipped, {foreignKey : 'user_id'});
 UserCurrency.belongsTo(Users, {foreignKey: 'user_id', targetKey: 'id'});
 Users.hasMany(UserCurrency, {foreignKey : 'user_id'});
 
-var syncPromise = sequelize.sync({ force : false });
+var syncPromise = sequelize.sync({ force : false }).then(function(){
+	//TODO: db maintenance stuff here
+});
 
 var returnValue = {
 	Users : Users,
