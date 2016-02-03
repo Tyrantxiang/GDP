@@ -352,6 +352,27 @@ function configReaderFactory(directory){
 
 
 
+    function unloadConfig(dir){
+        // Does not exist
+        // Find which config had this game in and delete it
+        for(config in configs){
+            if(configs[config].directory === dir){
+                delete configs[config];
+                break;
+            }
+        }
+        // Delete it's watcher
+        if(configWatchers[dir]){
+            configWatchers[dir].close();
+        }
+
+        // Always delete subdir from the directory list
+        delete subDirectories[dir];
+
+        console.log("          Unloaded config: " + path.join(dir, configFileName));
+    }
+
+
     /* Takes a particular config dir and loads it into memory */
     function updateConfig(dir){
         // Check if directory still exists
@@ -375,26 +396,11 @@ function configReaderFactory(directory){
                         // Report error here
                         console.error("          Error reading config: " + path.join(dir, configFileName));
                         console.error("          ", e);
+                        uploadConfig(dir);
                     }
                 });
             }else{
-                // Does not exist
-                // Find which config had this game in and delete it
-                for(config in configs){
-                    if(configs[config].directory === dir){
-                        delete configs[config];
-                        break;
-                    }
-                }
-                // Delete it's watcher
-                if(configWatchers[dir]){
-                    configWatchers[dir].close();
-                }
-
-                // Always delete subdir from the directory list
-                delete subDirectories[dir];
-
-                console.log("          Unloaded config: " + path.join(dir, configFileName));
+                unloadConfig(dir);
             }
         });
     }
