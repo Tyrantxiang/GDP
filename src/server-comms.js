@@ -60,8 +60,6 @@ Comms.prototype.send = {
 };
 
 
-
-
 /**
  * Initialises the Socket.io module and begins listening for socket requests
  *
@@ -74,24 +72,39 @@ Comms.prototype.send = {
 module.exports = function (server, auth, config, hub){
     var io = require("socket.io")(server);
 
-
-
-    // Set the auth middleware
-    io.use(auth.socket_middleware);
-
-    io.on("connection", function (socket){
+    function connect_middleware(socket, next){
         console.log("      uid " + socket.userId + ": socket created");
         // On connection create a new Comms class and let that deal with creating bindings and sending data
         hub.create(socket.userId, new Comms(socket), function(h){
+            if(h.error){
+                next(new Error("Could not create hub"));
+                return;
+            }
+
+            socket.hub = h;
 
             // Exit the hub on disconnect, so it can clean itself up gracefully
             socket.on("disconnect", function (){
                 console.log("      uid " + socket.userId + ": socket disconnect");
                 h.exit();
             });
+
+            next();
         });
-		
-    });
+
+    }
+
+
+
+    // Set the auth middleware
+    io.use(auth.socket_middleware);
+
+    // Setup middleware (bit of a hack)
+    io.use(connect_middleware);
+
+    /*io.on("connection", function (socket){
+
+    });*/
 
 
     return io;
