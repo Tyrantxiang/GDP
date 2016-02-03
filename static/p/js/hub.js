@@ -332,13 +332,16 @@
     // Getting carriables and those in the bag
     hub.getAllCarriables = function(cb){
         comms.get_all_carriables(function(data){
-            var needToLoad = data.filter(function(c){
+            var toKeep = [],
+                needToLoad = data.filter(function(c){
+                    toKeep.push(c.id);
                     return !hub.carriables[c.id];
                 }),
 
                 l = latch(needToLoad.length, function(){
                     cb(hub.carriables);
                 });
+
 
                 needToLoad.forEach(function(c){
                     var i = document.createElement("img");
@@ -352,6 +355,14 @@
                     });
                     i.src = c.url;
                 });
+
+            // PURGE
+            for(var i in hub.carriables){
+                var index = toKeep.indexOf(i);
+                if(index < 0){
+                    delete hub.carriables[i];
+                }
+            }
         });
     };
 
