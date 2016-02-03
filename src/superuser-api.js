@@ -291,6 +291,10 @@ var routes = {
 		
 		//define the variables used in this function
 		if(!req.body.isNumber) req.body.isNumber = true;//!req.body.words;
+		req.body.min_val = parseInt(req.body.min_val);
+		req.body.max_val = parseInt(req.body.max_val);
+		req.body.healthy_min = parseInt(req.body.healthy_min);
+		req.body.healthy_max = parseInt(req.body.healthy_max);
 		var properties = ["name", "min_val", "max_val", "healthy_min", "healthy_max", "isNumber", "words"];
 		
 		//validate
@@ -298,9 +302,9 @@ var routes = {
 		var wordsValid = req.body.isNumber || Object.keys(req.body.words).every(ele => validate.isInteger(ele));
 		var valsValid = () => {
 			var a = req.body;
-			var valsOk = (parseInt(a.min_val) <= parseInt(a.healthy_min)) 
-							&& (parseInt(a.healthy_min) <= parseInt(a.healthy_max)) 
-							&& (parseInt(a.healthy_max) <= parseInt(a.max_val));
+			var valsOk = (a.min_val <= a.healthy_min) 
+							&& (a.healthy_min <= a.healthy_max) 
+							&& (a.healthy_max <= a.max_val);
 			return valsOk;
 		};
 		if(!(allValid && wordsValid && valsValid())){
