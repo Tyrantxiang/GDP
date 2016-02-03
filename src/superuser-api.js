@@ -124,10 +124,11 @@ function isJsonString(str) {
  *
  * @param {string} path - The folder path to delete
  */
-function deleteFolderRecursive(path) {
-	if(fs.existsSync(path)){
-		fs.readdirSync(path).forEach(function(file, index){
-			var curPath = path.join(path, file);
+function deleteFolderRecursive(pat) {
+	if(fs.existsSync(pat)){
+		fs.readdirSync(pat).forEach(function(file, index){
+			console.log()
+			var curPath = path.join(pat, file);
 			if(fs.lstatSync(curPath).isDirectory()){
 				deleteFolderRecursive(curPath);
 			}else{
