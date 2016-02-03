@@ -84,7 +84,7 @@ function getRandomUnusedId(configObj){
  */
 function createFiles(spriteLoc, newLoc, configObj, otherFiles){
 	newLoc = config.app.getRootDirectory() + "configs/" + newLoc + "/";
-	console.log(newLoc);
+	
 	fs.mkdir(newLoc, function(err){
 		if(spriteLoc){
 			fs.readFile(spriteLoc, function (err, data) {
@@ -302,7 +302,6 @@ var routes = {
 			return valsOk;
 		};
 		if(!(allValid && wordsValid && valsValid())){
-			console.log(allValid, wordsValid, valsValid());
 			console.log(req.body);
 			sendError(res, "Validation failed");
 			return;
@@ -558,7 +557,6 @@ var dataRoutes = {
 	get_all_statuses : function(req, res){
 		var allStatuses = config.statuses.listAll();
 		allStatuses.push({id: "hp", name : "hp"});
-		console.log(allStatuses);
 		
 		res.status(200).json(allStatuses);
 	},
