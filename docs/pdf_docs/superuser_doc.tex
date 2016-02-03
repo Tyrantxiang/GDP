@@ -15,20 +15,24 @@
 %----------------------------------------------------------------------------------------
 \section{Overview}
 
-The Superuser Inteface allows easy creation of new configurations which the game can use.
-The diffrerent types of configurations include:
+The Superuser Interface allows easy creation of new configurations which the game can use.
+The different types of configurations include:
 \begin{itemize}
-	\item New carriable items (medicine, food, etc)
-	\item New conditions (diabetes, renal failure etc)
-	\item New status effects that are linked to conditions (bloodsugar etc)
+	\item New carriable items (medicine, food, etc.)
+	\item New conditions (diabetes, renal failure etc.)
+	\item New status effects that are linked to conditions (Blood Sugar etc)
 	\item New customization items (new avatar items or house items)
-	\item New minigames the users can play
+	\item New mini-games the users can play
 \end{itemize}
 
 The purpose of the interface is to both allow quick access to the addition and removal of the objects without
 direct access to the server, but also to allow those without the technical knowledge to navigate the server the
 ability to still add their own ideas.
 
+
+\section{Connecting}
+
+Accessing the Superuser Interface is extremely simple: just add "/superuser.html" to the end of the address of the application and load that page. You will then be required to login (using details that should have been provided separately). This will give you access to the interface.
 
 %----------------------------------------------------------------------------------------
 %	THE SUPERUSER API SECTION
@@ -57,7 +61,7 @@ Parameters:
 
 \subsection*{Add status}
 Adds a new status configuration. A status is what is affected by a condition.\\
-e.g. Bloodsugar is a status, which is caused by the condition diabetes.\\
+e.g. Blood Sugar is a status, which is caused by the condition diabetes.\\
 Parameters (all numbers must be integers):
 \begin{itemize}
 	\setlength\itemsep{0em}
@@ -86,7 +90,7 @@ Parameters:
 \begin{itemize}
 	\setlength\itemsep{0em}
 	\item Name: the name of the condition
-	\item Statsues: the list of all the statuses associated with this condition
+	\item Statuses: the list of all the statuses associated with this condition
 \end{itemize}
 
 \subsection*{Remove condition}
@@ -98,7 +102,7 @@ Parameters:
 \end{itemize}
 
 \subsection*{Add store item}
-Adds a new item available to buy from the ingame store. These items include avatar items and hub customization items.\\
+Adds a new item available to buy from the in-game store. These items include avatar items and hub customization items.\\
 Parameters:
 \begin{itemize}
 	\setlength\itemsep{0em}
@@ -118,16 +122,16 @@ Parameters:
 	\item Item: the name of the item  to be removed
 \end{itemize}	
 
-\subsection*{Add minigame}
-Adds a new minigame to the server, so that users can play it.\\
+\subsection*{Add mini-game}
+Adds a new mini-game to the server, so that users can play it.\\
 Currently not implemented through the interface.\\
 
-\subsection*{Remove minigame}
-Removes a minigame from the server, so that users can no longer play it.
+\subsection*{Remove mini-game}
+Removes a mini-game from the server, so that users can no longer play it.
 Parameters:
 \begin{itemize}
 	\setlength\itemsep{0em}
-	\item Name: the name of the minigame to delete
+	\item Name: the name of the mini-game to delete
 \end{itemize}		
 
 \end{document}
