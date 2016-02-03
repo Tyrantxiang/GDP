@@ -1,220 +1,444 @@
 (function(){
+    "use strict";
 
-	var api;
-	var canvas;
-	var statuses;
-	var changeableStatus;
-	var health;
-	var score;
-	var currency;
-	var currentBag;
-
-
-	function run(a, div, assetBaseURL, startHp, stats, bag){
-		// Create the canvas
-		var can = document.createElement("canvas");
-		div.appendChild(can);
-
-		api = a;
-		canvas = can;
-		can.width="800";
-		can.height="600";
-
-		statuses = stats;
-		changeableStatus = statuses[Object.keys(statuses)[0]];
-		health = startHp;
-		symptom = "HEALTHY";
-		score = 0;
-		currency = 0;
-		currentBag = bag;
-
-		// Handle keyboard controls
-		api.addKeyListener("keydown", keyPressed);
-
-		render();
-	}
-
-	// Update values depending on key
-	var keyPressed = function (e) {
-		switch(e.keyCode){
-			case(40) : // Player pressed down
-				//console.log("down");
-				api.modifyHealth(-5, updateHealthAndAvatar);
-				break;			
-			case(38) : // Player pressed up
-				//console.log("up");
-				api.modifyHealth(5, updateHealthAndAvatar);
-				break;
-
-				
-			case(37) : // Player pressed left
-				//console.log("left");
-				if(changeableStatus)
-					api.modifyStatus(changeableStatus.id, -1, updateStatus);
-				break;
-			case(39) : // Player pressed right
-				//console.log("right");
-				if(changeableStatus)
-					api.modifyStatus(changeableStatus.id, 1, updateStatus);
-				break;
-			
-
-			case(74) : // Player pressed j
-				//console.log("J");
-				updateScore(-10);
-				break;
-			case(75) : // Player pressed k
-				//console.log("K");
-				updateScore(10);
-				break;
-
-			case(78) : // Player pressed n
-				//console.log("N");
-				updateCurrency(-10);
-				break;
-			case(77) : // Player pressed m
-				//console.log("M");
-				updateCurrency(10);
-				break;
-
-			case(49) : // Player pressed 1
-				numberPressed(1);
-				break;
-			case(50) : // Player pressed 2
-				numberPressed(2);
-				break;
-			case(51) : // Player pressed 3
-				numberPressed(3);
-				break;
-			case(52) : // Player pressed 4
-				numberPressed(4);
-				break;
-			case(53) : // Player pressed 5
-				numberPressed(5);
-				break;
-			case(54) : // Player pressed 6
-				numberPressed(6);
-				break;
-			case(55) : // Player pressed 7
-				numberPressed(7);
-				break;
-			case(56) : // Player pressed 8
-				numberPressed(8);
-				break;
-			case(57) : // Player pressed 9
-				numberPressed(9);
-				break;
-			case(48) : // Player pressed 0
-				numberPressed(10);
-				break;
-
-			case(70) : // Player pressed F
-				//console.log("F");
-				finishGame();
-				break;
-		}
-	};
-
-	var finishGame = function(){
-		//window.removeEventListener("keydown", keyPressed);
-		api.finishGame(score, currency);
-	}
-
-	var numberPressed = function(num){
-		//console.log(num);
-		var key = Object.keys(currentBag)[num-1];
-
-		if(currentBag[key] == undefined){
-			alert("NO ITEM IN THAT SLOT");
-		} else {
-			api.useCarriable(currentBag[key].id, updateCarriables);
-			render();
-		}
-	}
-	
-	function base64ToImg(base64){
-        var i = document.createElement("img");
-        i.src = "data:image/png;base64," + base64;
-        return i;
+    function latch(num, complete){
+        return function(){
+            if(!--num){
+                complete();
+            }
+        };
     }
 
-	/*
-	 *  Local value updating callbacks
-	 */
-	function updateHealthAndAvatar(newHealth, newAvatar, newSymps){
-		health = newHealth;
-		//Do something with avatar
-		symptom = ((newSymps && newSymps[0]) || "healthy").toUpperCase();
-		render();
-	}
-
-	function updateStatus(statusId, newValue){
-		statuses[statusId].value = newValue;
-		render();
-	}
-
-	function updateScore(changeVal){
-		score += changeVal;
-		render();
-	}
-
-	function updateCurrency(changeVal){
-		currency += changeVal;
-		render();
-	}
-
-	function updateCarriables(newBag, newHp, newStatuses, avatarImage, newSymps){
-		updateHealthAndAvatar(newHp, avatarImage);
-		for(var i in newStatuses){
-			statuses[i].value = newStatuses[i].value;
-		}
-		currentBag = newBag;
-		render();
-	}
-
-	/*
-	 *	Draw the text!
-	 */
-	var render = function () {
-		var ctx = canvas.getContext('2d');
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		ctx.font = "32px serif";
-		ctx.fillText("Dummy Game...", 10, 40);
-		ctx.fillText("Use Keys:", 10, 80);
-
-		ctx.font = "24px serif";
-		ctx.fillText("UP/DOWN to change health", 10, 120);
-		if(changeableStatus)
-			ctx.fillText("LEFT/RIGHT to change status: "+changeableStatus.name, 10, 150);
-		ctx.fillText("J/K to change score", 10, 180);
-		ctx.fillText("N/M to change currency", 10, 210);
-		ctx.fillText("Numbers to use carriables", 10, 240);
-		ctx.fillText("F to finish game", 10, 270);
+    function clamp(num, min, max){ // Keeps a given number in some bounds
+        return Math.max(min, Math.min(num, max));
+    };
 
 
-		ctx.fillText("Health: "+health, 10, 350);
-		if(changeableStatus)
-			ctx.fillText(changeableStatus.name+": "+changeableStatus.value, 10, 380);
-		ctx.fillText("Symptom: "+symptom, 10, 410);
-		ctx.fillText("Score: "+score, 10, 440);
-		ctx.fillText("Currency: "+currency, 10, 470);
-		ctx.fillText("Carriables: "+makeBagString(), 10, 500);
+    var info = [
+        {
+            location : 0,
+            text : [
 
-		ctx.drawImage(api.getAvatarImage(),canvas.width-300,0);
-	};
+            ]
+        },
+        {
+            location : 1000,
+            text : [
 
-	var makeBagString = function(){
-		var arr = []
-			index = 1;
-		for(var c in currentBag){
-			arr.push("("+index+")"+currentBag[c].name);
-			index++;
-		}
+            ]
+        },
+        {
+            location : 2000,
+            text : [
 
-		return arr.join(', ');
-	}
+            ]
+        },
+        {
+            location : 3000,
+            text : [
 
-	window.dummyGame = {
-		run : run
-	};
+            ]
+        },
+        {
+            location : 3500,
+            text : [
+
+            ]
+        },
+        {
+            location : 4000,
+            text : [
+
+            ],
+            image : {
+                asset : "er",
+                w : 650,
+                h : 250
+            }
+        },
+
+        {
+            location : 5500,
+            text : [
+
+            ]
+        },
+        {
+            location : 6000,
+            text : [
+
+            ]
+        },
+        {
+            location : 6500,
+            text : [
+
+            ]
+        },
+        {
+            location : 7500,
+            text : [
+
+            ],
+            image : {
+                asset : "page_model",
+                w : 800,
+                h : 400
+            }
+        },
+        {
+            location : 9000,
+            text : [
+
+            ],
+            image : {
+                asset : "page_cvalid",
+                w : 800,
+                h : 400
+            }
+        }
+    ];
+
+
+
+    var animFrame;
+
+    function run_extern(api, div, assetBaseURL, startHp, stats, bag){
+        var canvas = document.createElement("canvas"),
+            ctx = canvas.getContext("2d"),
+            width = canvas.width = 1024,
+            height = canvas.height = 800,
+            a;
+
+        div.appendChild(canvas);
+
+
+
+        // Load all of the assets
+        var assets = {
+            background : "background.png",
+            //left : "left.png",
+            //right : "right.png",
+            house : "house.png",
+            rock : "rock.png",
+
+            er : "er.png",
+
+            page_index : "page_index.png",
+            page_cvalid : "page_cvalid.png",
+            page_model : "page_model.png",
+            page_signup : "page_signup.png",
+            page_login : "page_login.png",
+            page_uploads : "page_uploads.png",
+            page_uploaded : "page_uploaded.png",
+            page_collect : "page_collect.png",
+
+            route_testing : "route_testing.png",
+            devtools : "devtools.png"
+        };
+
+        // Prepend assets directory to all the assets
+        for(a in assets){
+            assets[a] = api.getAssetURL(assets[a]);
+        };
+
+        // Load all of the assets into memory
+        var l = latch(Object.keys(assets).length, run);
+
+        function loadAsset(assets, a){
+            var i = document.createElement("img");
+            i.addEventListener("load", function(){
+                assets[a] = this;
+                l();
+            });
+            i.src = assets[a];
+        }
+
+        for(a in assets){
+            loadAsset(assets, a);
+        }
+
+
+
+        function startLoop(){
+            // Create the loop
+            var reqAnimFrame = window.requestAnimationFrame ||
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame ||
+                (function(){
+                    throw new Error("Game not supported in this browser/version: No support for rAF");
+                })();
+            var last = null;
+            var cb = function(ts){
+                var dt = Math.min(80, (ts - last))/1000;
+                last = ts;
+                // Do shizz
+                if(cv.update(dt)){
+                    cv.draw();
+                }
+                reqAnimFrame(cb);
+            };
+            animFrame = reqAnimFrame(function(ts){
+                last = ts;
+                cv.draw();
+                cb(ts);
+            });
+        }
+
+
+        var keysDown = {}; // The keys currently being pressed
+
+        var keydown_func = function(e){
+            var kc = e.keyCode;
+            keysDown[kc] = true;
+        },
+        keyup_func = function(e){
+            delete keysDown[(e % 1 === 0)?e:e.keyCode];
+        }
+
+
+        function run(){
+            // Add avatar image
+            assets.left = assets.right = api.getAvatarImage();
+            // Attach event listeners for keys
+            window.addEventListener("keydown", keydown_func);
+            window.addEventListener("keyup", keyup_func);
+
+            startLoop();
+        }
+
+        /*document.getElementById("move-right").addEventListener("mousedown", function(e){
+            e.preventDefault();
+            keysDown[39] = true;
+        });
+        document.getElementById("move-right").addEventListener("mouseup", function(e){
+            e.preventDefault();
+            delete keysDown[39];
+        });
+
+        document.getElementById("move-left").addEventListener("mousedown", function(e){
+            e.preventDefault();
+            keysDown[37] = true;
+        });
+        document.getElementById("move-left").addEventListener("mouseup", function(e){
+            e.preventDefault();
+            delete keysDown[37];
+        });
+
+        document.getElementById("move-right").addEventListener("touchstart", function(e){
+            e.preventDefault();
+            keysDown[39] = true;
+        });
+        document.getElementById("move-right").addEventListener("touchend", function(e){
+            e.preventDefault();
+            delete keysDown[39];
+        });
+
+        document.getElementById("move-left").addEventListener("touchstart", function(e){
+            e.preventDefault();
+            keysDown[37] = true;
+        });
+        document.getElementById("move-left").addEventListener("touchend", function(e){
+            e.preventDefault();
+            delete keysDown[37];
+        });*/
+
+
+
+        var cv = (function(){
+            var direction = "right", // The direction the player is moving in (left or right)
+                jump = false,
+                up = 0,
+                maxUp = 50,
+                location = 0, // The location of us in the game currently (in px)
+                minLoc = 0,
+                maxLoc = 10000, // Location the CV ends
+                speed = 800, // 100px/s
+                health = startHp,
+                finished = false;
+
+
+            function finish(score){
+                if(!finished){
+                    finished = true;
+                    cancelAnimationFrame(animFrame);
+                    window.removeEventListener(keyup_func);
+                    window.removeEventListener(keydown_func);
+                    keysDown = [];
+                    return api.finishGame(score, score / 10);
+                }else{
+                    return;
+                }
+            }
+
+
+            function detectColision(){
+                return true; // Dumb
+            }
+
+
+            function update(dt){
+                if(location === maxLoc){
+                    finish(1000);
+                }
+
+                var updated = false;
+                // Check the player direction
+                // RIGHT
+                if(keysDown[39]){
+                    direction = "right";
+                    location = clamp(location + (speed * dt), minLoc, maxLoc);
+                    updated = true;
+                }
+                // LEFT
+                if(keysDown[37]){
+                    direction = "left";
+                    location = clamp(location - (speed * dt), minLoc, maxLoc);
+                    updated = true;
+                }
+
+                // UP
+                if(keysDown[38] && !jump){
+                    jump = (up === 0);
+                    updated = true;
+                }
+
+                if(jump && up >= maxUp){
+                    jump = false;
+                    updated = true;
+
+                    // Check colision
+                    if(detectColision()){
+                        api.modifyHealth(-5, function(newHealth, avatarImage){
+                            health = newHealth;
+                            assets.left = assets.right = avatarImage;
+                            if(health <= 0){
+                                finish(0);
+                            }
+                        });
+                    }
+                }
+
+                if(jump){
+                    up = clamp(up + (500 * dt), 0, maxUp);
+                    updated = true;
+                }else{
+                    if(up > 0){
+                        up = clamp(up - (500 * dt), 0, maxUp);
+                        updated = true;
+                    }
+
+                }
+
+
+                return updated;
+            }
+
+            function draw(){
+                ctx.save();
+                ctx.clearRect(0,0, width, height); // Clear the screen (blank canvas)
+
+                // Draw the background
+                ctx.save();
+                ctx.fillStyle = "#19c4ef";
+                ctx.fillRect(0, 0, width, height);
+                ctx.drawImage(assets.background, width - ((location/(maxLoc * 17)) * location), 0, width, height);
+                ctx.restore();
+
+                // Add the house if required
+                var hLocation = -200;
+                if((hLocation < location + width/2 + 200) && (hLocation > location - width/2 - 200)){
+                    ctx.drawImage(assets.house, (hLocation - location) + width/2 - 200, 300, 500 - 200, height - 200 - 300);
+                }
+
+
+                ctx.save();
+                ctx.fillStyle = "green";
+                ctx.fillRect(0, height - 200, width, 200);
+                ctx.restore();
+
+                // Add rock if required
+                var rLocation = maxLoc + 250;
+                if((rLocation < location + width/2 + 200) && (rLocation > location - width/2 - 200)){
+                    ctx.drawImage(assets.rock, (rLocation - location) + width/2 - 200, 0, 1000, height + 20);
+                }
+
+
+
+                // Draw in the descriptions for the 'CV'
+                ctx.save();
+                ctx.font = "32px sans-seriff";
+                ctx.textBaseline = "top";
+                info.forEach(function(b){
+                    var l = b.location,
+                        img = b.image,
+                        rightCutoff = location + width/2 + 200,
+                        leftCutoff = location - width/2 - 200;
+
+                    if(img){
+                        leftCutoff -= (50 + img.w);
+                    }
+
+                    if(l < rightCutoff && l > leftCutoff){
+
+                        var loc = (l - location) + width/2 - 200;
+                        ctx.fillStyle = "white";
+                        ctx.fillRect(loc, 100, 400, 300);
+                        ctx.strokeRect(loc, 100, 400, 300);
+                        ctx.fillStyle = "black";
+                        b.text.forEach(function(t, i){
+                            ctx.fillText(t, loc + 5, 100  + (32 * (i)));
+                        });
+
+                        if(img){
+                            ctx.drawImage(assets[img.asset], loc + 450, 100, img.w, img.h);
+                        }
+                    }
+                });
+                ctx.restore();
+
+
+
+
+                // Draw the player
+                var player = (direction === "right") ? assets.right : assets.left;
+                ctx.drawImage(player, width/2 - 50, height - 175 - 170 - up, 171, 171);
+
+
+                // DEBUG, write the location value to the top left hand corner
+                /*ctx.save();
+                ctx.font = "30px sans-serif";
+                ctx.fillText(location, 30, 30);
+                ctx.restore();*/
+
+                var barLength = 500;
+                ctx.save();
+                ctx.fillStyle = "white";
+                ctx.fillRect(30, 30, barLength, 50);
+                ctx.fillStyle = "red";
+                ctx.fillRect(30, 30, barLength * (health/100), 50);
+                ctx.strokeStyle = "black";
+                ctx.strokeRect(30, 30, barLength, 50);
+                ctx.restore();
+
+
+                ctx.restore();
+            }
+
+
+
+            return {
+                update : update,
+                draw : draw
+            };
+        })();
+
+
+
+    };
+
+
+
+    window.dummyGame = { run : run_extern };
+
 })();
