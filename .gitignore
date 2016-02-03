@@ -3,6 +3,9 @@ logs
 *.log
 npm-debug.log*
 
+## Merge orgs
+*.orig
+
 # Runtime data
 pids
 *.pid
@@ -51,6 +54,8 @@ build.sql
 *.aux
 *.synctex.gz
 
+
+# JSDOC
 out
 jsdoc
 
