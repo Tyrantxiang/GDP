@@ -185,10 +185,7 @@ var routes = {
 		//the validate.js constraints of the effects array
 		var constraintsEffect = {
 			id : {
-				presence : true,
-				numericality : {
-					onlyInteger : true
-				}
+				presence : true
 			}, amount : {
 				presence : true,
 				numericality : {
@@ -300,8 +297,8 @@ var routes = {
 		var valsValid = () => {
 			var a = req.body;
 			var valsOk = (parseInt(a.min_val) <= parseInt(a.healthy_min)) 
-							&& (parseInt(a.healthy_min) < parseInt(a.healthy_max)) 
-							&& (parseInt(a.healthy_max) < parseInt(a.max_val));
+							&& (parseInt(a.healthy_min) <= parseInt(a.healthy_max)) 
+							&& (parseInt(a.healthy_max) <= parseInt(a.max_val));
 			return valsOk;
 		};
 		if(!(allValid && wordsValid && valsValid())){
@@ -559,7 +556,11 @@ var dataRoutes = {
      * @type {express_route}
      */
 	get_all_statuses : function(req, res){
-		res.status(200).json(config.statuses.listAll());
+		var allStatuses = config.statuses.listAll();
+		allStatuses.push({id: "hp", name : "hp"});
+		console.log(allStatuses);
+		
+		res.status(200).json(allStatuses);
 	},
 	
 	/**
