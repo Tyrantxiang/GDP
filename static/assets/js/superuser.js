@@ -24,8 +24,11 @@ function superuserSetup(token){
 	$('form > div').addClass('form-group');
 	//every <INPUT> element
 	$('input').addClass('form-control');
-	//$('body > div').append($('<hr>'));
-
+	//Set up error messages
+	errorMessageParent = $(".alert-danger");
+	successMessageParent = $(".alert-success")
+	
+	
 	$('#nav-div li').click(function(e){
 		$('li.active').removeClass('active');
 		$(this).addClass('active');
@@ -77,6 +80,8 @@ function superuserSetup(token){
 		
 		$('#add_carriable').submit();
 	});
+	
+	
 })();	
 	
 //Remove carriable

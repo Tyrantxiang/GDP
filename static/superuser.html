@@ -13,7 +13,8 @@
 	<script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="//code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="http://malsup.github.com/jquery.form.js"></script> 
+    <script type="text/javascript" src="http://malsup.github.com/jquery.form.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/validate.js/0.9.0/validate.min.js"></script>
 	
 
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -56,10 +57,66 @@
 		  border-top-left-radius: 0;
 		  border-top-right-radius: 0;
 		}
+		.alert {
+		  display: none;
+		}
 	</style>
 	
-	<script>	
-		$(document).ready(function(){
+	<script>
+		var errorMessageNumber = 0,
+			errorMessageParent;
+		var successMessageNumber = 0,
+			successMessageParent;
+		
+		function addError(text){
+			var li = $(document.createElement("li"));
+
+			li.html(text);
+			li.appendTo(errorMessageParent.children("ul"));
+
+			errorMessageNumber++;
+			if(errorMessageNumber > 0){
+			    errorMessageParent.fadeIn();
+			}
+
+			window.setTimeout(function(){
+			    errorMessageNumber--;
+			    if(errorMessageNumber < 1){
+					errorMessageParent.fadeOut(function(){
+						li.remove();
+					});
+				}else{
+					li.remove();
+				}
+			}, 5000);
+		};
+			
+		function addSuccess(text){
+			var li = $(document.createElement("li"));
+
+			li.html(text);
+			li.appendTo(successMessageParent.children("ul"));
+
+			successMessageNumber++;
+			if(successMessageNumber > 0){
+				successMessageParent.fadeIn();
+			}
+
+			window.setTimeout(function(){
+				successMessageNumber--;
+				if(successMessageNumber < 1){
+					successMessageParent.fadeOut(function(){
+						li.remove();
+					});
+				}else{
+					li.fadeOut(function(){
+					li.remove();
+					});
+				}
+			}, 5000);
+		};
+	
+		$(document).ready(function(){		
 			$('#form-submit').click(function(){
 				var username = $('#username').val();
 				var password = $('#inputPassword').val();
@@ -75,9 +132,18 @@
 								$('form').each(function(){
 									$('<input>').attr({'type': 'hidden', 'name': 'token'}).val(data.token).appendTo(this);
 									
-									$(this).ajaxForm(function(datatwo){ 
-										console.log(datatwo);
+									$(this).ajaxForm(function(returnData){ 
 										setUpPage();
+										if(returnData.error){
+											var err = returnData.error;
+											for(var i in err){
+												if(err.hasOwnProperty(i)){
+													addError(err[i][0]);
+												}
+											}
+										}else{
+											addSuccess("Successfully added!");
+										}
 									});
 								});
 							}

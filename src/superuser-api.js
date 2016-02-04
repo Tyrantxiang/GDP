@@ -127,7 +127,6 @@ function isJsonString(str) {
 function deleteFolderRecursive(pat) {
 	if(fs.existsSync(pat)){
 		fs.readdirSync(pat).forEach(function(file, index){
-			console.log()
 			var curPath = path.join(pat, file);
 			if(fs.lstatSync(curPath).isDirectory()){
 				deleteFolderRecursive(curPath);
@@ -155,7 +154,7 @@ function createRoute(properties, cb){
 		}else{
 			console.log(req.body);
 			console.log("Error in validation:" + invalid);
-			sendError(res, "Request body not valid - missing: " + invalid);
+			sendError(res, {err : ['The following sections cannot be blank: ']});
 		}
 	};
 } 
@@ -206,7 +205,7 @@ var routes = {
 		var effectsValid = validate.isArray(effects) && effects.every(ele => !validate(ele, constraintsEffect));
 		
 		if(allValid || !effectsValid){
-			sendError(res, "Validation failed");
+			sendError(res, allValid || {effects : ['All effects must be numerical']});
 			return;
 		}
 		
@@ -241,7 +240,7 @@ var routes = {
 		//perform validation
 		var allValid = validate(req.body, constraints);
 		if(allValid){
-			sendError(res, "Validation failed");
+			sendError(res, {err : ["Only a postitive numeric ID accepted"]});
 			return;
 		}
 		
@@ -300,7 +299,7 @@ var routes = {
 		//validate
 		var allValid = !validate(req.body, constraints);
 		var wordsValid = req.body.isNumber || Object.keys(req.body.words).every(ele => validate.isInteger(ele));
-		var valsValid = () => {
+		var valsValid = function(){
 			var a = req.body;
 			var valsOk = (a.min_val <= a.healthy_min) 
 							&& (a.healthy_min <= a.healthy_max) 
@@ -308,8 +307,7 @@ var routes = {
 			return valsOk;
 		};
 		if(!(allValid && wordsValid && valsValid())){
-			console.log(req.body);
-			sendError(res, "Validation failed");
+			sendError(res, allValid || {err : [(wordsValid ? "Please check your word values again." : "Mins and maxs must be in order!")]});
 			return;
 		}
 		
@@ -346,7 +344,7 @@ var routes = {
 		//perform validation
 		var allValid = validate(req.body, constraints);
 		if(allValid){
-			sendError(res, "Validation failed");
+			sendError(res, {err : ["Only a postitive numeric ID accepted"]});
 			return;
 		}
 		
@@ -381,7 +379,7 @@ var routes = {
 		var allValid = !validate(req.body, constraints);
 		var statusesValid = req.body.statuses.every(ele => validate.isInteger(ele));
 		if(!(allValid && statusesValid)){
-			sendError(res, "Validation failed");
+			sendError(res, allValid || {err : ['Check over the submitted statuses again']});
 			return;
 		}
 		
@@ -422,7 +420,7 @@ var routes = {
 		//perform validation
 		var allValid = validate(req.body, constraints);
 		if(allValid){
-			sendError(res, "Validation failed");
+			sendError(res, {err : ["Only a postitive numeric ID accepted"]});
 			return;
 		}
 		
@@ -460,7 +458,7 @@ var routes = {
 		//perform validation
 		var allValid = validate(req.body, constraints);
 		if(allValid){
-			sendError(res, "Validation failed");
+			sendError(res, allValid);
 			return;
 		}
 		
@@ -481,7 +479,7 @@ var routes = {
 	 * @var
      * @type {express_route}
      */
-	remove_store_item : createRoute(["id"], function(req, res){		
+	remove_store_item : createRoute(["id"], function(req, res){
 		//the validate.js constraints of all the properties
 		var constraints = {
 			id : {
@@ -495,7 +493,7 @@ var routes = {
 		//perform validation
 		var allValid = validate(req.body, constraints);
 		if(allValid){
-			sendError(res, "Validation failed");
+			sendError(res, {err : ["Only a postitive numeric ID accepted"]});
 			return;
 		}
 		
