@@ -193,11 +193,4 @@ function superuserSetup(token){
 	});
 })();
 
-//remove minigame
-(function(){
-	$.post("/superuser/get_minigames", {token : token}, function(data){
-		attachOptions($('#remove_minigame_sel'), data);
-	});
-})();
-
 }

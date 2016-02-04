@@ -504,47 +504,6 @@ var routes = {
 		deleteFolderRecursive(path);
 		
 		res.json({"success": true});
-	}),
-	
-	/**
-     * Add a minigame configuration for use in game
-	 *
-	 * @var
-     * @type {express_route}
-     */
-	add_minigame : createRoute(["name", "description", "img", "scripts", "entry_point"], function(req, res){
-		sendError(res, "Not implemented");
-	}),
-
-	/**
-     * Remove a minigame configuration for use in game
-	 *
-	 * @var
-     * @type {express_route}
-     */
-	remove_minigame : createRoute(["id"], function(req, res){		
-		//the validate.js constraints of all the properties
-		var constraints = {
-			id : {
-				presence : true,
-				numericality : {
-					onlyInteger : true
-				}
-			}
-		};
-		
-		//perform validation
-		var allValid = validate(req.body, constraints);
-		if(allValid){
-			sendError(res, "Validation failed");
-			return;
-		}
-		
-		//remove the minigame
-		var path = config.games.getConfig(req.body.id, "directory");
-		deleteFolderRecursive(path);
-		
-		res.json({"success": true});
 	})
 };
 
@@ -614,16 +573,6 @@ var dataRoutes = {
 			res.status(200).json(config.items.listItemsForSlot(req.body.slot));
 		else
 			res.status(400).json({"success": false});
-	},
-	
-	/**
-     * Returns all minigame titles and ids
-	 *
-	 * @var
-     * @type {express_route}
-     */
-	get_minigames : function(req, res){
-		res.status(200).json(config.games.listAll());
 	}
 };
 
