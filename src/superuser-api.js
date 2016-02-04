@@ -52,7 +52,7 @@ function checkIsValid(arrNames, objToTest){
  * @param {string} message - the error message to send back to the client
  */
 function sendError(res, message){
-	res.status(400).json({"error" : message});
+	res.json({'error' : message});
 }
 
 /**

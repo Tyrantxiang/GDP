@@ -139,7 +139,7 @@ function startApp(db){
 	//Create admin user
 	db.checkUsernameExists('admin').then(function(exists){
 		if(exists) return Promise.resolve();
-		else return db.createUser({ username : "admin", password : "changeme", dob : new Date(946684800000) });
+		else return db.createUser({ username : 'admin', password : 'changeme', dob : new Date(946684800000) });
 	}).then(function(a){
 		if(a) console.log(a);
 	}).catch(console.log);
@@ -163,9 +163,6 @@ function startApp(db){
 
     app.post("/superuser/add_store_item", superuserapi.routes.add_store_item);
     app.post("/superuser/remove_store_item", superuserapi.routes.remove_store_item);
-	
-    app.post("/superuser/add_minigame", superuserapi.routes.add_minigame);
-    app.post("/superuser/remove_minigame", superuserapi.routes.remove_minigame);
 
 
     for(var i in superuserapi.dataRoutes){
