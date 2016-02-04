@@ -135,7 +135,7 @@ Hub.prototype.exit = function(){
     var disconnectTime = new Date();
 
     db.endSession(disconnectTime, this.userId).catch(function(err){
-		console.log(err.toString());
+		console.log(err);
 	});
 };
 
@@ -1320,15 +1320,15 @@ var exportFunctions = {
      */
     create : function (userId, comms, cb){
         var equipped = {},
-            stats = {};
-
+            stats = {},
+			connectedTime = new Date()
+			
+		var meta = config.hub.getItemMetaData(),
+			e = equipped,
+			slot, r;
 
         // Get the equppied items
         db.getEquippedForUser(userId).then(function(results){
-            var meta = config.hub.getItemMetaData(),
-                e = equipped,
-                slot, r;
-
             for(slot in meta){
                 r = results[slot]
                 if(r && config.items.exists(results[slot])){
@@ -1338,25 +1338,18 @@ var exportFunctions = {
                 }
             }
         }).catch(function(err){
-            var meta = config.hub.getItemMetaData(),
-                e = equipped,
-                slot, r;
-
             for(slot in meta){
                 e[slot] = meta[slot].default;
             }
         }).then(function(){
-            // Do in the finally block as the promise always actually runs
-
-            // Get the user data from the db
-            var connectedTime = new Date(),
-                sessionPromise = db.createSession({
-                    user_id: userId,
-                    start_time: connectedTime
-                });
-
+			//add the session to the database
+			return db.createSession({
+				user_id: userId,
+				start_time: connectedTime
+			});
+		}).then(function(){
             //load the users statuses here
-            var statusPromise = db.getConditionsForUser(userId).then(function(results){
+            return db.getConditionsForUser(userId).then(function(results){
                 for(var i=0; i<results.length; i++){
                     //loop over all statuses and start
                     var statuses = config.conditions.getConfig(results[i]).statuses;
@@ -1368,24 +1361,17 @@ var exportFunctions = {
                     });
                 }
             });
+        }).then(function(){
+			//console.log(userId, equipped, stats, connectedTime, comms)
+			var h = new Hub(userId, equipped, stats, connectedTime, comms);
 
+			// Set up the hub event listeners for the comms module, bind them to the hub
+			comms.setEventListeners(commsEventListeners, h);
 
-
-            Promise.join(sessionPromise, statusPromise).then(function(){
-                //console.log(userId, equipped, stats, connectedTime, comms)
-                var h = new Hub(userId, equipped, stats, connectedTime, comms);
-
-                // Set up the hub event listeners for the comms module, bind them to the hub
-                comms.setEventListeners(commsEventListeners, h);
-
-                cb(h);
-            }).catch(function(err){
-                cb({error : err});
-            });
-
-        });
-
-        //return h;
+			cb(h);
+		}).catch(function(err){
+			cb({error : err});
+		});
     }
 };
 

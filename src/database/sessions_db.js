@@ -14,13 +14,7 @@ var sessionsDB = {}
 
 //Creates a new entry on the Sessions table
 sessionsDB.createSession = function(sessionObj) {		
-	var session = Sessions.build(sessionObj);
-	
-	return session.validate().then(function(isNotValid){
-		console.log(isNotValid);
-		if(isNotValid) throw new Error(isNotValid.message);
-		else return session.save();
-	});
+	return Sessions.build(sessionObj).save();
 }
 
 //Gets the session entry that matches the given
