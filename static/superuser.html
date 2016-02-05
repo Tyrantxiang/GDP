@@ -62,59 +62,37 @@
 		}
 	</style>
 	
-	<script>
-		var errorMessageNumber = 0,
-			errorMessageParent;
-		var successMessageNumber = 0,
-			successMessageParent;
+	<script>			
+		function addMessage(messageParent){
+			var messageNumber = 0;
+			return function(text){
+				var li = $(document.createElement("li"));
+
+				li.html(text);
+				li.appendTo(messageParent.children("ul"));
+
+				messageNumber++;
+				if(messageNumber > 0){
+					messageParent.fadeIn();
+				}
+
+				window.setTimeout(function(){
+					messageNumber--;
+					if(messageNumber < 1){
+						messageParent.fadeOut(function(){
+							li.remove();
+						});
+					}else{
+						li.fadeOut(function(){
+							li.remove();
+						});
+					}
+				}, 5000);
+			};
+		};
 		
-		function addError(text){
-			var li = $(document.createElement("li"));
-
-			li.html(text);
-			li.appendTo(errorMessageParent.children("ul"));
-
-			errorMessageNumber++;
-			if(errorMessageNumber > 0){
-			    errorMessageParent.fadeIn();
-			}
-
-			window.setTimeout(function(){
-			    errorMessageNumber--;
-			    if(errorMessageNumber < 1){
-					errorMessageParent.fadeOut(function(){
-						li.remove();
-					});
-				}else{
-					li.remove();
-				}
-			}, 5000);
-		};
-			
-		function addSuccess(text){
-			var li = $(document.createElement("li"));
-
-			li.html(text);
-			li.appendTo(successMessageParent.children("ul"));
-
-			successMessageNumber++;
-			if(successMessageNumber > 0){
-				successMessageParent.fadeIn();
-			}
-
-			window.setTimeout(function(){
-				successMessageNumber--;
-				if(successMessageNumber < 1){
-					successMessageParent.fadeOut(function(){
-						li.remove();
-					});
-				}else{
-					li.fadeOut(function(){
-					li.remove();
-					});
-				}
-			}, 5000);
-		};
+		var addError;
+		var addSuccess;
 	
 		$(document).ready(function(){		
 			$('#form-submit').click(function(){
@@ -126,8 +104,11 @@
 						$.get("/views/superuser-functions.html", {token: data.token}, function(htmldata){
 						
 							function setUpPage(){
-								$('body').css('background-color', '#4da6ff').html(htmldata);
+								$('body').css('background-color', /*'#4da6ff'*/'#ffffff').html(htmldata);
 								superuserSetup(data.token);
+								
+								addError = addMessage($(".alert-danger"));
+								addSuccess = addMessage($(".alert-success"));
 								
 								$('form').each(function(){
 									$('<input>').attr({'type': 'hidden', 'name': 'token'}).val(data.token).appendTo(this);

@@ -23,11 +23,7 @@ function superuserSetup(token){
 	//add form-group to each form subdiv
 	$('form > div').addClass('form-group');
 	//every <INPUT> element
-	$('input').addClass('form-control');
-	//Set up error messages
-	errorMessageParent = $(".alert-danger");
-	successMessageParent = $(".alert-success")
-	
+	$('input').addClass('form-control');	
 	
 	$('#nav-div li').click(function(e){
 		$('li.active').removeClass('active');
