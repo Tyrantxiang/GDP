@@ -104,7 +104,7 @@
 						$.get("/views/superuser-functions.html", {token: data.token}, function(htmldata){
 						
 							function setUpPage(){
-								$('body').css('background-color', /*'#4da6ff'*/'#ffffff').html(htmldata);
+								$('body').css('background-color', '#4da6ff').html(htmldata);
 								superuserSetup(data.token);
 								
 								addError = addMessage($(".alert-danger"));
