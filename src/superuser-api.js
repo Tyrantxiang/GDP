@@ -518,7 +518,9 @@ var dataRoutes = {
      * @type {express_route}
      */
 	get_all_statuses : function(req, res){
-		var allStatuses = config.statuses.listAll();
+		var allStatuses = config.statuses.listAll().map(function(ele){
+			return {id: ele.id, name: ele.name};
+		});
 		if(req.body.withHp) allStatuses.push({id: "hp", name : "hp"});
 		
 		res.status(200).json(allStatuses);
@@ -533,8 +535,7 @@ var dataRoutes = {
 	get_all_carriables : function(req, res){
 		var allitems = config.carriables.listAll().map(item => {
 			item.url = config.carriables.getSpriteURL(item.id);
-			delete item.effects;
-			return item;
+			return {id: item.id, name: item.name, url: item.url};
 		});
 		
 		res.status(200).json(allitems);
@@ -547,7 +548,9 @@ var dataRoutes = {
      * @type {express_route}
      */
 	get_all_conditions : function(req, res){
-		res.status(200).json(config.conditions.listAll());
+		res.status(200).json(config.conditions.listAll().map(function(ele){
+			return {id: ele.id, name: ele.name};
+		}));
 	},
 	
 	/**
