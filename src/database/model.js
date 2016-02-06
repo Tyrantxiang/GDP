@@ -22,8 +22,6 @@ var sequelize = new Sequelize(connectionString, {
 			freezeTableName : true,
 			schema : settings.schema,
 			searchPath : settings.schema,
-			createdAt : 'created',
-			updatedAt : 'modified',
 			paranoid : true
 	}
 });

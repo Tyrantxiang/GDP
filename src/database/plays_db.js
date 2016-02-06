@@ -48,7 +48,7 @@ limit = 10
 */
 playsDB.getScores = function(filterConds, orderBy, limit){
 	var filter = {
-		attributes : ['id', 'user_id', 'game_id', 'start_time', 'end_time', 'score', 'created'],
+		attributes : ['id', 'user_id', 'game_id', 'start_time', 'end_time', 'score'],
 		include : [{
 			model : Users,
 			attributes : ['username']
