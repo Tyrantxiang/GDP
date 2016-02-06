@@ -66,27 +66,21 @@
 		function addMessage(messageParent){
 			var messageNumber = 0;
 			return function(text){
-				var li = $(document.createElement("li"));
+				var li = $(document.createElement('li'));
 
 				li.html(text);
-				li.appendTo(messageParent.children("ul"));
+				li.appendTo(messageParent.children('ul'));
 
 				messageNumber++;
-				if(messageNumber > 0){
-					messageParent.fadeIn();
-				}
+				messageParent.fadeIn();
 
 				window.setTimeout(function(){
 					messageNumber--;
-					if(messageNumber < 1){
-						messageParent.fadeOut(function(){
-							li.remove();
-						});
-					}else{
-						li.fadeOut(function(){
-							li.remove();
-						});
-					}
+					
+					var ele = messageNumber<1 ? messageParent : li;
+					ele.fadeOut(function(){
+						li.remove();
+					});
 				}, 5000);
 			};
 		};
@@ -98,42 +92,43 @@
 			$('#form-submit').click(function(){
 				var username = $('#username').val();
 				var password = $('#inputPassword').val();
+				var token;
 				
-				$.post("/authenticate", {username: username, password: password}, function(data){
-					$.getScript('/assets/js/superuser.js?token=' + data.token).done(function(){
-						$.get("/views/superuser-functions.html", {token: data.token}, function(htmldata){
+				$.post("/authenticate", {'username' : username, 'password' : password}).then(function(data){
+					token = data.token;
+					return $.getScript('/assets/js/superuser.js?token=' + token);
+				}).then(function(){
+					return $.get("/views/superuser-functions.html", {token: token});
+				}).then(function(htmldata){
+					$('body').css('background-color', '#4da6ff');
+					function setUpPage(){
+						$('body').html(htmldata);
+						superuserSetup(token);
 						
-							function setUpPage(){
-								$('body').css('background-color', '#4da6ff').html(htmldata);
-								superuserSetup(data.token);
-								
-								addError = addMessage($(".alert-danger"));
-								addSuccess = addMessage($(".alert-success"));
-								
-								$('form').each(function(){
-									$('<input>').attr({'type': 'hidden', 'name': 'token'}).val(data.token).appendTo(this);
-									
-									$(this).ajaxForm(function(returnData){ 
-										setUpPage();
-										if(returnData.error){
-											var err = returnData.error;
-											for(var i in err){
-												if(err.hasOwnProperty(i)){
-													addError(err[i][0]);
-												}
-											}
-										}else{
-											addSuccess("Successfully added!");
-										}
-									});
-								});
-							}
+						addError = addMessage($(".alert-danger"));
+						addSuccess = addMessage($(".alert-success"));
+						
+						$('form').each(function(){
+							$('<input>').attr({'type': 'hidden', 'name': 'token'}).val(token).appendTo(this);
 							
-							setUpPage();
+							$(this).ajaxForm(function(returnData){ 
+								setUpPage();
+								if(returnData.error){
+									var err = returnData.error;
+									for(var i in err){
+										if(err.hasOwnProperty(i)){
+											addError(err[i][0]);
+										}
+									}
+								}else{
+									addSuccess("Success!");
+								}
+							});
 						});
-					});
+					};
+					
+					setUpPage();
 				});
-				
 			});
 		});
 	</script>
@@ -149,6 +144,6 @@
 			<input type="password" id="inputPassword" class="form-control" placeholder="Password" name="password" required>
 			<button class="btn btn-lg btn-primary btn-block" type="button" id="form-submit">Sign in</button>
 		</form>
-	</div> <!-- /container -->
+	</div>
 </body>
 </html>
