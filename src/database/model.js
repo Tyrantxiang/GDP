@@ -26,6 +26,7 @@ var sequelize = new Sequelize(connectionString, {
 	}
 });
 
+// TODO: Uncomment validate stuff once fixed.
 var Users = sequelize.define('users', {
 	id : {
 		type : Sequelize.INTEGER,
@@ -36,10 +37,10 @@ var Users = sequelize.define('users', {
 		type : Sequelize.STRING,
 		unique : true,
 		allowNull : false,
-		validate : {
-			isAlphanumeric : true,
-			len : [1, 25]
-		}
+//		validate : {
+//			isAlphanumeric : true,
+//			len : [1, 25]
+//		}
 	}, saltedpw : {
 		type : Sequelize.STRING,
 		allowNull : false

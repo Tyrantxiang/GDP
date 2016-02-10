@@ -327,6 +327,7 @@ window.comms = {
 	tokeniseGetRequest : tokeniseGetRequest,
 	loadScriptFile : loadScriptFile,
 	ajaz : ajaz,
+	getRequest : getRequest,
 
 	setEventListener : setEventListener,
 	clearEventListeners : clearEventListeners,

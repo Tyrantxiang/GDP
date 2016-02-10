@@ -42,6 +42,8 @@
 		canvas.setWidth(window.innerHeight * 1.26);
 		// Default width is ~1.26 times the height.
 		// 1096 / 868, to be specific.
+
+		return window.draw;
 	}
 	/*
 	function initialise_canvas(cnvs, background)
@@ -126,6 +128,8 @@
 
 			canvas.add(item_instance);
 		}
+
+		return window.draw;
 	}
 
 	/*
@@ -139,9 +143,17 @@
 	*/
 	function attach_event_listeners()
 	{
+		event_mouse_over();
+		event_mouse_out();
+		event_mouse_down();
+	}
+
+	function event_mouse_over()
+	{
 		// TODO: Add filter so it's only the objects we actually care about (i.e. menu items).
 		canvas.on('mouse:over', function(i)
 		{
+			console.log('over');
 			if(clickable_elements.indexOf(i.target.name) > -1)
 			{
 				var x 			= i.target.getLeft();
@@ -164,8 +176,14 @@
 			}
 		});
 
+		return window.draw;
+	}
+
+	function event_mouse_out()
+	{
 		canvas.on('mouse:out', function(i)
 		{
+			console.log('out');
 			if(clickable_elements.indexOf(i.target.name) > -1)
 			{
 				i.target.setLeft(i.target.orig_left);
@@ -176,6 +194,11 @@
 			}
 		});
 
+		return window.draw;
+	}
+
+	function event_mouse_down()
+	{
 		canvas.on('mouse:down', function(i)
 		{
 			if(typeof i.target !== 'undefined')
@@ -529,7 +552,7 @@
 		var background	= images.background;
 		var items		= images.items;
 
-		initialise_canvas(cnvs, background);
+		initialise_canvas(cnvs);
 		attach_items(background, items);
 		attach_event_listeners();
 		add_avatar();
@@ -540,6 +563,16 @@
 		//$("body").css('overflow', 'hidden');
 
 		return window.draw;
+	};
+
+	window.draw.initialise_canvas	= initialise_canvas;
+	window.draw.attach_items		= attach_items;
+	window.draw.event_mouse_over	= event_mouse_over;
+	window.draw.event_mouse_out		= event_mouse_out;
+
+	window.draw.get_canvas_el		= function()
+	{
+		return canvasEl;
 	};
 
 	window.draw.update_avatar	= function()

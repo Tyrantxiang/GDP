@@ -112,11 +112,11 @@ function startApp(db){
     app.use(parser.urlencoded({ extended : true }));
 
     // Set up the authentication middleware
-    app.use([/*"/games",*/ "/p"], auth.express_middleware);
+    // TODO: Uncomment once auth actually done for canvas.
+    //app.use([/*"/games",*/ "/p"], auth.express_middleware);
     
     // Set the static files to be served
     app.use("/", express.static("static"));
-
 
     // Routes
     app.get("/", function (req, res){
@@ -166,8 +166,35 @@ function startApp(db){
 
 
     for(var i in superuserapi.dataRoutes){
-        app.post(i, superuserapi.dataRoutes[i])
+      app.post(i, superuserapi.dataRoutes[i])
     }
+
+    // TODO: Check all working.
+    app.get("/canvas-demo/init_data", function(req, res){
+      var background_img  = config.hub.getBackgroundImages(),
+          items           = config.hub.getItemMetaData("hub");
+
+      var new_items       = {};
+      for(var item_index in Object.keys(items))
+      {
+          var key       = Object.keys(items)[item_index];
+          var item      = items[key];
+          var new_item  = {};
+          for(var property in item)
+          {
+              new_item[property] = item[property];
+          }
+          new_item.slot   = key;
+          new_item.url    = config.items.getSpriteURL(item.default);
+          new_items[key]  = new_item;
+      }
+
+      var images        = {};
+      images.background = background_img;
+      images.items      = new_items;
+
+      res.json({images: images});
+    });
     
     // Set up Socket.io connection
     var comms = internalRequire("server-comms.js")(server, auth, config, hub);

@@ -83,6 +83,7 @@ img > .section-img {
 }
 
 /* TODO: Work out how to make background cover areas not currently shown (off-screen scrolling). */
+/* TODO: Make background dynamics; */
 .hub #main-content-area > .hub-canvas-container {
   background-image : url(/assets/img/hub/test_background.png);
   background-size : 100% 100%;
