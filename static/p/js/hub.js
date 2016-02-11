@@ -339,6 +339,15 @@
                 }),
 
                 l = latch(needToLoad.length, function(){
+                    // PURGE
+                    for(var i in hub.carriables){
+                        var carriable = hub.carriables[i].id,
+                            index = toKeep.indexOf(carriable);
+                        if(index < 0){
+                            delete hub.carriables[i];
+                        }
+                    }
+
                     cb(hub.carriables);
                 });
 
@@ -356,13 +365,7 @@
                     i.src = c.url;
                 });
 
-            // PURGE
-            for(var i in hub.carriables){
-                var index = toKeep.indexOf(i);
-                if(index < 0){
-                    delete hub.carriables[i];
-                }
-            }
+
         });
     };
 
