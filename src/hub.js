@@ -1080,8 +1080,13 @@ var commsEventListeners = {
      */
     get_currency : function(data, fn){
         db.readUserCurrency(this.userId).then(function(curr){
-			console.log(curr);
-            fn({currency: curr.currency});
+            var c;
+            if(curr && curr.currency){
+                c = curr.currency;
+            }else{
+                c = 0;
+            }
+            fn({currency: c});
         }).catch(function(err){
             fn({error: err});
         });
