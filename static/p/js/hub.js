@@ -477,7 +477,7 @@
                 }
                 cb(data.id, data.value);
             } else {
-                console.log(data.err);
+                console.error(data.err);
             }
         });
     };
@@ -764,9 +764,6 @@
                     return item.price > 0;
                 });
 
-                console.log(not_free_items);
-                console.log(unlocked_items);
-
                 // Return the difference between not_free_items and unlocked items
                 var shop_items = not_free_items.filter(function(current){
                     return unlocked_items.filter(function(current_b){
@@ -774,7 +771,6 @@
                     }).length == 0
                 });
 
-                console.log(shop_items);
                 comms.get_currency(function(currency) {
                     menu.shop.load(shop_items, currency);
                 });

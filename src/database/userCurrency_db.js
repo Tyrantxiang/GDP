@@ -19,7 +19,6 @@ currencyDb.createCurrency = function(currency, userid) {
 			'user_id' : userid,
 		}
 	}).then(function(){
-		console.log('aaa');
 		return UserCurrency.create({
 			'currency' : currency,
 			'user_id' : userid
@@ -37,11 +36,10 @@ currencyDb.updateUserCurrency = function(newCurrency, userid){
 currencyDb.modifyUserCurrency = function(modifyValue, userid){
 	return currencyDb.readUserCurrency(userid).then(function(usercurr){
 		var newCurr;
-		
+
 		if(usercurr) newCurr = usercurr.currency + modifyValue;
 		else newCurr = modifyValue;
-		
-		console.log(newCurr);
+
 		return currencyDb.createCurrency(newCurr, userid);
 	});
 }

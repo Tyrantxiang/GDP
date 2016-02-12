@@ -153,7 +153,6 @@
 		// TODO: Add filter so it's only the objects we actually care about (i.e. menu items).
 		canvas.on('mouse:over', function(i)
 		{
-			console.log('over');
 			if(clickable_elements.indexOf(i.target.name) > -1)
 			{
 				var x 			= i.target.getLeft();
@@ -183,7 +182,6 @@
 	{
 		canvas.on('mouse:out', function(i)
 		{
-			console.log('out');
 			if(clickable_elements.indexOf(i.target.name) > -1)
 			{
 				i.target.setLeft(i.target.orig_left);
@@ -247,7 +245,6 @@
 				}
 				else if(i.target.name === hb.mouseoverGroupName)
 				{
-					console.log('hb click');
 					hb.toggleVisiblity();
 
 					canvas.renderAll();
@@ -462,7 +459,6 @@
 
 			hb.statuslistborder.set({visible: newVis});
 			hb.statuslist.forEach(function(s){
-				console.log(newVis);
 				s.set({visible: newVis});
 			});
 
