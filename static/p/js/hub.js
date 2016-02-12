@@ -21,6 +21,26 @@
         menu;
 
 
+    /**** The hub object: central object for the system ****/
+    var hub = {
+        // The current health
+        health : 100,
+        // The users statuses
+        statuses : {},
+
+        // All carriables
+        carriables : {},
+
+        symptoms : [],
+
+        avatarImage : undefined
+
+
+    };
+
+
+
+    /* Simple implementation of a latch */
     function latch(num, complete){
         if(num < 1){
             complete();
@@ -34,6 +54,12 @@
     }
     utils.latch = latch;
 
+
+    /*********************
+     ********************* Internal and controlled functions that were previously removed from the window object
+     ********************* These were used in the old game loading system and are awaiting removal
+     ********************* Do not use
+     *********************/
     // Clear the window functions so games cannot use them
     function clearInternalWindowFunctions(){
         delete window.comms;
@@ -87,6 +113,12 @@
         }
     }
 
+
+    /********************* End controlled functions/objects **************************/
+
+
+
+    /********************* Utility functions for the hub *************************/
     // Clones an arbitrary object
     function cloneObject(obj){
         var o = {}, i;
@@ -108,6 +140,7 @@
 
         return cloneObject(t);
     }
+    hub.getAssetsByType = getAssetsByType;
 
     function getCloneOfAssets(){
         var o = {}, i;
@@ -128,6 +161,10 @@
     }
 
 
+
+
+
+    /****** Hub loading functions *********/
     // Creates the DOM bootstrap loading bar
     function generateLoadingBar(){
         var value = 0;
@@ -156,23 +193,7 @@
     }
 
 
-    // The hub object
-    var hub = {
-        // The current health
-        health : 100,
-        // The users statuses
-        statuses : {},
-
-        // All carriables
-        carriables : {},
-
-        symptoms : [],
-
-        avatarImage : undefined
-
-
-    };
-
+    // Actual function that loads the ghub
     hub.load = function(cb){
         // Show loading sign
         var loadingContainer = document.createElement("div"),
@@ -321,12 +342,14 @@
     };
 
 
-    // Get a avatar image from the given array
-    hub.getAvatarImageFromItems = function(items, cb){
-        comms.get_avatar(function(img){
-            cb(base64ToImg(img));
-        }, items);
-    };
+
+
+
+
+
+
+
+    /****************** Carraible and bag functions **********************/
 
 
     // Getting carriables and those in the bag
@@ -406,13 +429,42 @@
         }
     };
 
+    hub.useCarriable = function(carriableId, cb){
+        comms.use_carriable(carriableId, function(data){
+            if(!data.err){
+                comms.get_symptoms(function(symps){
+                    hub.symptoms = symps;
+                    hub.health = data.newhp;
+                    hub.statuses = data.newStatuses;
+                    if(data.avatarImage){
+                        hub.avatarImage = base64ToImg(data.avatarImage);
+                    }
+                    cb(data.bag, hub.health, hub.cloneStatuses(), hub.avatarImage, hub.symptoms);
+                });
+            }else{
+                cb({
+                    err : data.err
+                });
+            }
+        });
+    };
+
     // Set the bag
     hub.setBag = function(carriables, cb){
         comms.set_bag(carriables, cb);
     };
 
+    hub.cloneCarriableInfo = function(carriable){
+        return cloneObject(carriable);
+    };
 
-    //Status modification functions
+
+
+
+
+
+    /*************** Health and status related functions ***************/
+
     //TODO: Joe
     hub.getHealth = function(cb){
         comms.get_hp_value(function(data){
@@ -449,26 +501,6 @@
         });
     };
 
-    hub.useCarriable = function(carriableId, cb){
-        comms.use_carriable(carriableId, function(data){
-            if(!data.err){
-                comms.get_symptoms(function(symps){
-                    hub.symptoms = symps;
-                    hub.health = data.newhp;
-                    hub.statuses = data.newStatuses;
-                    if(data.avatarImage){
-                        hub.avatarImage = base64ToImg(data.avatarImage);
-                    }
-                    cb(data.bag, hub.health, hub.cloneStatuses(), hub.avatarImage, hub.symptoms);
-                });
-            }else{
-                cb({
-                    err : data.err
-                });
-            }
-        });
-    };
-
     hub.modifyStatus = function(statusId, changeVal, cb){
         comms.modify_status_value(statusId, changeVal, function(data){
             if(!data.err){
@@ -482,9 +514,20 @@
         });
     };
 
-    hub.getAllMinigames = function(cb){
-        comms.list_minigames(cb);
+    hub.cloneStatuses = function(){
+        return cloneObject(hub.statuses);
     };
+
+
+
+
+
+
+
+
+
+
+    /******************* High score functions ******************/
 
     hub.getHighScoresForAllGames = function(cb){
         comms.get_scores(2, null, null, cb);
@@ -493,6 +536,14 @@
     hub.getHighScoresForGame = function(gameid, cb){
         comms.get_scores(3, null, gameid, cb);
     };
+
+
+
+
+
+
+
+    /************** Item related functions **********************/
 
     //an array of ints, referring to item ids
     hub.getUserUnlockedItems = function(cb){
@@ -560,19 +611,18 @@
         });
     };
 
-    hub.getGameInfo = function(gameid, cb){
-        comms.get_minigame_info(gameid, cb);
+
+    // Get a avatar image from the given array
+    hub.getAvatarImageFromItems = function(items, cb){
+        comms.get_avatar(function(img){
+            cb(base64ToImg(img));
+        }, items);
     };
 
 
-    hub.cloneStatuses = function(){
-        return cloneObject(hub.statuses);
-    };
 
-    hub.cloneCarriableInfo = function(carriable){
-        return cloneObject(carriable);
-    };
 
+    /********* Menu launching functions *****************/
 
     hub.launchAvatarCreation = function(){
         container.removeChild(hubCanvasContainer);
@@ -677,6 +727,51 @@
         });
     };
 
+    // Fix the filtering.
+    hub.launchShop = function() {
+        // Gets all items and user unlocked items
+        comms.get_all_item_info(function(all_items) {
+            comms.get_user_unlocked_items(function(unlocked_items) {
+                // Include no items that are priced at 0
+                var not_free_items = all_items.filter(function(item) {
+                    return item.price > 0;
+                });
+
+                // Return the difference between not_free_items and unlocked items
+                var shop_items = not_free_items.filter(function(current){
+                    return unlocked_items.filter(function(current_b){
+                        return current_b == current.id;
+                    }).length == 0
+                });
+
+                comms.get_currency(function(currency) {
+                    menu.shop.load(shop_items, currency);
+                });
+            });
+        });
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+    /**************** Minigame related functions ******************/
+
+    hub.getAllMinigames = function(cb){
+        comms.list_minigames(cb);
+    };
+
+    hub.getGameInfo = function(gameid, cb){
+        comms.get_minigame_info(gameid, cb);
+    };
+
     // Launches a game
     hub.launchGame = function(gameId){
         // Get the minigame info
@@ -754,36 +849,12 @@
         });
     };
 
-    // Fix the filtering.
-    hub.launchShop = function() {
-        // Gets all items and user unlocked items
-        comms.get_all_item_info(function(all_items) {
-            comms.get_user_unlocked_items(function(unlocked_items) {
-                // Include no items that are priced at 0
-                var not_free_items = all_items.filter(function(item) {
-                    return item.price > 0;
-                });
-
-                // Return the difference between not_free_items and unlocked items
-                var shop_items = not_free_items.filter(function(current){
-                    return unlocked_items.filter(function(current_b){
-                        return current_b == current.id;
-                    }).length == 0
-                });
-
-                comms.get_currency(function(currency) {
-                    menu.shop.load(shop_items, currency);
-                });
-            });
-        });
-    };
-
-    hub.getAssetsByType = getAssetsByType;
 
 
 
 
 
+    /*************** Game related classes that communicate with the game's iFrame and the hub ****************/
 
     // Simple class to coordinate the game api and the hub
     function GameCoordinator(frame, channel){
