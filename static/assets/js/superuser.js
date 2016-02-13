@@ -70,10 +70,21 @@ $('#add_carriable_submit').click(function(e){
 		return {id : id, amount : val};
 	}).toArray();
 	
-	$('#add_carriable_remove').remove();
-	$('<input>').attr({'type': 'text', 'name': 'effects'}).val(JSON.stringify(allEffects)).appendTo('#add_carriable');
+	var checkNoDuplicates = allEffects.map(function(ele){
+		return ele.id;
+	});
+	var unique = checkNoDuplicates.every(function(item, pos, self) {
+		return self.indexOf(item) === pos;
+	});
 	
-	$('#add_carriable').submit();
+	if(unique){	
+		$('#add_carriable_remove').remove();
+		$('<input>').attr({'type': 'text', 'name': 'effects'}).val(JSON.stringify(allEffects)).appendTo('#add_carriable');
+		
+		$('#add_carriable').submit();
+	}else{
+		addError("Duplicate effects found. Please ensure only 1 of each is present.");
+	}
 });
 // END ADD CARRIABLE
 	
@@ -137,10 +148,24 @@ $('#add_condition_submit').click(function(e){
 		return parseInt($(this).children().first().children().first().val());
 	}).toArray();
 	
-	$('#add_condition_statuses').remove();
-	$('<input>').attr({'type': 'text', 'name': 'statuses'}).val(JSON.stringify(statuses)).appendTo('#add_condition');
+	var checkNoDuplicates = statuses.map(function(ele){
+		return ele.id;
+	});
+	var unique = checkNoDuplicates.every(function(item, pos, self) {
+		return self.indexOf(item) === pos;
+	});
 	
-	$('#add_condition').submit();
+	if(unique){	
+		$('#add_condition_statuses').remove();
+		$('<input>').attr({'type': 'text', 'name': 'statuses'}).val(JSON.stringify(statuses)).appendTo('#add_condition');
+		
+		$('#add_condition').submit();
+	}else{
+		addError("Duplicate statuses found. Please ensure only 1 of each is present.");
+	}
+	
+	
+
 });
 //END ADD CONDITION
 
