@@ -172,6 +172,15 @@ img > .section-img {
   margin: 20px;
 }
 
+.dark-dark-grey-box-smaller-text {
+  background-color: rgba(50, 50, 50, 0.9);
+  color: #ffffff;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: x-large;
+  margin: 20px;
+}
+
 .dark-dark-grey-box-no-text {
   background-color: rgba(50, 50, 50, 0.9);
   padding: 15px;

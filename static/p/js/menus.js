@@ -53,6 +53,7 @@
 
 				$('#score_close').on('click', function(obj) {
 					$('#overlay').hide();
+					document.title = "The hub";
 				});
 
 				$('#overlay').show();
@@ -111,6 +112,7 @@
 					{
 						hub.launchGame(selected_minigame, function(data) {
 							$('#overlay').hide();
+							document.title = "The hub";
 						});
 					}
 					else
@@ -121,6 +123,7 @@
 
 				$('#minigame_cancel').on('click', function(obj) {
 					$('#overlay').hide();
+					document.title = "The hub";
 				});
 
 				$('#overlay').show();
@@ -140,33 +143,24 @@
 				$('#menu-overlays').html(data);
 				document.title	= 'Customise the hub!';
 
-				var temp	= 0,
+				var active	= false,
 					slots	= Object.keys(available);
 
 				slots.forEach(function(key) {
+					// Reference to original if cancel customise change.
 					original_selection[key]	= equipped[key].id;
 					selected_items[key]		= equipped[key].id;
 
-					// TODO: Proper title formatting, rather than upper-casing the system name.
-					/*
-					var slot_title_div			= document.createElement('div');
-					slot_title_div.innerHTML	= key.toUpperCase();
-					slot_title_div.className	= 'dark-dark-grey-box';
-
-					document.getElementById('hub_customisables_container').appendChild(slot_title_div);
-					*/
 					var div_id					= 'div_' + key,
 						slot_title_li			= document.createElement('li'),
 						slot_title_elem			= document.createElement('a');
 
+					// TODO: Proper title formatting, rather than upper-casing the system name.
 					slot_title_elem.innerHTML	= key.toUpperCase();
 					slot_title_elem.setAttribute('data-toggle', 'tab');
 					slot_title_elem.setAttribute('href', '#' + div_id);
-					//slot_title_elem.href(div_id);
 
-					// Check size of the ul (hub_customisables_titles), make active if empty.
-					// ul/title bit to 'active', content to 'in active'
-					if(temp === 0)
+					if(active != true)
 					{
 						slot_title_li.className = 'active';
 					}
@@ -174,21 +168,15 @@
 					slot_title_li.appendChild(slot_title_elem);
 					title_storage.push(slot_title_li);
 
-					// set data-toggle -> blah.setAttribute('data-toggle', val);
-					// Not sure if best way, but a way.
-					// set href to content link -> blah.href('link');
-
 					var container_div		= document.createElement('div');
 					container_div.id		= div_id;
 					container_div.className	= 'row row-centered';
 					container_div.className += ' tab-pane fade';
 
-					// Check size of the ul (hub_customisables_titles), make active if empty.
-					// ul/title bit to 'active', content to 'in active'
-					if(temp === 0)
+					if(active != true)
 					{
 						container_div.className += ' in active';
-						temp 					+= 1;
+						active					= true;
 					}
 
 					var available_for_slot	= available[key];
@@ -199,9 +187,7 @@
 
 							// TODO: Find proper classname.
 							img.src					= item.url;
-							//img.className			= 'packing_images';
 							img.className			= 'height-100px white-img-box hub-item-box';
-							//img.className			= 'col-md-3 col-centered';
 
 							if(item.id == equipped[key].id)
 							{
@@ -271,6 +257,7 @@
 					comms.update_equipped_items(selected_items, function(obj) {
 						canvas.renderAll();
 						$('#overlay').hide();
+						document.title = "The hub";
 					});
 				});
 
@@ -292,6 +279,7 @@
 
 					canvas.renderAll();
 					$('#overlay').hide();
+					document.title = "The hub";
 				});
 
 				$('#overlay').show();
@@ -352,6 +340,7 @@
 							comms.get_currency(function(curr) {
 								utils.addSuccess('You have $' + curr.currency + ' left.');
 								$('#overlay').hide();
+								document.title = "The hub";
 							});
 						}
 						else
@@ -363,6 +352,7 @@
 
 				$('#hub_shop_cancel').on('click', function(data) {
 					$('#overlay').hide();
+					document.title = "The hub";
 				});
 			});
 		}
@@ -421,6 +411,7 @@
 
 				$('#backpack_accept').on('click', function(obj) {
 					$('#overlay').hide();
+					document.title = "The hub";
 					load	= 0;
 
 					var set_array	= [];
@@ -437,6 +428,7 @@
 
 				$('#backpack_cancel').on('click', function(obj) {
 					$('#overlay').hide();
+					document.title = "The hub";
 					load	= 0;
 				});
 
