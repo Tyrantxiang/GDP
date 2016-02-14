@@ -1269,7 +1269,9 @@ Status.prototype.getClientObject = function(){
         name : this.name,
         value : this.value,
         min : this.min,
-        max : this.max
+        max : this.max,
+        healthy_min : this.healthy_min,
+        healthy_max : this.healthy_max
     };
 };
 

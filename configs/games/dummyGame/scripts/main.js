@@ -17,21 +17,31 @@
 
 		api = a;
 		canvas = can;
-		can.width="800";
+		can.width="1000";
 		can.height="600";
+
+		health = undefined;
+		symptom = undefined;
+		healthColour = undefined;
+		//TODO: ask about passing symptoms into this??
+		setHealth(startHp, null);
 
 		statuses = stats;
 		changeableStatus = statuses[Object.keys(statuses)[0]];
-		health = startHp;
-		symptom = "HEALTHY";
+		statusColour = undefined;
+		setStatus(changeableStatus.id, changeableStatus.value);
+
 		score = 0;
 		currency = 0;
 		currentBag = bag;
+
+		defaultColour = "white";
 
 		// Handle keyboard controls
 		window.addEventListener("keydown", keyPressed);
 
 		render();
+
 	}
 
 	// Update values depending on key
@@ -46,7 +56,6 @@
 				api.modifyHealth(5, updateHealthAndAvatar);
 				break;
 
-				
 			case(37) : // Player pressed left
 				//console.log("left");
 				if(changeableStatus)
@@ -57,7 +66,6 @@
 				if(changeableStatus)
 					api.modifyStatus(changeableStatus.id, 1, updateStatus);
 				break;
-			
 
 			case(74) : // Player pressed j
 				//console.log("J");
@@ -141,15 +149,42 @@
 	/*
 	 *  Local value updating callbacks
 	 */
-	function updateHealthAndAvatar(newHealth, newAvatar, newSymps){
+	function setHealth(newHealth, newSymps){
 		health = newHealth;
-		//Do something with avatar
+		switch(true){
+			case (health < 20):
+				healthColour = 'red';
+				break;
+			case (health < 40):
+				healthColour = 'orange';
+				break;
+			case (health < 60):
+				healthColour = 'yellow';
+				break;
+			default:
+				healthColour = 'rgb(63,255,0)';
+				break;
+		}
+
 		symptom = ((newSymps && newSymps[0]) || "healthy").toUpperCase();
+	}
+	function updateHealthAndAvatar(newHealth, newAvatar, newSymps){
+		setHealth(newHealth, newSymps);
 		render();
 	}
 
+	function setStatus(statusId, newValue){
+		var stat = statuses[statusId];
+		console.log(stat);
+		stat.value = newValue;
+		if(newValue < stat.healthy_min || newValue > stat.healthy_max){
+			statusColour = 'red';
+		} else {
+			statusColour = 'rgb(63,255,0)';
+		}
+	}
 	function updateStatus(statusId, newValue){
-		statuses[statusId].value = newValue;
+		setStatus(statusId, newValue);
 		render();
 	}
 
@@ -178,24 +213,34 @@
 	var render = function () {
 		var ctx = canvas.getContext('2d');
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+
+		ctx.fillStyle = "#000000";
+		ctx.fillRect(0,0,(canvas.width-300),canvas.height);
+
 		ctx.font = "32px serif";
+		ctx.fillStyle = defaultColour;
 		ctx.fillText("Dummy Game...", 10, 40);
 		ctx.fillText("Use Keys:", 10, 80);
 
 		ctx.font = "24px serif";
-		ctx.fillText("UP/DOWN to change health", 10, 120);
+		ctx.fillText("UP/DOWN to change health by 5", 10, 120);
 		if(changeableStatus)
-			ctx.fillText("LEFT/RIGHT to change status: "+changeableStatus.name, 10, 150);
+			ctx.fillText("LEFT/RIGHT to change status by 1: "+changeableStatus.name, 10, 150);
 		ctx.fillText("J/K to change score", 10, 180);
 		ctx.fillText("N/M to change currency", 10, 210);
 		ctx.fillText("Numbers to use carriables", 10, 240);
 		ctx.fillText("F to finish game", 10, 270);
 
-
-		ctx.fillText("Health: "+health, 10, 350);
+		ctx.fillStyle = healthColour;
+		ctx.fillText("HEALTH: "+health, 10, 350);
 		if(changeableStatus)
+			ctx.fillStyle = statusColour;
 			ctx.fillText(changeableStatus.name+": "+changeableStatus.value, 10, 380);
+
+		ctx.fillStyle = healthColour;
 		ctx.fillText("Symptom: "+symptom, 10, 410);
+		ctx.fillStyle = defaultColour;
 		ctx.fillText("Score: "+score, 10, 440);
 		ctx.fillText("Currency: "+currency, 10, 470);
 		ctx.fillText("Carriables: "+makeBagString(), 10, 500);
@@ -211,7 +256,11 @@
 			index++;
 		}
 
-		return arr.join(', ');
+		if(arr.length > 0) {
+			return arr.join(', ');
+		} else {
+			return "NO ITEMS";
+		}
 	}
 
 	window.dummyGame = {

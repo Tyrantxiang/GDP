@@ -406,7 +406,6 @@
 
     /*************** Health and status related functions ***************/
 
-    //TODO: Joe
     hub.getHealth = function(cb){
         comms.get_hp_value(function(data){
             hub.health = data.health;
@@ -414,7 +413,6 @@
         });
     };
 
-    //TODO: Joe
     hub.modifyHealth = function(changeVal, cb){
         comms.modify_hp_value(changeVal, function(data) {
             comms.get_symptoms(function(symps){
@@ -428,7 +426,6 @@
         });
     };
 
-    //TODO: Joe
     hub.setAbsoluteHealth = function(value, cb){
         comms.set_hp_value(value, function(data) {
             comms.get_symptoms(function(symps){
