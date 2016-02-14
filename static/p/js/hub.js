@@ -713,15 +713,16 @@
     };
 
     // Launches a game
-    hub.launchGame = function(gameId){
+    hub.launchGame = function(gameId, cb){
         // Get the minigame info
         comms.launch_minigame(gameId, function(data){
             comms.get_bag(function(bag){
                 if(data.err){
                     window.utils.addError(data.err);
+                    cb(data);
                     return;
                 }
-
+                cb();
 
                 // Create the iframe
                 var frame = document.createElement("iframe");
