@@ -136,8 +136,7 @@
 			var original_selection	= {},
 				original_images		= [],
 				selected_items		= {},
-				selected_images		= [],
-				title_storage		= [];
+				selected_images		= [];
 
 			$.get('/views/customise_hub.html', function(data) {
 				$('#menu-overlays').html(data);
@@ -146,8 +145,8 @@
 				var active	= false,
 					slots	= Object.keys(available);
 
-				slots.forEach(function(key) {
-					// Reference to original if cancel customise change.
+				slots.sort().forEach(function(key) {
+					// Requires reference to original hub to restore if change is cancelled.
 					original_selection[key]	= equipped[key].id;
 					selected_items[key]		= equipped[key].id;
 
@@ -166,7 +165,6 @@
 					}
 
 					slot_title_li.appendChild(slot_title_elem);
-					title_storage.push(slot_title_li);
 
 					var container_div		= document.createElement('div');
 					container_div.id		= div_id;
@@ -199,7 +197,6 @@
 								selected_items[key]		= item.id;
 								selected_images[key]	= item.url;
 
-								// TODO: If changed from 'white-img-box' in definition, change here.
 								$('.dark-dark-grey-box-no-text', obj.target.parentNode).removeClass('active');
 								$(this).addClass('active');
 
@@ -226,28 +223,7 @@
 						})(available_for_slot[a]);
 					}
 
-					// Adds the tabs in alphabetical order.
-					function compare(a, b) {
-						if (a.innerText < b.innerText)
-						{
-							return -1;
-						}
-						else if (a.innerText > b.innerText)
-						{
-  							return 1;
-						}
-						else
-						{
-  							return 0;
-						}
-					}
-					title_storage.sort(compare);
-
-					for(var t in title_storage)
-					{
-						document.getElementById('hub_customisables_titles').appendChild(title_storage[t]);
-					}
-
+					document.getElementById('hub_customisables_titles').appendChild(slot_title_li);
 					document.getElementById('hub_customisables_content').appendChild(container_div);
 				});
 
@@ -287,53 +263,76 @@
 		}
 	};
 
+	// TODO:
+	// Selection persists through changing tabs, does this need changing?
 	window.menu.shop = {
-		load : function(locked_items, currency) {
+		load : function(locked_items_per_slot, currency) {
 			$.get('/views/shop.html', function(shop_html) {
 				$('#menu-overlays').html(shop_html);
 				document.title	= 'Shop';
 				currency = currency.currency;
 				var price	= 0,
+					active	= false,
 					id;
 
 				$('#currency_container').html("You have $" + currency + " to spend in the shop");
 
-				locked_items.forEach(function(item) {
-					if (item.url) {
-						var img_html = '<img src="' + item.url + '" class="col-md-12" data-price="'+ item.price+'" data-id="' + item.id + '">';
-						$('#hub_shop_content').append('<div class="col-md-2 white-img-box">' + img_html + '</div>');
+				Object.keys(locked_items_per_slot).sort().forEach(function(key, index) {
+					var locked_items	= locked_items_per_slot[key],
+						div_id			= 'div_' + key,
+						slot_title_li	= document.createElement('li'),
+						slot_title_elem	= document.createElement('a');
+
+					slot_title_elem.innerHTML	= key.toUpperCase();
+					slot_title_elem.setAttribute('data-toggle', 'tab');
+					slot_title_elem.setAttribute('href', '#' + div_id);
+
+					if(active != true)
+					{
+						slot_title_li.className	= 'active';
 					}
+
+					slot_title_li.appendChild(slot_title_elem);
+
+					var container_div		= document.createElement('div');
+					container_div.id		= div_id;
+					container_div.className	= 'row row-centered';
+					container_div.className += ' tab-pane fade';
+
+					if(active != true)
+					{
+						container_div.className += ' in active';
+						active					= true;
+					}
+
+					locked_items.forEach(function(item) {
+						if (item.url) {
+							var img			= document.createElement('img');
+
+							// TODO: Find proper classname.
+							img.src			= item.url;
+							img.className	= 'col-md-2 col-centered dark-dark-grey-box-no-text';
+							img.setAttribute('data-price', item.price);
+							img.setAttribute('data-id', item.id);
+							container_div.appendChild(img);
+						}
+					});
+
+					document.getElementById('hub_shop_titles').appendChild(slot_title_li);
+					document.getElementById('hub_shop_content').appendChild(container_div);
 				});
 				
-				$('.white-img-box').on('click', function(data) {
-	        		$('div.white-img-box').siblings().removeClass('active');
+				$('.dark-dark-grey-box-no-text').on('click', function(data) {
+	        		$('div.dark-dark-grey-box-no-text').siblings().removeClass('active');
 	        		$(this).addClass('active');
-	        		price = $(this).children('img').data('price');
-	        		id	= $(this).children('img').data('id');
+	        		price = $(this).children('img').context.getAttribute('data-price');
+	        		id	= $(this).children('img').context.getAttribute('data-id');
 
 	        		$('#price_container').html("Cost: $" + price).addClass("dark-grey-box");
 	     		});
 			
 
 				$('#hub_shop_accept').on('click', function(data) {
-					/*
-					if (price == 0) {
-						$('#overlay').hide();
-					} else if (currency >= price) {
-						comms.add_currency(-(price), function(d) {
-							if (d.success) {
-								var remaining_currency = parseInt(currency) - parseInt(price);
-								alert("You have $" + remaining_currency + " left.");
-
-
-
-								// TODO Add to player's unlocked items
-								$('#overlay').hide();
-							} else {
-								alert("You have insufficient funds. Try some mini-games!");
-							}
-						});
-					}*/
 					comms.unlock_item(id, function(obj) {
 						if(obj.success)
 						{

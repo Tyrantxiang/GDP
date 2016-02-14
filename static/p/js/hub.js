@@ -684,8 +684,24 @@
                     }).length == 0
                 });
 
+                var shop_items_by_slot  = {};
+                shop_items.forEach(function(item) {
+                    var slot    = item.slot;
+
+                    if(slot in shop_items_by_slot)
+                    {
+                        var items   = shop_items_by_slot[slot];
+                    }
+                    else
+                    {
+                        var items                   = [];
+                    }
+                    items.push(item);
+                    shop_items_by_slot[slot]    = items;
+                });
+
                 comms.get_currency(function(currency) {
-                    menu.shop.load(shop_items, currency);
+                    menu.shop.load(shop_items_by_slot, currency);
                 });
             });
         });
