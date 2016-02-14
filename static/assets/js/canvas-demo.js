@@ -54,22 +54,13 @@ comms.getRequest("/canvas-demo/init_data", null, function(data) {
 		original_item_srcs[item]	= items[item].url;
 	}
 
-	for(var item_index in Object.keys(items))
-    {
-        var key		= Object.keys(items)[item_index];
-        var option	= document.createElement("option");
+	Object.keys(items).sort().forEach(function(key, index)
+	{
+		var option	= document.createElement("option");
 		option.text	= key;
 		document.getElementById("menu_select").add(option);
-    }
 
-	var inputElement = document.getElementById("menu_input");
-	//inputElement.addEventListener("change", handleFiles, false);
-	//function handleFiles()
-	//{
-  	//	var fileList = this.files; /* now you can work with the file list */
-  	//	console.log(fileList);
-  	//	console.log(document.getElementById("menu_select").value);
-	//}
+	});
 
 	function overwrite_image(canvas, slot_name, image_src)
 	{
