@@ -107,8 +107,9 @@
 				$('#minigame_accept').on('click', function(obj) {
 					if(selected_minigame)
 					{
-						hub.launchGame(selected_minigame, function() {});
-						$('#overlay').hide();
+						hub.launchGame(selected_minigame, function(data) {
+							$('#overlay').hide();
+						});
 					}
 					else
 					{
@@ -468,7 +469,7 @@
 		}
 		else
 		{
-			alert('You can only carry ' + load_max + ' items, please remove some if you want to make room for more.');
+			window.utils.addError('You can only carry ' + load_max + ' items, please remove some if you want to make room for more.');
 		}
 	}
 
