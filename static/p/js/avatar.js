@@ -1,5 +1,5 @@
 (function(){
-  "user strict";
+  'use strict';
 
   // Round rectangle shape 
   CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
@@ -19,10 +19,10 @@
 
   // Function to draw on the canvas
   function drawAvatar(canvas, img, col){
-    var ctx = canvas.getContext("2d");
+    var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.roundRect(0, 0, canvas.width, canvas.height, canvasRadius);
-    ctx.fillStyle = col;
+    ctx.fillStyle = col || '#ffffff';
     ctx.fill();
     ctx.drawImage(img, 
       canvas.width / 2 - img.width / 2,
@@ -30,65 +30,34 @@
   }
 
 
+  var avatar = {};
 
 
-  window.hub.avatarCreationLoader = function(){
-    $.get("/views/createavatar.html", function(data){
-      $("#avatar-creation-overlay").html(data);
+
+  avatar.launch = function(slots, equipped){
+    $.get('/views/createavatar.html', function(data){
+      $('#avatar-creation-overlay').html(data);
       
       // Draw white background on canvas
-      var canvas = document.getElementById("avatar-create");
-      var ctx = canvas.getContext("2d");
+      var canvas = document.getElementById('avatar-create');
+      var ctx = canvas.getContext('2d');
       ctx.roundRect(0, 0, canvas.width, canvas.height, canvasRadius);
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = '#ffffff';
       ctx.fill();
 
       // Cached image object
       var img;
 
       // Cache the menus divs
-      var menus = {
-        head : $('#head-menu'),
-        eyes : $('#eyes-menu'),
-        shirt : $('#upper-menu'),
-        skin : $('#skin-menu'),
-        trousers : $('#lower-menu')
-      };
-
-
-      hub.getUserUnlockedItemsForSlot(Object.keys(menus), function (slots) {
-        window.comms.get_user_equipped_items(function(equipped) {
-
-          // Add the slots to the menu
-          var slot, menu, elements, curr;
-          for (slot in slots) {
-
-            curr = equipped[slot];
-
-            elements = slots[slot].map(function(item){
-              var imgEl = $(document.createElement("img")).attr("src", item.url).data("itemId", item.id).addClass("width-22 white-img-box avatar-item-box").on("click", avatarItemBoxClick);
-              // Set as active if it is equipped
-              if(curr.id === item.id){
-                imgEl.addClass("active");
-              }
-
-              return imgEl;
-            });
-
-
-            menu = menus[slot];
-            if(menu){
-              // Append to the menu
-              menu.append(elements);
-            }
-          }
-
-          equipItemsOnSelect();
-        });
+      var menus = {};
+      $('.avatar-slot').each(function(){
+        var j = $(this);
+        menus[j.data('slot')] = j;
       });
 
 
-      $("#avatar-creation-close").click(function(){
+      // Closes and commits avatar creation when finished button is clicked
+      $('#avatar-creation-close').click(function(){
         var userObj = getUserObject();
         hub.updateEquiptItems(userObj, function(image) {
           hub.closeAvatarCreation();
@@ -96,30 +65,39 @@
       });
 
 
+      // Event listner for when an item is selected
       function avatarItemBoxClick(e){
         $('.avatar-item-box', e.target.parentNode).removeClass('active');
         $(this).addClass('active');
         equipItemsOnSelect();
       }
 
-      function setEquippedItemAsActive(itemId, item) {
-        if (itemId == $(item).data("itemId")) {
-          $(item).addClass('active');
-        }
-      }
 
+      // Gets the currently selected item ids
       function getUserObject(){
         var userObj = {};
         for(var i in menus){
-          userObj[i] = menus[i].find('.active').data("itemId");
+          userObj[i] = menus[i].find('.active').data('itemId');
         }
         return userObj;
       }
 
+
+
+      // Sets the given item as selected if it matches the given item id
+      function setEquippedItemAsActive(itemId, item) {
+        if (itemId == $(item).data('itemId')) {
+          $(item).addClass('active');
+        }
+      }
+
+
+
+      // Updates the avatar display from the given items
       function updateAvatarDisplay(userObj){
         hub.getAvatarImageFromItems(userObj, function(image){
           img = image;
-          drawAvatar(canvas, image, "#ffffff");
+          drawAvatar(canvas, image);
         });
       }
 
@@ -127,6 +105,41 @@
         var userObj = getUserObject();
         updateAvatarDisplay(userObj);
       }
+
+
+
+      // Add the slots to the menu
+      var slot, menu, elements, curr;
+      for (slot in slots) {
+
+        curr = equipped[slot];
+
+        elements = slots[slot].map(function(item){
+          var imgEl = $(document.createElement('img')).attr('src', item.url).data('itemId', item.id).addClass('width-22 white-img-box avatar-item-box').on('click', avatarItemBoxClick);
+          // Set as active if it is equipped
+          if(curr.id === item.id){
+            imgEl.addClass('active');
+          }
+
+          return imgEl;
+        });
+
+
+        menu = menus[slot];
+        if(menu){
+          // Append to the menu
+          menu.append(elements);
+        }
+      }
+
+      equipItemsOnSelect();
+
+
     });
   };
+
+
+
+
+  window.avatar = avatar;
 })();

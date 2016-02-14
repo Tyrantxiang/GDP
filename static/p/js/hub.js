@@ -18,7 +18,9 @@
         // Local draw object
         draw,
         // Local menu object
-        menu;
+        menu,
+        // Local avatar object
+        avatar;
 
 
     /**** The hub object: central object for the system ****/
@@ -246,10 +248,11 @@
 
                                     initalFilesLoaded = true;
 
-                                    // Pull the window instances of draw and comms
+                                    // Pull the window instances of draw, comms, menu and avatar
                                     comms = window.comms;
                                     draw = window.draw;
                                     menu = window.menu;
+                                    avatar = window.avatar;
 
                                     draw.init(hubCanvas, getAssetsByType("images"))
                                         .healthbar.init(hub.health, hub.statuses, hub.symptoms);
@@ -542,9 +545,7 @@
     };
 
     hub.getEquippedHouseItems = function(cb){
-        comms.get_user_equipped_items(function(data){
-            var avatar = ["skin", "head", "shirt", "eyes"];
-            for(var i=0; i<avatar.length; i++) delete data[avatar[i]];
+        comms.get_user_equipped_items_by_type("hub", function(data){
             cb(data);
         });
     };
@@ -563,10 +564,14 @@
     /********* Menu launching functions *****************/
 
     hub.launchAvatarCreation = function(){
-        container.removeChild(hubCanvasContainer);
-        document.getElementById("avatar-creation-overlay").style.display = "block";
-        document.body.style.backgroundColor = "#90C695";
-        hub.avatarCreationLoader();
+        comms.get_items_by_type("avatar", function(slots){
+            comms.get_user_equipped_items_by_type("avatar", function(equipped) {
+                container.removeChild(hubCanvasContainer);
+                document.getElementById("avatar-creation-overlay").style.display = "block";
+                document.body.style.backgroundColor = "#90C695";
+                avatar.launch(slots, equipped);
+            });
+        });
     };
 
     hub.closeAvatarCreation = function(){
