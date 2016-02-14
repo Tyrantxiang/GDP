@@ -590,10 +590,10 @@
     // Sleep, resetting health.
     hub.sleep = function(cb) {
         hub.setAbsoluteHealth(100, function() {
-            menu.sleep.load();
-
-            draw.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
-            draw.update_avatar();
+            menu.sleep.load(function() {
+                draw.healthbar.updateHealthSymptoms(hub.health, hub.symptoms);
+                draw.update_avatar();
+            });
         });
     };
 

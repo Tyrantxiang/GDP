@@ -13,15 +13,17 @@
 	window.menu = {};
 
 	window.menu.sleep	= {
-		load : function() {
+		load : function(update_canvas) {
 			$.get('/views/sleep.html', function(data) {
 				$('#menu-overlays').html(data);
 
 				$('#fade-overlay').hide();
-				$('#fade-overlay').fadeToggle(2000);
-				setTimeout(function(e) {
-					$('#fade-overlay').fadeToggle(2000);
-				}, 3000);
+				$('#fade-overlay').fadeIn(2000, function() {
+					setTimeout(function() {
+						update_canvas();
+						$('#fade-overlay').fadeOut(2000);
+					}, 1000);
+				});
 			});
 		}
 	};
