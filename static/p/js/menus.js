@@ -105,8 +105,15 @@
 				}
 
 				$('#minigame_accept').on('click', function(obj) {
-					hub.launchGame(selected_minigame, function() {});
-					$('#overlay').hide();
+					if(selected_minigame)
+					{
+						hub.launchGame(selected_minigame, function() {});
+						$('#overlay').hide();
+					}
+					else
+					{
+						window.utils.addError('Please select a mini-game.');
+					}
 				});
 
 				$('#minigame_cancel').on('click', function(obj) {
