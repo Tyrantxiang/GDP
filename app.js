@@ -175,9 +175,8 @@ function startApp(db){
           items           = config.hub.getItemMetaData("hub");
 
       var new_items       = {};
-      for(var item_index in Object.keys(items))
+      for(var key in items)
       {
-          var key       = Object.keys(items)[item_index];
           var item      = items[key];
           var new_item  = {};
           for(var property in item)
