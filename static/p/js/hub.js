@@ -55,68 +55,6 @@
     utils.latch = latch;
 
 
-    /*********************
-     ********************* Internal and controlled functions that were previously removed from the window object
-     ********************* These were used in the old game loading system and are awaiting removal
-     ********************* Do not use
-     *********************/
-    // Clear the window functions so games cannot use them
-    function clearInternalWindowFunctions(){
-        delete window.comms;
-        delete window.draw;
-        delete window.hub;
-        delete window.menu;
-    }
-
-    // Recover the above window functioInternalns
-    function recoverInternalWindowFunctions(){
-        window.comms = comms;
-        window.draw = draw;
-        window.hub = hub;
-        window.menu = menu;
-    }
-
-
-    // Classes that are to be removed and/or pollyfilled during a game running
-    var controlledFunctions = {
-        setTimeout : { obj : window, func : window.setTimeout },
-        clearTimeout : { obj : window, func : window.clearTimeout },
-        setInterval : { obj : window, func : window.setInterval },
-        clearInterval : { obj : window, func : window.clearInterval },
-
-        requestAnimationFrame: { obj : window, func : window.requestAnimationFrame },
-        cancelAnimationFrame : { obj : window, func : window.cancelAnimationFrame }
-    };
-
-    function clearControlledFunctions(){
-        for(var a in controlledFunctions){
-            var f  = controlledFunctions[a];
-            delete f.obj[a];
-        }
-    }
-
-    // Replaces the functions with those given in the object passed in
-    function replaceControlledFunctions(other){
-        for(var a in controlledFunctions){
-            var f  = controlledFunctions[a],
-                o = other[a];
-            if(other[a]){
-                f.obj[a] = o;
-            }
-        }
-    }
-
-    function recoverControlledFunctions(){
-        for(var a in controlledFunctions){
-            var f  = controlledFunctions[a];
-            f.obj[a] = f.func;
-        }
-    }
-
-
-    /********************* End controlled functions/objects **************************/
-
-
 
     /********************* Utility functions for the hub *************************/
     // Clones an arbitrary object
