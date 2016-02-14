@@ -434,3 +434,30 @@ iframe.game-frame {
      padding:15px;
      text-align:center;
 }
+
+/** Center tabs for shop/hub customisation. **/
+.nav-tabs > li, .nav-pills > li {
+    float:none;
+    display:inline-block;
+    *display:inline; /* ie7 fix */
+     zoom:1; /* hasLayout ie7 trigger */
+}
+
+.nav-tabs, .nav-pills {
+    text-align:center;
+}
+
+/** Tabs for shop/hub customisation styling. **/
+.nav > li > a.dark-tab {
+  background-color: rgba(50, 50, 50, 0.9);
+  color: #FFFFFF;
+  border: none;
+}
+
+.nav > li.active > a.dark-tab,
+.nav > li.active > a.dark-tab:hover,
+.nav > li.active > a.dark-tab:focus {
+  background-color: rgba(50, 50, 50, 0.9);
+  color: #FFFFFF;
+  border: solid 1px;
+}

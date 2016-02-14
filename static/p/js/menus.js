@@ -158,10 +158,12 @@
 					slot_title_elem.innerHTML	= key.toUpperCase();
 					slot_title_elem.setAttribute('data-toggle', 'tab');
 					slot_title_elem.setAttribute('href', '#' + div_id);
+					slot_title_elem.className	= 'dark-tab';
 
+					slot_title_li.className		= 'col-md-3';
 					if(active != true)
 					{
-						slot_title_li.className = 'active';
+						slot_title_li.className	+= ' active';
 					}
 
 					slot_title_li.appendChild(slot_title_elem);
@@ -286,10 +288,12 @@
 					slot_title_elem.innerHTML	= key.toUpperCase();
 					slot_title_elem.setAttribute('data-toggle', 'tab');
 					slot_title_elem.setAttribute('href', '#' + div_id);
+					slot_title_elem.className	= 'dark-tab';
 
+					slot_title_li.className		= 'col-md-3';
 					if(active != true)
 					{
-						slot_title_li.className	= 'active';
+						slot_title_li.className	+= ' active';
 					}
 
 					slot_title_li.appendChild(slot_title_elem);
