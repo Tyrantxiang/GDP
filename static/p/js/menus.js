@@ -385,14 +385,13 @@
 							img				= carriable.image.cloneNode();
 
 						text_div.innerHTML	= carriable.name;
-						text_div.className	= 'row';
 
 						img.className		= 'packing_images';
 
 						container_div.appendChild(img);
 						container_div.appendChild(text_div);
 
-						container_div.className = 'col-md-2 col-centered';
+						container_div.className = 'col-md-2 col-centered packing_container dark-dark-grey-box-no-text';
 
 						container_div.addEventListener('click', function(obj) {
 							add_to_backpack(carriable);
