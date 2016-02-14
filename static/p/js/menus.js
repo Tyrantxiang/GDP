@@ -446,7 +446,7 @@
 
 			container_div.appendChild(img);
 
-			container_div.className	= 'col-md-3 col-centered';
+			container_div.className	= 'col-md-2 col-centered packing_container dark-dark-grey-box-no-text';
 
 			container_div.addEventListener('click', function(obj) {
 				remove_from_backpack(carriable, container_div);
@@ -462,7 +462,7 @@
 		}
 		else
 		{
-			window.utils.addError('You can only carry ' + load_max + ' items, please remove some if you want to make room for more.');
+			window.utils.addError('You can only carry ' + load_max + ' items, please remove some to make room for more.');
 		}
 	}
 
