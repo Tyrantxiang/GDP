@@ -164,7 +164,7 @@
 	}
 
 	function updateCarriables(newBag, newHp, newStatuses, avatarImage, newSymps){
-		updateHealthAndAvatar(newHp, avatarImage);
+		updateHealthAndAvatar(newHp, avatarImage, newSymps);
 		for(var i in newStatuses){
 			statuses[i].value = newStatuses[i].value;
 		}
