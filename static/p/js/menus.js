@@ -187,7 +187,7 @@
 
 							// TODO: Find proper classname.
 							img.src					= item.url;
-							img.className			= 'height-100px white-img-box hub-item-box';
+							img.className			= 'col-md-2 col-centered dark-dark-grey-box-no-text';
 
 							if(item.id == equipped[key].id)
 							{
@@ -200,7 +200,7 @@
 								selected_images[key]	= item.url;
 
 								// TODO: If changed from 'white-img-box' in definition, change here.
-								$('.white-img-box', obj.target.parentNode).removeClass('active');
+								$('.dark-dark-grey-box-no-text', obj.target.parentNode).removeClass('active');
 								$(this).addClass('active');
 
 								// TODO: Need reworking, heavily inefficient.

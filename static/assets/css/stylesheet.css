@@ -188,6 +188,10 @@ img > .section-img {
   margin: 10px;
 }
 
+.dark-dark-grey-box-no-text.active {
+  border: white solid 1px;
+}
+
 /* Positioning */
 .bottom-align {
   position: fixed;
