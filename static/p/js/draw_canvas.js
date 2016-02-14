@@ -243,12 +243,17 @@
 							break;
 					}
 				}
+
+				/*
+				 * QUICK FIX TO MAKE IT TO FIX THE OLD HEALTHBAR BEING VISIBLE BEHIND THE NEW ONE
+				 * Stops it being clickable (wasn't a necessary feature anyway!)
 				else if(i.target.name === hb.mouseoverGroupName)
 				{
 					hb.toggleVisiblity();
 
 					canvas.renderAll();
 				}
+				*/
 			}
 		});
 	}
@@ -298,7 +303,7 @@
 			hb.barborderVals.left			= hb.canvas.width  - (hb.barborderVals.width*1.1);
 			hb.barborderVals.top			= hb.canvas.height - (hb.barborderVals.height*1.5);
 			hb.barborderVals.fill			= 'black';
-			hb.barborderVals.opacity		= 0.75;
+			hb.barborderVals.opacity		= 1;
 			hb.barborderVals.stroke 		= 'white';
 			hb.barborderVals.strokeWidth	= 3;
 
