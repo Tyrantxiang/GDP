@@ -20,7 +20,7 @@
             <label for="signup_password"><span class="required">*</span>password: </label>
             <div class="pull-right clearfix">
               <span class="hidden signup_password-ok glyphicon glyphicon-ok-sign"></span><span class="hidden signup_password-error glyphicon glyphicon-remove-sign"></span>
-              <input type="password" class="form-control" id="signup_password" placeholder="password" required="required">
+              <input type="password" class="form-control" id="signup_password" placeholder="password" required="required" data-toggle="tooltip" title="Password must be at least 6 characters long.">
             </div>
           </div>
           <hr class="hr-grey">
@@ -61,3 +61,7 @@
     </div>
   </div>
 </div>
+
+<script>
+ $('[data-toggle="tooltip"]').tooltip(); 
+ </script>

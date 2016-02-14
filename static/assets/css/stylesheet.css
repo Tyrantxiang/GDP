@@ -75,11 +75,9 @@ img > .section-img {
 }
 
 .footer {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 400px;
 }
 
 /* TODO: Work out how to make background cover areas not currently shown (off-screen scrolling). */
