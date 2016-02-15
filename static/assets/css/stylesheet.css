@@ -436,11 +436,11 @@ iframe.game-frame {
 }
 
 /** Center tabs for shop/hub customisation. **/
-.nav-tabs > li, .nav-pills > li {
+.nav-tabs > li.menu-tab, dym.nav-pills > li.menu-tab {
     float:none;
     display:inline-block;
     *display:inline; /* ie7 fix */
-     zoom:1; /* hasLayout ie7 trigger */
+    zoom:1; /* hasLayout ie7 trigger */
 }
 
 .nav-tabs, .nav-pills {
