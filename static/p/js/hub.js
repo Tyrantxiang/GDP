@@ -817,6 +817,11 @@
     function GameCoordinator(frame, channel){
         this.frame = frame;
         this.channel = channel;
+
+        this.ready = true;
+
+        this.useCarriableReturn = undefined;
+
     }
     // Add to the prototype
     GameCoordinator.prototype.finishGame = function(data){
@@ -825,7 +830,7 @@
 
     GameCoordinator.prototype.useCarriable = function(data, cb){
         hub.useCarriable(data.carriableId, function(bag, health, statuses, avatarImage, symptoms){
-            cb({
+	        cb({
                 bag : bag,
                 health : health,
                 statuses : statuses,
@@ -834,6 +839,22 @@
             });
         });
     };
+
+    GameCoordinator.prototype.useCarriableSync = function(data){
+    	var returnObject = undefined;
+
+    	this.useCarriable(data, function(obj){
+    		returnObject = obj;
+    	});
+
+    	while(returnObject !== undefined){
+    		var c = 5;
+    	}
+
+    	this.useCarriableReturn = returnObject;
+
+    	return !!returnObject;
+    }
 
     GameCoordinator.prototype.getCarriableInfo = function(data, cb){
         hub.getCarriable(data.carriableId, function(carriable){
@@ -864,7 +885,11 @@
 
     // Assume we are always ready
     GameCoordinator.prototype.ready = function(data, cb){
-        cb({ready : true});
+    	if(cb){
+        	cb({ready : this.ready});
+    	}else{
+    		return this.ready;
+    	}
     };
 
 
