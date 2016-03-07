@@ -912,7 +912,9 @@
 
         }.bind(this);
 
-        window.setTimeout(sendHandshake, 250);
+        this.frame.addEventListener("load", function(){
+            window.setTimeout(sendHandshake, 250);
+        });
 
         return this;
     };
