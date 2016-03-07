@@ -262,8 +262,8 @@
                 if(!finished){
                     finished = true;
                     cancelAnimationFrame(animFrame);
-                    window.removeEventListener(keyup_func);
-                    window.removeEventListener(keydown_func);
+                    window.removeEventListener("keyup", keyup_func);
+                    window.removeEventListener("keydown", keydown_func);
                     keysDown = [];
                     return api.finishGame(score, score / 10);
                 }else{
