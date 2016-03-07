@@ -818,7 +818,7 @@
         this.frame = frame;
         this.channel = channel;
 
-        this.ready = true;
+        this.isReady = true;
 
         this.useCarriableReturn = undefined;
 
@@ -830,7 +830,7 @@
 
     GameCoordinator.prototype.useCarriable = function(data, cb){
         hub.useCarriable(data.carriableId, function(bag, health, statuses, avatarImage, symptoms){
-	        cb({
+            cb({
                 bag : bag,
                 health : health,
                 statuses : statuses,
@@ -839,22 +839,6 @@
             });
         });
     };
-
-    GameCoordinator.prototype.useCarriableSync = function(data){
-    	var returnObject = undefined;
-
-    	this.useCarriable(data, function(obj){
-    		returnObject = obj;
-    	});
-
-    	while(returnObject !== undefined){
-    		var c = 5;
-    	}
-
-    	this.useCarriableReturn = returnObject;
-
-    	return !!returnObject;
-    }
 
     GameCoordinator.prototype.getCarriableInfo = function(data, cb){
         hub.getCarriable(data.carriableId, function(carriable){
@@ -885,11 +869,11 @@
 
     // Assume we are always ready
     GameCoordinator.prototype.ready = function(data, cb){
-    	if(cb){
-        	cb({ready : this.ready});
-    	}else{
-    		return this.ready;
-    	}
+        if(cb){
+            cb({ready : this.isReady});
+        }else{
+            return this.isReady;
+        }
     };
 
 
