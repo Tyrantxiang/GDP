@@ -126,7 +126,7 @@ function startApp(db){
     app.post("/authenticate", auth.authenticate);
 
     // Routes to serve semi static files
-    app.get("/games/:game/:fileType/:filename", config.games.serveFile);
+    app.get("/games/:game/:fileType/:filename(*)", config.games.serveFile);
     app.get("/carriables/:carriable/:filename", config.carriables.serveFile);
     app.get("/items/:item/:filename", config.items.serveFile);
 
