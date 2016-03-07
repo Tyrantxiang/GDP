@@ -73,7 +73,8 @@
 
         // Confirm we are ready
         disp.sendMessage("ready", null, function(){
-            var api = new GameAPI(disp, data.gameId, data.sessionId, base64ToImg(data.avatarImage), data.assetBaseURL, div, data.version),
+            var bu = windowOrigin + data.assetBaseURL,
+                api = new GameAPI(disp, data.gameId, data.sessionId, base64ToImg(data.avatarImage), bu, div, data.version),
                 eo = window[data.entryObject];
 
             // Just in case they lose track of it!
@@ -83,7 +84,7 @@
 
             window.focus();
 
-            eo.run.call(eo, api, div, data.assetBaseURL, data.health, data.statuses, data.bag);
+            eo.run.call(eo, api, div, bu, data.health, data.statuses, data.bag);
         });
     }
 
@@ -160,7 +161,7 @@
         };
 
         this.getAssetURL = function(asset){
-            return dispatcher.windowOrigin + baseAssetURL + asset;
+            return baseAssetURL + asset;
         };
     }
 
