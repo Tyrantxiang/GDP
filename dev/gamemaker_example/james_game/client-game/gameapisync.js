@@ -81,11 +81,18 @@ function getReady(functionName){
 
 var api;
 window.obj = {};
-window.obj.run = function(a){
+window.obj.run = function(a, canvas, assetBaseURL, health, statuses, bag){
 	api = a;
 	// load html5 game
 
 	var script = document.createElement("script");
+	script.addEventListener("load", function(){
+		var mm = window.onload;
+		window.onload = undefined;
+		_k._s3[0] = a.getAssetURL(_k._s3[0]);
+		_k._l[0]._m[0] = a.getAssetURL(_k._l[0]._m[0]);
+		mm();
+	});
     script.src = 'html5game/DiabetesGame2.js';
 
     var stag = document.getElementsByTagName('script')[0];
