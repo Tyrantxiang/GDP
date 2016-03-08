@@ -151,7 +151,6 @@
         // Scripts to load
         var scripts = [
             ['//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js', false],
-            ['/assets/polyfills/rAF.js', false],
             ['/assets/js/hub/draw_canvas.js', false],
             ['/assets/js/hub/avatar.js', false],
             ['/assets/js/hub/menus.js', false]
