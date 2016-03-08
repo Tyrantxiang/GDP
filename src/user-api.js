@@ -230,7 +230,6 @@ var routes = {
 							};
 							
 							return Promise.map(conditions, function(c){
-								console.log(c);
 								return db.createUserCondition({user_id : user_result.id, condition_id: c, active: true});
 							}).then(function(){
 								response();

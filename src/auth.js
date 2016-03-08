@@ -145,7 +145,6 @@ function admin_check(req, res, next){
  * @type {socket_middleware}
  */
 function socket_middleware(socket, next){
-    //console.log(socket.request);
     var token = socket.request._query.token;
     if(!token){
         // Fail here

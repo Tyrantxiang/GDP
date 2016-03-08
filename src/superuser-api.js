@@ -152,8 +152,6 @@ function createRoute(properties, cb){
 		if(!invalid){
 			cb(req, res);
 		}else{
-			console.log(req.body);
-			console.log("Error in validation:" + invalid);
 			sendError(res, {err : ['The following sections cannot be blank: ']});
 		}
 	};

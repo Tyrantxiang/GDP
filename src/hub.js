@@ -135,8 +135,8 @@ Hub.prototype.exit = function(){
     var disconnectTime = new Date();
 
     db.endSession(disconnectTime, this.userId).catch(function(err){
-		console.log(err);
-	});
+        console.log(err);
+    });
 };
 
 
@@ -354,14 +354,13 @@ Hub.prototype.generateAvatarImageFromEquippedItems = function(cb){
  * @param {function} cb - Called on success or failure
  */
 Hub.prototype.modifyCurrency = function(modify, cb){
-	
+    
     db.modifyUserCurrency(parseInt(modify), this.userId).then(function(currencyObj){
-		console.log(currencyObj.currency);
-		cb({
-			success: true,
-			currency: currencyObj.currency
-		});
-	}).catch(function(err){
+        cb({
+            success: true,
+            currency: currencyObj.currency
+        });
+    }).catch(function(err){
         cb({error: err});
     });
 };
@@ -1110,21 +1109,21 @@ var commsEventListeners = {
 
                 item_price = config.items.getConfig(data.item_id).price;
 
-            // TODO use modifyCurrency and adjust that so it cannot go below zero			
-			db.readUserCurrency(userId).then(function(currencyObj){
-				if(item_price <= currencyObj.currency){
-					return db.modifyUserCurrency(0-item_price, userId).then(function(){
-						return db.createUserInventory(inventoryObj);
-					}).then(function(){
-						fn({success : true});
-					});
+            // TODO use modifyCurrency and adjust that so it cannot go below zero           
+            db.readUserCurrency(userId).then(function(currencyObj){
+                if(item_price <= currencyObj.currency){
+                    return db.modifyUserCurrency(0-item_price, userId).then(function(){
+                        return db.createUserInventory(inventoryObj);
+                    }).then(function(){
+                        fn({success : true});
+                    });
                 }else{
                     throw new Error("Not enough currency");
                 }
-			}).catch(function(err){
+            }).catch(function(err){
                 fn({error: err});
             });
-			
+            
         }else{
             fn({error: "Item does not exist"});
         }

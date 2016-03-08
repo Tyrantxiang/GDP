@@ -12,8 +12,7 @@ var currencyDb = {}
 	, UserCurrency = undefined
 	;
 
-currencyDb.createCurrency = function(currency, userid) {	
-	console.log(currency, userid);
+currencyDb.createCurrency = function(currency, userid) {
 	return UserCurrency.destroy({
 		where : {
 			'user_id' : userid,
