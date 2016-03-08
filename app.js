@@ -111,9 +111,8 @@ function startApp(db){
     app.use(parser.json());
     app.use(parser.urlencoded({ extended : true }));
 
-    // Set up the authentication middleware
-    // TODO: Uncomment once auth actually done for canvas.
-    //app.use([/*"/games",*/ "/p"], auth.express_middleware);
+    // Set up the authentication middleware for requests starting with /p
+    app.use(["/p"], auth.express_middleware);
     
     // Set the static files to be served
     app.use("/", express.static("static"));
