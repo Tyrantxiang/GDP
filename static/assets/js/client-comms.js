@@ -144,7 +144,7 @@ function tokeniseGetRequest(path){
  * @param {boolean} tokenise - Whether or not to tokenise the request (required for authentcated scripts)
  */
 function loadScriptFile(url, cb, tokenise){
-	if(tokenise !== false){
+	if(tokenise){
 		url = tokeniseGetRequest(url);
 	}
 
