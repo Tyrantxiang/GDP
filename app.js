@@ -149,7 +149,7 @@ function startApp(db){
 
     // Add auth to the routes
     app.use("/superuser", auth.express_middleware, auth.admin_check);
-    app.use(["/views/superuser-functions.html", "/assets/js/superuser.js"], auth.express_middleware, auth.admin_check);
+    app.use(["/views/dev_tools/superuser-functions.html", "/assets/js/dev_tools/superuser.js"], auth.express_middleware, auth.admin_check);
 
     app.post("/superuser/add_bag_item", superuserapi.routes.add_bag_item);
     app.post("/superuser/remove_bag_item", superuserapi.routes.remove_bag_item);
