@@ -171,16 +171,11 @@
         this.port = port;
         this.windowOrigin = windowOrigin;
 
-        this.callbacks = {};
+        this.callbacks = [];
     }
     (function(p){
         p.generateUID = function(){
-            var uid;
-            do {
-                uid = Math.floor(Math.random() * 24000);
-            } while (this.callbacks[uid]);
-
-            return uid;
+            return callbacks.length;
         };
 
 
@@ -205,8 +200,9 @@
                 cb = this.callbacks[uid];
 
             if(cb){
-                delete this.callbacks[uid];
-
+                this.callbacks[uid] = null; // Remove callback to clear from memory
+                                            // Do not delete, so as to prevent the array from becoming sparse
+                                            // and negating optimisations
                 cb(d);
             }
         };
