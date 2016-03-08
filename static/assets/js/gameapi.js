@@ -175,7 +175,7 @@
     }
     (function(p){
         p.generateUID = function(){
-            return callbacks.length;
+            return this.callbacks.length;
         };
 
 
