@@ -14,7 +14,7 @@
 
 	window.menu.sleep	= {
 		load : function(update_canvas) {
-			$.get('/views/sleep.html', function(data) {
+			$.get('/views/hub/sleep.html', function(data) {
 				$('#menu-overlays').html(data);
 
 				$('#fade-overlay').hide();
@@ -30,7 +30,7 @@
 
 	window.menu.scores = {
 		load : function(formatted_scores) {
-			$.get('/views/scoreboard.html', function(data) {
+			$.get('/views/hub/scoreboard.html', function(data) {
 				$('#menu-overlays').html(data);
 				document.title	= 'Scoreboard';
 
@@ -63,7 +63,7 @@
 
 	window.menu.game_select = {
 		load : function(minigames) {
-			$.get('/views/minigame_select.html', function(data) {
+			$.get('/views/hub/minigame_select.html', function(data) {
 				$('#menu-overlays').html(data);
 				document.title	= 'Select a minigame!';
 
@@ -138,7 +138,7 @@
 				selected_items		= {},
 				selected_images		= [];
 
-			$.get('/views/customise_hub.html', function(data) {
+			$.get('/views/hub/customise_hub.html', function(data) {
 				$('#menu-overlays').html(data);
 				document.title	= 'Customise the hub!';
 
@@ -269,7 +269,7 @@
 	// Selection persists through changing tabs, does this need changing?
 	window.menu.shop = {
 		load : function(locked_items_per_slot, currency) {
-			$.get('/views/shop.html', function(shop_html) {
+			$.get('/views/hub/shop.html', function(shop_html) {
 				$('#menu-overlays').html(shop_html);
 				document.title	= 'Shop';
 				currency = currency.currency;
@@ -373,7 +373,7 @@
 			}
 			backpack	= temp_backpack;
 
-			$.get('/views/pack_backpack.html', function(data) {
+			$.get('/views/hub/pack_backpack.html', function(data) {
 				$('#menu-overlays').html(data);
 				document.title	= 'Pack your backpack';
 

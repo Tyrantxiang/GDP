@@ -152,9 +152,9 @@
         var scripts = [
             ['//cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js', false],
             ['/assets/polyfills/rAF.js', false],
-            ['/p/js/draw_canvas.js', true],
-            ['/p/js/avatar.js', true],
-            ['/p/js/menus.js', true]
+            ['/assets/js/hub/draw_canvas.js', false],
+            ['/assets/js/hub/avatar.js', false],
+            ['/assets/js/hub/menus.js', false]
         ];
 
         // TODO: Handle if login is clicked multiple times, prevent loading multiple hubs, i.e. .html() first.

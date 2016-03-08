@@ -67,7 +67,7 @@ $(function() {
       if(data.authenticated){
         addSuccess("Login Successful");
         
-        comms.loadScriptFile("/p/js/hub.js", function(){
+        comms.loadScriptFile("/assets/js/hub/hub.js", function(){
           // Remove the login stuff
           $("#main-content-area").empty();
           $("body").removeClass("login");

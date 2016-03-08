@@ -35,7 +35,7 @@
 
 
   avatar.launch = function(slots, equipped){
-    $.get('/views/createavatar.html', function(data){
+    $.get('/views/hub/createavatar.html', function(data){
       $('#avatar-creation-overlay').html(data);
       
       // Draw white background on canvas

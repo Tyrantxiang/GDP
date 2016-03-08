@@ -96,9 +96,9 @@
 				
 				$.post("/authenticate", {'username' : username, 'password' : password}).then(function(data){
 					token = data.token;
-					return $.getScript('/assets/js/superuser.js?token=' + token);
+					return $.getScript('/assets/js/dev_tools/superuser.js?token=' + token);
 				}).then(function(){
-					return $.get("/views/superuser-functions.html", {token: token});
+					return $.get("/views/dev_tools/superuser-functions.html", {token: token});
 				}).then(function(htmldata){
 					$('body').css('background-color', '#4da6ff');
 					function setUpPage(){
