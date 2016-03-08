@@ -817,11 +817,6 @@
     function GameCoordinator(frame, channel){
         this.frame = frame;
         this.channel = channel;
-
-        this.isReady = true;
-
-        this.useCarriableReturn = undefined;
-
     }
     // Add to the prototype
     GameCoordinator.prototype.finishGame = function(data){
@@ -869,11 +864,7 @@
 
     // Assume we are always ready
     GameCoordinator.prototype.ready = function(data, cb){
-        if(cb){
-            cb({ready : this.isReady});
-        }else{
-            return this.isReady;
-        }
+        cb({ ready : true });
     };
 
 
