@@ -27,13 +27,26 @@ function getDatabase(){
  * Generate a JSON Web Token (jwt)
  *
  * @param {int} userId - The ID of the user to generate the token for
- * @return {string} - The JSON Web Token 
+ * @return {string} - The JSON Web Token
  */
 function generateToken(userId){
     /* To make sure we don't send the userId (for db reasons) maybe we should encrypt the
      * user ID here (with AES?)
      */
     return jwt.sign({ userId : userId }, secret, { expiresIn : 60 * 60 * 24 });
+}
+
+/**
+ * Generate a JSON Web Token (jwt) with userInfo
+ * the return (token) can be changed easily
+ * by clouds8
+ *
+ * @param {obj} user -  User obj
+ * @return {string} token - The JSON Web Token
+ */
+function generateTokenByUser(user){
+
+    return jwt.sign({userId: user.id , userName: user.name}, secret, { expiresIn : 60 * 60 * 24 });
 }
 
 /**
@@ -49,7 +62,11 @@ function authenticate(req, res){
 
         authenticated = function(user){
             // Generate web token
-            var token = generateToken(user.id);
+            // var token = generateToken(user.id);
+
+            // Generate web token by user to send the userId and userName     --by clouds8
+            var token = generateTokenByUser(user);
+
             console.log("     uid " + user.id + " authenticated");
             res.json({
                 token : token
@@ -85,7 +102,7 @@ function authenticate(req, res){
 function express_middleware(req, res, next){
     // Try and get the token from the query string first
     var token = req.query.token || req.query.t;
-    
+
     // See if that worked
     if(!token){
         // Try and get it from the body
@@ -159,6 +176,7 @@ function socket_middleware(socket, next){
         }
 
         socket.userId = decoded.userId;
+        socket.userName = decoded.userName;   // add the userName to socket  --clouds8
         next();
     });
 }
@@ -184,15 +202,14 @@ var exportFunctions = {
     getDatabase : getDatabase
 };
 
-/** 
+/**
  * Init function for the module. Returns the exposed functions of the module
- * 
+ *
  * @param {module:database} db  - The database object
  * @return {module:auth~auth} - Object with the module's functions
  */
 module.exports = function(db){
     setDatabase(db);
-    
+
     return exportFunctions;
 };
-

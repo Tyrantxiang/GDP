@@ -2,7 +2,7 @@
 
 /*
  * users_db.js
- * 
+ *
  * Queries for the Users database table
  *
  * @authors Joe Ringham
@@ -15,11 +15,11 @@ var usersDB = {}
 
 //Creates an entry on the user table
 // Includes validation of details and password salting
-usersDB.createUser = function(userObj) {		
+usersDB.createUser = function(userObj) {
 	return createSaltedPassword(userObj.password).then(function queryExecution(saltedpw){
 		delete userObj.password;
 		userObj.saltedpw = saltedpw;
-		
+
 		return Users.create(userObj);
 	});
 }
@@ -36,7 +36,7 @@ usersDB.readUserById = function(id){
 }
 
 //Reads a user entry given a username
-usersDB.readUserByName = function(username){		
+usersDB.readUserByName = function(username){
 	return Users.findOne({
 		where : {
 			'username' : username
@@ -56,14 +56,20 @@ usersDB.authenticateUser = function(username, givenpw){
 	}).bind({}).then(function(userObj){
 		if(!userObj)
 			throw Error("User does not exist");
-		
+
 		this.id = userObj.id;
-		
+
+		//add the name to the attr so that
+		// in src/auth.js method authenticateUser can return a promise
+		// with user containing the name attr
+		// --clouds8
+		this.name = userObj.username;
+
 		return bcrypt.compareAsync(givenpw, userObj.saltedpw);
-	}).then(function(passCorrect){		
+	}).then(function(passCorrect){
 		if(!passCorrect)
 			throw new Error('Password is incorrect for user '+username.toString());
-		
+
 		return Promise.resolve(this);
 	});
 }
@@ -80,12 +86,12 @@ usersDB.checkUsernameExists = function(username){
 }
 
 //Updates all user details provided in the updatedUserObj
-usersDB.updateUserDetails = function(updatedUserObj, id){	
+usersDB.updateUserDetails = function(updatedUserObj, id){
 	if(updatedUserObj){
 		return createSaltedPassword(updatedUserObj.password).then(function(saltedpw){
 			delete updatedUserObj.password;
 			updatedUserObj.saltedpw = saltedpw;
-			
+
 			return Users.update(updatedUserObj, { where : { 'id' : id } });
 		});
 	}else{
@@ -114,6 +120,6 @@ function createSaltedPassword(password){
 
 module.exports = function(seq){
 	Users = seq.Users;
-	
+
 	return usersDB;
 }
