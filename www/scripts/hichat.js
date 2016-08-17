@@ -43,6 +43,7 @@ Hichat.prototype = {
 		document.getElementById('sendBtn').addEventListener('click',function(){
 			var messageInput = document.getElementById('messageInput');
 		    	var msg = messageInput.value;
+			var color =document.getElementById('colorStyle').value;
 			console.log(msg);
 			messageInput.value = '';
 			messageInput.focus();
