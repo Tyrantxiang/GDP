@@ -194,7 +194,6 @@
 
 		return window.draw;
 	}
-
 	function event_mouse_down()
 	{
 		canvas.on('mouse:down', function(i)
@@ -246,14 +245,12 @@
 
 				/*
 				 * QUICK FIX TO MAKE IT TO FIX THE OLD HEALTHBAR BEING VISIBLE BEHIND THE NEW ONE
-				 * Stops it being clickable (wasn't a necessary feature anyway!)
-				else if(i.target.name === hb.mouseoverGroupName)
+				 * Stops it being clickable (wasn't a necessary feature anyway!)*/
+				else
 				{
-					hb.toggleVisiblity();
-
-					canvas.renderAll();
+					hub.chat();
 				}
-				*/
+				
 			}
 		});
 	}

@@ -596,6 +596,16 @@
         });
     };
 
+	//chatting
+	
+	hub.chat = function(cb){
+	/*	document.addEventListener('keyup',function(w){
+			if(w.keyCode == 13){*/
+				menu.chat.load(	);
+		/*	}			
+		});*/
+	};
+	
     // Gets all unlocked (hub) items and passes them to the customisation menu.
     hub.launchHomeCustomisation = function(cb) {
         comms.get_item_slot_names_by_type('hub', function(slots) {

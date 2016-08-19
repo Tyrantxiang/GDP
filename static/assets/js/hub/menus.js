@@ -27,7 +27,26 @@
 			});
 		}
 	};
-
+	
+	window.menu.chat = {
+		load: function(chatting){
+			//console.log(chatting);
+			$.get('/views/hub/chatting.html', function(data){
+				$('#menu-overlays').html(data);
+				$('#chat-overlay').hide();
+				$('#chat-overlay').fadeIn(2000,function(){	
+					
+					$(document).keyup(function(e){
+						if(e.keyCode == 27){
+							$('#chat-overlay').fadeOut(2000);
+						}
+								
+					});
+				});
+			});
+		}
+	};
+	
 	window.menu.scores = {
 		load : function(formatted_scores) {
 			$.get('/views/hub/scoreboard.html', function(data) {
