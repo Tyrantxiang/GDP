@@ -141,7 +141,7 @@ Hub.prototype.exit = function(){
 
 
 /**
- * Gets the currently equipped items for this user
+
  *
  * @param {string} [type] - The type of items to get: "avatar" or "hub", if not present will return all
  * @return {Object} The config for a given item, including the slot's meta data

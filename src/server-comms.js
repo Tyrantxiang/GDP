@@ -73,7 +73,9 @@ module.exports = function (server, auth, config, hub){
     var io = require("socket.io")(server);
 
     var sockets = {};
-
+    
+    var users = [];	
+	
     function connect_middleware(socket, next){
         console.log("      uid " + socket.userId + ": socket created");
         // On connection create a new Comms class and let that deal with creating bindings and sending data
@@ -84,17 +86,30 @@ module.exports = function (server, auth, config, hub){
             }
 
             socket.hub = h;
-
-            // Exit the hub on disconnect, so it can clean itself up gracefully
+	    users.push(socket.userId);
+	    socket.userIndex = users.length;
+	  // Exit the hub on disconnect, so it can clean itself up gracefully
             socket.on("disconnect", function (){
                 console.log("      uid " + socket.userId + ": socket disconnect");
                 h.exit();
                 delete sockets[socket.userId];
+		users.splice(socket.userIndex,1);
             });
-
+			/*socket.on('disconnect',function(){
+				users.splice(socket.userIndex,1);
+				socket.broadcast.emit('system',socket.userName,users.length,'logout');
+			});*/
+	socket.on('login',function(){
+		io.sockets.emit('system', socket.userName, users.length, 'Online');	
+	});
+/*	socket.on('postMsg', function(msg){
+		socket.broadcast.emit('newMsg', socket.userName, msg);
+	});
+	socket.on('img',function(imgData){
+		socket.broadcast.emit('newImg',socket.userName,imgData);
+	});*/
             next();
         });
-
     }
 
 
@@ -107,6 +122,7 @@ module.exports = function (server, auth, config, hub){
           console.log(sockets[key]);
         }
       }
+
       next();
     }
 
@@ -118,9 +134,15 @@ module.exports = function (server, auth, config, hub){
     // Setup middleware (bit of a hack)
     io.use(connect_middleware);
 
-    /*io.on("connection", function (socket){
-
-    });*/
+    io.on("connection", function (socket){
+	console.log("sdf");
+	socket.on('postMsg', function(msg){
+                socket.broadcast.emit('newMsg', socket.userName, msg);
+        });
+        socket.on('img',function(imgData){
+                socket.broadcast.emit('newImg',socket.userName,imgData);
+        });
+    });
 
 
     return io;
