@@ -15,11 +15,12 @@
  */
 function Comms(socket){
     var userId = socket.userId;
-
+    var userName = socket.userName;
     // Define these as properties for the prototype to use
     Object.defineProperties(this, {
         userId : { get: function () { return userId; } },
-        socket : { get: function () { return socket; } }
+        socket : { get: function () { return socket; } },
+	userName : { get: function () { return userName} }
     });
 
     this.listeners = {};
@@ -88,31 +89,69 @@ module.exports = function (server, auth, config, hub){
             socket.hub = h;
 	    users.push(socket.userId);
 	    socket.userIndex = users.length;
+	io.on('connection',function(socket){
+                console.log("sd");
+		socket.on('login',function(nickname){
+                       console.log("qqqqq");
+			 if(users.indexOf(nickname) > -1){
+                                socket.emit('nickExisted');
+                        }else{
+                        socket.userIndex = users.length;
+                        socket.nickName = nickName
+                        users.push(socket.nickName);
+                        socket.emit('loginSucess');
+                        io.sockets.emit('system',socket.nickName,users.length,'login');
+                        }
+                });
+                socket.on('disconnect',function(){
+                        users.splice(socket.userIndex,1);
+                        socket.broadcast.emit('system',socket.nickName,users.length,'logout');
+                });
+                socket.on('postMsg', function(msg){
+                        socket.broadcast.emit('newMsg', socket.nickName, msg);
+                });
+                socket.on('img',function(imgData){
+                        socket.broadcasr.emit('newImg',socket.nickName, imgData);
+                });
+        });
+ //   io.use(chat_middleware);
 	  // Exit the hub on disconnect, so it can clean itself up gracefully
-            socket.on("disconnect", function (){
+	     socket.on("disconnect", function (){
                 console.log("      uid " + socket.userId + ": socket disconnect");
                 h.exit();
                 delete sockets[socket.userId];
 		users.splice(socket.userIndex,1);
             });
-			/*socket.on('disconnect',function(){
-				users.splice(socket.userIndex,1);
-				socket.broadcast.emit('system',socket.userName,users.length,'logout');
-			});*/
-	socket.on('login',function(){
-		io.sockets.emit('system', socket.userName, users.length, 'Online');	
-	});
-/*	socket.on('postMsg', function(msg){
-		socket.broadcast.emit('newMsg', socket.userName, msg);
-	});
-	socket.on('img',function(imgData){
-		socket.broadcast.emit('newImg',socket.userName,imgData);
-	});*/
             next();
-        });
+     });
     }
 
-
+   function chat_middleware(socket,next){
+	io.on('connection',function(socket){
+		socket.on('login',function(nickname){
+			if(users.indexOf(nickname) > -1){
+				socket.emit('nickExisted');
+			}else{
+			socket.userIndex = users.length;
+			socket.nickName = nickName
+			users.push(socket.nickName);
+			socket.emit('loginSucess');
+			io.sockets.emit('system',socket.nickName,users.length,'login');
+			}
+		});
+		socket.on('disconnect',function(){
+			users.splice(socket.userIndex,1);
+			socket.broadcast.emit('system',socket.nickName,users.length,'logout');	
+		});
+		socket.on('postMsg', function(msg){
+                	socket.broadcast.emit('newMsg', socket.nickName, msg);
+		});
+		socket.on('img',function(imgData){
+			socket.broadcasr.emit('newImg',socket.nickName, imgData);
+		});
+	});
+	next();	
+    }
     function data_middleware(socket, next) {
       sockets[socket.userId] = socket.userName;
       console.log('player ' + socket.userName + ' come, welcome.');
@@ -133,8 +172,8 @@ module.exports = function (server, auth, config, hub){
 
     // Setup middleware (bit of a hack)
     io.use(connect_middleware);
-
-    io.on("connection", function (socket){
+   // io.use(chat_middleware);
+    /*io.on("connection", function (socket){
 	console.log("sdf");
 	socket.on('postMsg', function(msg){
                 socket.broadcast.emit('newMsg', socket.userName, msg);
@@ -142,7 +181,7 @@ module.exports = function (server, auth, config, hub){
         socket.on('img',function(imgData){
                 socket.broadcast.emit('newImg',socket.userName,imgData);
         });
-    });
+    });*/
 
 
     return io;
