@@ -6,7 +6,6 @@
 	var array_to_add	= [];
 	var load			= 0;
 	var load_max		= 10;
-
 	// Minigame select.
 	var selected_minigame;
 	var Hichat = function(socket){
@@ -16,7 +15,6 @@
 		init: function(){
 			var that = this;
 			this.socket = io.connect();
-			console.log("sdfs");
 			this.socket.on('connect',function(){
 				document.getElementById('info').textContent = 'get yourself a nickname:)';
 				document.getElementById('nickWrapper').style.display = 'block';
@@ -177,14 +175,15 @@
 	};
 	
 	window.menu.chat = {
-		load: function(chatting){
+		load: function(){
 			//console.log(chatting);
-			$.get('/views/hub/chatting.html', function(data){
+			/*$.get('/views/hub/chatting.html', function(data){
 				$('#menu-overlays').html(data);
 				$('#chat-overlay').hide();
 				$('#main-content-area').hide();
 				$('#chat-overlay').fadeIn(2000,function(){	
 					var hichat = new Hichat();
+					console.log(chatting);
 					hichat.init();
 					$(document).keyup(function(e){
 						if(e.keyCode == 27){
@@ -194,7 +193,8 @@
 								
 					});
 				});
-			});
+			});*/
+			window.open("http://localhost:8080");
 		}
 	};
 	
